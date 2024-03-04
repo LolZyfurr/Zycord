@@ -8,6 +8,7 @@
     let updateRecall = false;
     let updateStatus = "";
     let timeoutId = null;
+    let leaderboardDebounce = false;
     const DELAY = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (3 / 5)) * 1000);
     const STATUS_API_URL = "https://discord.com/api/v9/users/@me/settings-proto/1";
@@ -188,6 +189,8 @@
         return "https://cdn.discordapp.com/avatars/" + a.id + "/" + a.avatar + ".png?size=4096"
     }
     async function fetchLeaderboard() {
+        if (!leaderboardDebounce) {
+            leaderboardDebounce = true;
         const channels = await fetchUserDMs(AUTHORIZATION);
         const fetchedSelfUser = await fetchUserSelf(AUTHORIZATION);
         const selfUser = fetchedSelfUser.id;
@@ -280,7 +283,10 @@
 
     </html>
     `;
-        console.log(html);
+            var newTab = window.open();
+    newTab.document.write(html);
+            leaderboardDebounce = false;
+        }
     }
 
     function AddLeaderboardButton() {
