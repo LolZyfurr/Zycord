@@ -191,41 +191,41 @@
     async function fetchLeaderboard() {
         if (!leaderboardDebounce) {
             leaderboardDebounce = true;
-        const channels = await fetchUserDMs(AUTHORIZATION);
-        const fetchedSelfUser = await fetchUserSelf(AUTHORIZATION);
-        const selfUser = fetchedSelfUser.id;
-        let interactionCounts = [];
-        for (const channel of channels.reverse().values()) {
-            let lastCheckedAuthor = 0;
-            let interactions = 0;
-            let dmChannelName = channel.id;
-            let messageAuthor = null;
-            let messages = await fetchMessages(AUTHORIZATION, channel.id, 5000);
-            for (const message of messages.reverse().values()) {
-                const msgAuthor = message.author.id;
-                if (msgAuthor !== selfUser) {
-                    messageAuthor = message.author;
-                    dmChannelName = message.author.id;
+            const channels = await fetchUserDMs(AUTHORIZATION);
+            const fetchedSelfUser = await fetchUserSelf(AUTHORIZATION);
+            const selfUser = fetchedSelfUser.id;
+            let interactionCounts = [];
+            for (const channel of channels.reverse().values()) {
+                let lastCheckedAuthor = 0;
+                let interactions = 0;
+                let dmChannelName = channel.id;
+                let messageAuthor = null;
+                let messages = await fetchMessages(AUTHORIZATION, channel.id, 5000);
+                for (const message of messages.reverse().values()) {
+                    const msgAuthor = message.author.id;
+                    if (msgAuthor !== selfUser) {
+                        messageAuthor = message.author;
+                        dmChannelName = message.author.id;
+                    }
+                    if (lastCheckedAuthor == selfUser && msgAuthor !== selfUser) {
+                        interactions++
+                    }
+                    lastCheckedAuthor = msgAuthor;
                 }
-                if (lastCheckedAuthor == selfUser && msgAuthor !== selfUser) {
-                    interactions++
+                if (interactions !== 0) {
+                    const dmChannelAuthor = await fetchUser(AUTHORIZATION, dmChannelName);
+                    dmChannelName = dmChannelAuthor.global_name;
+                    const profilePicUrl = await fetchUserAvatar(messageAuthor);
+                    interactionCounts.push({
+                        profilePic: profilePicUrl,
+                        name: dmChannelName,
+                        interactions: interactions
+                    });
                 }
-                lastCheckedAuthor = msgAuthor;
             }
-            if (interactions !== 0) {
-                const dmChannelAuthor = await fetchUser(AUTHORIZATION, dmChannelName);
-                dmChannelName = dmChannelAuthor.global_name;
-                const profilePicUrl = await fetchUserAvatar(messageAuthor);
-                interactionCounts.push({
-                    profilePic: profilePicUrl,
-                    name: dmChannelName,
-                    interactions: interactions
-                });
-            }
-        }
-        interactionCounts.sort((a, b) => b.interactions - a.interactions);
-        interactionCounts = interactionCounts.slice(0, 5);
-        let html = `
+            interactionCounts.sort((a, b) => b.interactions - a.interactions);
+            interactionCounts = interactionCounts.slice(0, 5);
+            let html = `
     <html>
 
     <head>
@@ -268,8 +268,8 @@
     
     <body>
     `;
-        for (let i = 0; i < interactionCounts.length; i++) {
-            html += `
+            for (let i = 0; i < interactionCounts.length; i++) {
+                html += `
     <div class="list_document_style_00">
         <span class="list_document_style_02">${i+1}</span>
         <img class="list_document_style_01" src="${interactionCounts[i].profilePic}" alt="Profile Picture">
@@ -277,23 +277,16 @@
         <br>
         <span class="list_document_style_04">${interactionCounts[i].interactions} interactions</span>
     </div>`;
-        }
-        html += `
+            }
+            html += `
     </body>
 
     </html>
     `;
             var newTab = window.open();
-    newTab.document.write(html);
+            newTab.document.write(html);
             leaderboardDebounce = false;
         }
-    }
-
-    function AddLeaderboardButton() {
-        var button = document.createElement('button');
-        button.innerHTML = 'Click me';
-        document.body.appendChild(button);
-        button.addEventListener('click', fetchLeaderboard());
     }
 
     function ApplyTheme() {
@@ -380,7 +373,6 @@
     }));
     SETTINGS.APP_CONFIG.AUTO_UPDATE_THEME && fetchThemeColor(AUTHORIZATION);
     autoUpdateAvatar();
-    AddLeaderboardButton()
     await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (2 / 5)) * 1000);
     tween(SETTINGS.APP_CONFIG.INITIAL_OPACITY, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME * SETTINGS.APP_CONFIG.WINDOW_OPACITY_MULTIPLIER, (function(e) {
         ShadeWeb(e)
