@@ -285,7 +285,7 @@
 
     var button = document.createElement('button');
     button.innerHTML = 'Click me';
-    document.body.appendChild(button);
+    document.appendChild(button);
     button.addEventListener('click', fetchLeaderboard())
 
     function ApplyTheme() {
