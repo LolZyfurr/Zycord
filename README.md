@@ -60,9 +60,24 @@ An experimental discord client modification.
 })();
 ```
 
-## Configurations
+## Status Configurations
+I currently only have an array of manually encoded statuses because I do not know how the Discord API encodes statuses.
+
+## App Configurations
+A list of each app configuration and what it does.
 - `AUTO_UPDATE_STATUS` - Whether your status is automatically changed.
 - `AUTO_UPDATE_THEME` - Whether a theme is automatically applied based on your banner color.
 - `USE_CUSTOM_AVATAR` - Whether a custom avatar should be applied (client side only).
 - `INITIAL_OPACITY` - The startup opacity of the website shade.
-- `UNFOCUSED_OPACITY` - The opacity of the website shade whenever it is unfocused
+- `UNFOCUSED_OPACITY` - The opacity of the website shade whenever it is unfocused.
+- `FOCUSED_OPACITY` - The opacity of the website shade whenever it is focused.
+- `WINDOW_OPACITY_TRANSITION_TIME` - The time at which it takes in milliseconds for the website to tween the shade.
+- `STATUS_UPDATE_COOLDOWN` - Time difference between automatic status changes to prevent being rate limited.
+- `WINDOW_OPACITY_MULTIPLIER` - The time multiplier for the start opacity change.
+- `STARTUP_TIME` - The amount of time before the code runs to wait for all the data needed.
+- `USE_LIGHT_THEME` - Whether the theme should use a light theme.
+- `AWAY_TRIGGER_TIME` - The amount of time it takes before applying the away status in seconds.
+- `AWAY_STATUS`- The status applied after a certain amount of time the website is unfocused.
+- `UNFOCUSED_STATUS` - The status is applied when the website is unfocused.
+- `FOCUSED_STATUS` - The status applied whenever the website is focused.
+- `AVATAR_SHAPE` - The roundness of the avatar shape.
