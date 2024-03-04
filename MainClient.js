@@ -1,43 +1,225 @@
-(async function () {
-ShadeWeb(SETTINGS.APP_CONFIG.INITIAL_OPACITY);
-let AUTHORIZATION = getToken();
-let LAST_AUTH = AUTHORIZATION;
-let THEME_COLOR = null;
-let lastStatus = "";
-let updateDebounce = false;
-let updateRecall = false;
-let updateStatus = "";
-let timeoutId = null;
-const DELAY = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME*(3/5)) * 1000);
-const STATUS_API_URL = "https://discord.com/api/v9/users/@me/settings-proto/1";
-const USER_API_URL = "https://discord.com/api/v9/users/@me";
-const USER_AVATAR_URL = await fetchUserAvatarURL(AUTHORIZATION, "1132521952238637117");
-const invisibleChar = await unicodeToString('U+200B');
-document.addEventListener("keydown",(updateEventAvatar));
-document.addEventListener("click",(updateEventAvatar));
-function unicodeToString(n){return String.fromCharCode(n)};
-function changeAvatarImages(a){SETTINGS.APP_CONFIG.USE_CUSTOM_AVATAR&&document.querySelectorAll('img[src*="723659289377636423"]').forEach(c=>c.src=a)}
-function autoUpdateAvatar(){updateEventAvatar;new MutationObserver(()=>{updateEventAvatar}).observe(document.querySelector("head > title"),{attributes:!0,childList:!0,characterData:!0})}
-function getToken(){let m;return(window.webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let c in e.c)m.push(e.c[c])}]),m).find(m=>m?.exports?.default?.getToken!==void 0).exports.default.getToken();}
-function createFetchOptions(t,e,n){return{headers:{accept:"*/*","accept-language":"en-US,en;q=0.9",authorization:t,"content-type":"application/json"},body:e?JSON.stringify({settings:e}):null,method:n}}
-function uwuify(l){const a=["rawr x3","OwO","UwU","o.O","-.-",">w<","(⑅˘꒳˘)","(ꈍᴗꈍ)","(˘ω˘)","(U ᵕ U❁)","σωσ","òωó","(///ˬ///✿)","(U ﹏ U)","( ͡o ω ͡o )","ʘwʘ",":3",":3","XD","nyaa~~","mya",">_<","😳","🥺","😳😳😳","rawr","^^","^^;;","(ˆ ﻌ ˆ)♡","^•ﻌ•^","/(^•ω•^)","(✿oωo)"],o=[["small","smol"],["cute","kawaii~"],["fluff","floof"],["love","luv"],["stupid","baka"],["what","nani"],["meow","nya~"],["hello","hewwo"]];l=l.toLowerCase();for(const a of o)l=l.replaceAll(a[0],a[1]);return l=l.replaceAll(/([ \t\n])n/g,"$1ny").replaceAll(/[lr]/g,"w").replaceAll(/([ \t\n])([a-z])/g,(l,a,o)=>Math.random()<.5?`${a}${o}-${o}`:`${a}${o}`).replaceAll(/([^.,!][.,!])([ \t\n])/g,(l,o,e)=>{return`${o} ${r=a,r[Math.floor(Math.random()*r.length)]}${e}`;var r})}
-function setStatus(t,e){fetch(STATUS_API_URL,createFetchOptions(t,e,"PATCH"))}
-function hexToRgb(e){let n=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(e);return n?{r:parseInt(n[1],16),g:parseInt(n[2],16),b:parseInt(n[3],16)}:null}
-function tween(n,e,t,i){let a=null;requestAnimationFrame((function m(u){a||(a=u);let l=u-a,o=Math.min(l/t,1);i(n+(e-n)*o),o<1&&requestAnimationFrame(m)}))}
-function loadCSS(e){let t=document.createElement("link");t.rel="stylesheet",t.type="text/css",t.href=e,t.media="only x",t.onload=function(){this.media="all"},document.head.appendChild(t)}
-function WatermarkWeb(n,e){var t=document.createElement("style");t.type="text/css",t.innerHTML=`\nbody::after {\n  content: "${n}";\n  position: fixed;\n  bottom: 10px;\n  right: 10px;\n  font-size: 25px;\n  font-weight: 900;\n  opacity: 1;\n}\n  z-index: 999999;\n`,document.getElementsByTagName("head")[0].appendChild(t)}
-function fetchThemeColor(e){null==THEME_COLOR?fetch(USER_API_URL,createFetchOptions(e,null,"GET")).then(e=>e.json()).then(e=>{const n=e.banner_color;n&&(console.log(n),THEME_COLOR=n,changeElementColor(THEME_COLOR))}):changeElementColor(THEME_COLOR)}
-function ShadeWeb(e){WatermarkWeb("ZYCORD","#FFFFFF");var n=document.getElementById("shadeWebStyle"),t=`\nbody::before {\ncontent: "";\nposition: fixed;\ntop: 0;\nleft: 0;\nwidth: 100%;\nheight: 100%;\nz-index: 999998;\npointer-events: none;\nbackground-color: rgba(0,0,0,${e});\nbackground-image: url('');\nbackground-size: cover;\n}\n`;if(n)n.innerHTML=t;else{var d=document.createElement("style");d.type="text/css",d.id="shadeWebStyle",d.innerHTML=t,document.getElementsByTagName("head")[0].appendChild(d)}}
-function ApplyTheme(){WatermarkWeb("ZYCORD","#FFFFFF");var t=document.createElement("style");t.type="text/css",t.innerHTML="div.peopleListItem_d14722{background-color:rgb(var(--backgroundsecondaryalt));border-radius:10px;padding-left:10px;padding-right:10px;}div.interactive__776ee.interactive_a868bc{background-color:rgb(var(--backgroundsecondaryalt));border-radius:10px;}div.wrapper_edb6e0{outline-width:8px;outline-style:solid;outline-color:rgba(var(--backgroundsecondaryalt),1)}img.executedCommandAvatar__939bc,img.replyAvatar_cea07c,button.shinyButton_fc8363.giftButton_ff61dc,div.repliedMessage_e2bf4a::before,span.latin24CompactTimeStamp__21614.timestamp_cdbd93,.avatarDecoration_ae35e3,.avatarDecoration__14b3c{display:none}img.avatar__08316{top:-20px;border-radius:var(--rs-avatar-shape)}div.wrapper_edb6e0,img.avatar__08316{background-color:rgb(var(--backgroundsecondaryalt))}div.message__80c10.cozyMessage__64ce7{margin-left:70px;background-color:rgba(var(--backgroundsecondary),0.5);border-radius:10px;margin-right:15px}img.avatar__08316,h3.header__39b23,div.markup_a7e664.messageContent__21e69,div.repliedMessage_e2bf4a,div.container_dbadf5{left:-55px}div.cozyMessage__64ce7::before{border-bottom-left-radius:10px;border-top-left-radius:10px;width:75%;background:linear-gradient(90deg,rgba(var(--mentioncolor),0.5) 0,rgba(0,0,0,0) 100%) !important}div.message__80c10.cozyMessage__64ce7{margin-top:5px}div.message__80c10.cozyMessage__64ce7.groupStart__56db5{margin-top:24px}div.message__80c10.cozyMessage__64ce7.groupStart__56db5,div.message__80c10.cozyMessage__64ce7.groupStart__56db5::before{border-top-left-radius:5px}",document.getElementsByTagName("head")[0].appendChild(t),loadCSS("https://mwittrien.github.io/BetterDiscordAddons/Themes/DiscordRecolor/DiscordRecolor.css"),loadCSS("https://discordstyles.github.io/RadialStatus/dist/RadialStatus.css")}
-async function fetchUserBannerColor(a,t){let e="#000000";return await fetch("https://discord.com/api/v9/users/"+t,createFetchOptions(a,null,"GET")).then(t=>t.json()).then(t=>{const n=t.banner_color;n&&(e=n)}),e}
-async function fetchUserAvatarURL(t,a){let s=null;return await fetch("https://discord.com/api/v9/users/"+a,createFetchOptions(t,null,"GET")).then(t=>t.json()).then(t=>{if(t.avatar){const n=t.avatar.startsWith("a_")?".gif":".png";s=`https://cdn.discordapp.com/avatars/${a}/${t.avatar}${n}`}}),s}
-async function updateEventAvatar(a){changeAvatarImages(USER_AVATAR_URL),await DELAY(500),changeAvatarImages(USER_AVATAR_URL),await DELAY(1500),changeAvatarImages(USER_AVATAR_URL)}
-async function changeElementColor(t){const r=hexToRgb(t),e=SETTINGS.APP_CONFIG.USE_LIGHT_THEME?155:0,o=(SETTINGS.APP_CONFIG.USE_LIGHT_THEME,SETTINGS.THEME_COLORS.PRIMARY),s=SETTINGS.APP_CONFIG.USE_LIGHT_THEME?SETTINGS.THEME_COLORS.SENARY:SETTINGS.THEME_COLORS.SECONDARY,l=SETTINGS.APP_CONFIG.USE_LIGHT_THEME?SETTINGS.THEME_COLORS.QUINARY:SETTINGS.THEME_COLORS.TERTIARY,p=(SETTINGS.APP_CONFIG.USE_LIGHT_THEME,SETTINGS.THEME_COLORS.QUATERNARY),a=SETTINGS.APP_CONFIG.USE_LIGHT_THEME?SETTINGS.THEME_COLORS.TERTIARY:SETTINGS.THEME_COLORS.QUINARY,i=SETTINGS.APP_CONFIG.USE_LIGHT_THEME?SETTINGS.THEME_COLORS.SECONDARY:SETTINGS.THEME_COLORS.SENARY,n=SETTINGS.APP_CONFIG.USE_LIGHT_THEME?SETTINGS.THEME_COLORS.PRIMARY:SETTINGS.THEME_COLORS.SEPTENARY;let y=`${r.r},${r.g},${r.b}`,m=`${r.r*o},${r.g*o},${r.b*o}`,c=`${r.r*s+e},${r.g*s+e},${r.b*s+e}`,P=`${r.r*l+e},${r.g*l+e},${r.b*l+e}`,g=`${r.r*p+e},${r.g*p+e},${r.b*p+e}`,b=`${r.r*a+e},${r.g*a+e},${r.b*a+e}`,h=`${r.r*i+e},${r.g*i+e},${r.b*i+e}`,d=`${r.r*n+e},${r.g*n+e},${r.b*n+e}`,E=document.documentElement,$=!1,u=!1,x=[y,m,c,P,g,b,h,d].join(",").split(",").map(Number),_=x.reduce((t,r)=>t+r,0)/x.length>=155;const k=async()=>{$?u=!0:($=!0,WatermarkWeb("ZYCORD",m),E.style.setProperty("--mainaccentcolor",y,"important"),E.style.setProperty("--accentcolor",m,"important"),E.style.setProperty("--accentcolor2",m,"important"),E.style.setProperty("--linkcolor",m,"important"),E.style.setProperty("--mentioncolor",m,"important"),E.style.setProperty("--backgroundaccent",c,"important"),E.style.setProperty("--backgroundprimary",P,"important"),E.style.setProperty("--backgroundsecondary",g,"important"),E.style.setProperty("--backgroundsecondaryalt",b,"important"),E.style.setProperty("--backgroundtertiary",h,"important"),E.style.setProperty("--backgroundfloating",d,"important"),E.style.setProperty("--rs-small-spacing","2px","important"),E.style.setProperty("--rs-small-spacing","2px","important"),E.style.setProperty("--rs-medium-spacing","3px","important"),E.style.setProperty("--rs-large-spacing","4px","important"),E.style.setProperty("--rs-small-width","2px","important"),E.style.setProperty("--rs-medium-width","3px","important"),E.style.setProperty("--rs-large-width","4px","important"),E.style.setProperty("--rs-avatar-shape",SETTINGS.APP_CONFIG.AVATAR_SHAPE,"important"),E.style.setProperty("--rs-online-color","#43b581","important"),E.style.setProperty("--rs-idle-color","#faa61a","important"),E.style.setProperty("--rs-dnd-color","#f04747","important"),E.style.setProperty("--rs-offline-color","#636b75","important"),E.style.setProperty("--rs-streaming-color","#643da7","important"),E.style.setProperty("--rs-invisible-color","#747f8d","important"),E.style.setProperty("--rs-phone-color","var(--rs-online-color)","important"),E.style.setProperty("--rs-phone-visible","none","important"),_?(E.style.setProperty("--textbrightest","100,100,100","important"),E.style.setProperty("--embed-title","100,100,100","important"),E.style.setProperty("--textbrighter","90,90,90","important"),E.style.setProperty("--textbright","80,80,80","important"),E.style.setProperty("--textdark","70,70,70","important"),E.style.setProperty("--textdarker","60,60,60","important"),E.style.setProperty("--textdarkest","50,50,50","important")):(E.style.setProperty("--textbrightest","250,250,250","important"),E.style.setProperty("--textbrighter","240,240,240","important"),E.style.setProperty("--textbright","230,230,230","important"),E.style.setProperty("--textdark","220,220,220","important"),E.style.setProperty("--textdarker","210,210,210","important"),E.style.setProperty("--textdarkest","200,200,200","important")),ApplyTheme(),await DELAY(500),$=!1,u&&(u=!1,k()))};k(),new MutationObserver((function(t){t.forEach((function(t){"attributes"==t.type&&"style"==t.attributeName&&E.style.getPropertyValue("--mainaccentcolor").trim()!==y&&k()}))})).observe(E,{attributes:!0,attributeFilter:["style"]})}
-async function updateUserStatus(t){if(updateDebounce)updateRecall||(updateRecall=!0),updateStatus=t;else{if(updateDebounce=!0,SETTINGS.APP_CONFIG.AUTO_UPDATE_STATUS){if(lastStatus===t)return void(updateDebounce=!1);setStatus(AUTHORIZATION,t),lastStatus=t}await DELAY(SETTINGS.APP_CONFIG.STATUS_UPDATE_COOLDOWN),updateDebounce=!1,updateRecall&&(updateRecall=!1,updateUserStatus(updateStatus))}}
-window.addEventListener("blur",(function(){tween(SETTINGS.APP_CONFIG.FOCUSED_OPACITY,SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY,SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME,(function(T){ShadeWeb(T)})),updateUserStatus(SETTINGS.APP_CONFIG.UNFOCUSED_STATUS),timeoutId=setTimeout((function(){updateUserStatus(SETTINGS.APP_CONFIG.AWAY_STATUS)}),1e3*SETTINGS.APP_CONFIG.AWAY_TRIGGER_TIME)}));
-window.addEventListener("focus",(function(){null!==timeoutId&&(clearTimeout(timeoutId),timeoutId=null),tween(SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY,SETTINGS.APP_CONFIG.FOCUSED_OPACITY,SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME,(function(I){ShadeWeb(I)})),updateUserStatus(SETTINGS.APP_CONFIG.FOCUSED_STATUS)}));
-SETTINGS.APP_CONFIG.AUTO_UPDATE_THEME&&fetchThemeColor(AUTHORIZATION); autoUpdateAvatar();
-await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME*(2/5)) * 1000);
-tween(SETTINGS.APP_CONFIG.INITIAL_OPACITY,SETTINGS.APP_CONFIG.FOCUSED_OPACITY,SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME*SETTINGS.APP_CONFIG.WINDOW_OPACITY_MULTIPLIER,(function(e){ShadeWeb(e)}));
+(async function() {
+    ShadeWeb(SETTINGS.APP_CONFIG.INITIAL_OPACITY);
+    let AUTHORIZATION = getToken();
+    let LAST_AUTH = AUTHORIZATION;
+    let THEME_COLOR = null;
+    let lastStatus = "";
+    let updateDebounce = false;
+    let updateRecall = false;
+    let updateStatus = "";
+    let timeoutId = null;
+    const DELAY = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (3 / 5)) * 1000);
+    const STATUS_API_URL = "https://discord.com/api/v9/users/@me/settings-proto/1";
+    const USER_API_URL = "https://discord.com/api/v9/users/@me";
+    const USER_AVATAR_URL = await fetchUserAvatarURL(AUTHORIZATION, "1132521952238637117");
+    const invisibleChar = await unicodeToString('U+200B');
+    document.addEventListener("keydown", (updateEventAvatar));
+    document.addEventListener("click", (updateEventAvatar));
+
+    function unicodeToString(n) {
+        return String.fromCharCode(n)
+    };
+
+    function changeAvatarImages(a) {
+        SETTINGS.APP_CONFIG.USE_CUSTOM_AVATAR && document.querySelectorAll('img[src*="723659289377636423"]').forEach(c => c.src = a)
+    }
+
+    function autoUpdateAvatar() {
+        updateEventAvatar;
+        new MutationObserver(() => {
+            updateEventAvatar
+        }).observe(document.querySelector("head > title"), {
+            attributes: !0,
+            childList: !0,
+            characterData: !0
+        })
+    }
+
+    function getToken() {
+        let m;
+        return (window.webpackChunkdiscord_app.push([
+            [''], {},
+            e => {
+                m = [];
+                for (let c in e.c) m.push(e.c[c])
+            }
+        ]), m).find(m => m?.exports?.default?.getToken !== void 0).exports.default.getToken();
+    }
+
+    function createFetchOptions(t, e, n) {
+        return {
+            headers: {
+                accept: "*/*",
+                "accept-language": "en-US,en;q=0.9",
+                authorization: t,
+                "content-type": "application/json"
+            },
+            body: e ? JSON.stringify({
+                settings: e
+            }) : null,
+            method: n
+        }
+    }
+
+    function uwuify(l) {
+        const a = ["rawr x3", "OwO", "UwU", "o.O", "-.-", ">w<", "(⑅˘꒳˘)", "(ꈍᴗꈍ)", "(˘ω˘)", "(U ᵕ U❁)", "σωσ", "òωó", "(///ˬ///✿)", "(U ﹏ U)", "( ͡o ω ͡o )", "ʘwʘ", ":3", ":3", "XD", "nyaa~~", "mya", ">_<", "😳", "🥺", "😳😳😳", "rawr", "^^", "^^;;", "(ˆ ﻌ ˆ)♡", "^•ﻌ•^", "/(^•ω•^)", "(✿oωo)"],
+            o = [
+                ["small", "smol"],
+                ["cute", "kawaii~"],
+                ["fluff", "floof"],
+                ["love", "luv"],
+                ["stupid", "baka"],
+                ["what", "nani"],
+                ["meow", "nya~"],
+                ["hello", "hewwo"]
+            ];
+        l = l.toLowerCase();
+        for (const a of o) l = l.replaceAll(a[0], a[1]);
+        return l = l.replaceAll(/([ \t\n])n/g, "$1ny").replaceAll(/[lr]/g, "w").replaceAll(/([ \t\n])([a-z])/g, (l, a, o) => Math.random() < .5 ? `${a}${o}-${o}` : `${a}${o}`).replaceAll(/([^.,!][.,!])([ \t\n])/g, (l, o, e) => {
+            return `${o} ${r=a,r[Math.floor(Math.random()*r.length)]}${e}`;
+            var r
+        })
+    }
+
+    function setStatus(t, e) {
+        fetch(STATUS_API_URL, createFetchOptions(t, e, "PATCH"))
+    }
+
+    function hexToRgb(e) {
+        let n = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(e);
+        return n ? {
+            r: parseInt(n[1], 16),
+            g: parseInt(n[2], 16),
+            b: parseInt(n[3], 16)
+        } : null
+    }
+
+    function tween(n, e, t, i) {
+        let a = null;
+        requestAnimationFrame((function m(u) {
+            a || (a = u);
+            let l = u - a,
+                o = Math.min(l / t, 1);
+            i(n + (e - n) * o), o < 1 && requestAnimationFrame(m)
+        }))
+    }
+
+    function loadCSS(e) {
+        let t = document.createElement("link");
+        t.rel = "stylesheet", t.type = "text/css", t.href = e, t.media = "only x", t.onload = function() {
+            this.media = "all"
+        }, document.head.appendChild(t)
+    }
+
+    function WatermarkWeb(n, e) {
+        var t = document.createElement("style");
+        t.type = "text/css", t.innerHTML = `\nbody::after {\n  content: "${n}";\n  position: fixed;\n  bottom: 10px;\n  right: 10px;\n  font-size: 25px;\n  font-weight: 900;\n  opacity: 1;\n}\n  z-index: 999999;\n`, document.getElementsByTagName("head")[0].appendChild(t)
+    }
+
+    function fetchThemeColor(e) {
+        null == THEME_COLOR ? fetch(USER_API_URL, createFetchOptions(e, null, "GET")).then(e => e.json()).then(e => {
+            const n = e.banner_color;
+            n && (console.log(n), THEME_COLOR = n, changeElementColor(THEME_COLOR))
+        }) : changeElementColor(THEME_COLOR)
+    }
+
+    function ShadeWeb(e) {
+        WatermarkWeb("ZYCORD", "#FFFFFF");
+        var n = document.getElementById("shadeWebStyle"),
+            t = `\nbody::before {\ncontent: "";\nposition: fixed;\ntop: 0;\nleft: 0;\nwidth: 100%;\nheight: 100%;\nz-index: 999998;\npointer-events: none;\nbackground-color: rgba(0,0,0,${e});\nbackground-image: url('');\nbackground-size: cover;\n}\n`;
+        if (n) n.innerHTML = t;
+        else {
+            var d = document.createElement("style");
+            d.type = "text/css", d.id = "shadeWebStyle", d.innerHTML = t, document.getElementsByTagName("head")[0].appendChild(d)
+        }
+    }
+
+    function ApplyTheme() {
+        WatermarkWeb("ZYCORD", "#FFFFFF");
+        var t = document.createElement("style");
+        t.type = "text/css", t.innerHTML = "div.peopleListItem_d14722{background-color:rgb(var(--backgroundsecondaryalt));border-radius:10px;padding-left:10px;padding-right:10px;}div.interactive__776ee.interactive_a868bc{background-color:rgb(var(--backgroundsecondaryalt));border-radius:10px;}div.wrapper_edb6e0{outline-width:8px;outline-style:solid;outline-color:rgba(var(--backgroundsecondaryalt),1)}img.executedCommandAvatar__939bc,img.replyAvatar_cea07c,button.shinyButton_fc8363.giftButton_ff61dc,div.repliedMessage_e2bf4a::before,span.latin24CompactTimeStamp__21614.timestamp_cdbd93,.avatarDecoration_ae35e3,.avatarDecoration__14b3c{display:none}img.avatar__08316{top:-20px;border-radius:var(--rs-avatar-shape)}div.wrapper_edb6e0,img.avatar__08316{background-color:rgb(var(--backgroundsecondaryalt))}div.message__80c10.cozyMessage__64ce7{margin-left:70px;background-color:rgba(var(--backgroundsecondary),0.5);border-radius:10px;margin-right:15px}img.avatar__08316,h3.header__39b23,div.markup_a7e664.messageContent__21e69,div.repliedMessage_e2bf4a,div.container_dbadf5{left:-55px}div.cozyMessage__64ce7::before{border-bottom-left-radius:10px;border-top-left-radius:10px;width:75%;background:linear-gradient(90deg,rgba(var(--mentioncolor),0.5) 0,rgba(0,0,0,0) 100%) !important}div.message__80c10.cozyMessage__64ce7{margin-top:5px}div.message__80c10.cozyMessage__64ce7.groupStart__56db5{margin-top:24px}div.message__80c10.cozyMessage__64ce7.groupStart__56db5,div.message__80c10.cozyMessage__64ce7.groupStart__56db5::before{border-top-left-radius:5px}", document.getElementsByTagName("head")[0].appendChild(t), loadCSS("https://mwittrien.github.io/BetterDiscordAddons/Themes/DiscordRecolor/DiscordRecolor.css"), loadCSS("https://discordstyles.github.io/RadialStatus/dist/RadialStatus.css")
+    }
+    async function fetchUserBannerColor(a, t) {
+        let e = "#000000";
+        return await fetch("https://discord.com/api/v9/users/" + t, createFetchOptions(a, null, "GET")).then(t => t.json()).then(t => {
+            const n = t.banner_color;
+            n && (e = n)
+        }), e
+    }
+    async function fetchUserAvatarURL(t, a) {
+        let s = null;
+        return await fetch("https://discord.com/api/v9/users/" + a, createFetchOptions(t, null, "GET")).then(t => t.json()).then(t => {
+            if (t.avatar) {
+                const n = t.avatar.startsWith("a_") ? ".gif" : ".png";
+                s = `https://cdn.discordapp.com/avatars/${a}/${t.avatar}${n}`
+            }
+        }), s
+    }
+    async function updateEventAvatar(a) {
+        changeAvatarImages(USER_AVATAR_URL), await DELAY(500), changeAvatarImages(USER_AVATAR_URL), await DELAY(1500), changeAvatarImages(USER_AVATAR_URL)
+    }
+    async function changeElementColor(t) {
+        const r = hexToRgb(t),
+            e = SETTINGS.APP_CONFIG.USE_LIGHT_THEME ? 155 : 0,
+            o = (SETTINGS.APP_CONFIG.USE_LIGHT_THEME, SETTINGS.THEME_COLORS.PRIMARY),
+            s = SETTINGS.APP_CONFIG.USE_LIGHT_THEME ? SETTINGS.THEME_COLORS.SENARY : SETTINGS.THEME_COLORS.SECONDARY,
+            l = SETTINGS.APP_CONFIG.USE_LIGHT_THEME ? SETTINGS.THEME_COLORS.QUINARY : SETTINGS.THEME_COLORS.TERTIARY,
+            p = (SETTINGS.APP_CONFIG.USE_LIGHT_THEME, SETTINGS.THEME_COLORS.QUATERNARY),
+            a = SETTINGS.APP_CONFIG.USE_LIGHT_THEME ? SETTINGS.THEME_COLORS.TERTIARY : SETTINGS.THEME_COLORS.QUINARY,
+            i = SETTINGS.APP_CONFIG.USE_LIGHT_THEME ? SETTINGS.THEME_COLORS.SECONDARY : SETTINGS.THEME_COLORS.SENARY,
+            n = SETTINGS.APP_CONFIG.USE_LIGHT_THEME ? SETTINGS.THEME_COLORS.PRIMARY : SETTINGS.THEME_COLORS.SEPTENARY;
+        let y = `${r.r},${r.g},${r.b}`,
+            m = `${r.r*o},${r.g*o},${r.b*o}`,
+            c = `${r.r*s+e},${r.g*s+e},${r.b*s+e}`,
+            P = `${r.r*l+e},${r.g*l+e},${r.b*l+e}`,
+            g = `${r.r*p+e},${r.g*p+e},${r.b*p+e}`,
+            b = `${r.r*a+e},${r.g*a+e},${r.b*a+e}`,
+            h = `${r.r*i+e},${r.g*i+e},${r.b*i+e}`,
+            d = `${r.r*n+e},${r.g*n+e},${r.b*n+e}`,
+            E = document.documentElement,
+            $ = !1,
+            u = !1,
+            x = [y, m, c, P, g, b, h, d].join(",").split(",").map(Number),
+            _ = x.reduce((t, r) => t + r, 0) / x.length >= 155;
+        const k = async () => {
+            $ ? u = !0 : ($ = !0, WatermarkWeb("ZYCORD", m), E.style.setProperty("--mainaccentcolor", y, "important"), E.style.setProperty("--accentcolor", m, "important"), E.style.setProperty("--accentcolor2", m, "important"), E.style.setProperty("--linkcolor", m, "important"), E.style.setProperty("--mentioncolor", m, "important"), E.style.setProperty("--backgroundaccent", c, "important"), E.style.setProperty("--backgroundprimary", P, "important"), E.style.setProperty("--backgroundsecondary", g, "important"), E.style.setProperty("--backgroundsecondaryalt", b, "important"), E.style.setProperty("--backgroundtertiary", h, "important"), E.style.setProperty("--backgroundfloating", d, "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-medium-spacing", "3px", "important"), E.style.setProperty("--rs-large-spacing", "4px", "important"), E.style.setProperty("--rs-small-width", "2px", "important"), E.style.setProperty("--rs-medium-width", "3px", "important"), E.style.setProperty("--rs-large-width", "4px", "important"), E.style.setProperty("--rs-avatar-shape", SETTINGS.APP_CONFIG.AVATAR_SHAPE, "important"), E.style.setProperty("--rs-online-color", "#43b581", "important"), E.style.setProperty("--rs-idle-color", "#faa61a", "important"), E.style.setProperty("--rs-dnd-color", "#f04747", "important"), E.style.setProperty("--rs-offline-color", "#636b75", "important"), E.style.setProperty("--rs-streaming-color", "#643da7", "important"), E.style.setProperty("--rs-invisible-color", "#747f8d", "important"), E.style.setProperty("--rs-phone-color", "var(--rs-online-color)", "important"), E.style.setProperty("--rs-phone-visible", "none", "important"), _ ? (E.style.setProperty("--textbrightest", "100,100,100", "important"), E.style.setProperty("--embed-title", "100,100,100", "important"), E.style.setProperty("--textbrighter", "90,90,90", "important"), E.style.setProperty("--textbright", "80,80,80", "important"), E.style.setProperty("--textdark", "70,70,70", "important"), E.style.setProperty("--textdarker", "60,60,60", "important"), E.style.setProperty("--textdarkest", "50,50,50", "important")) : (E.style.setProperty("--textbrightest", "250,250,250", "important"), E.style.setProperty("--textbrighter", "240,240,240", "important"), E.style.setProperty("--textbright", "230,230,230", "important"), E.style.setProperty("--textdark", "220,220,220", "important"), E.style.setProperty("--textdarker", "210,210,210", "important"), E.style.setProperty("--textdarkest", "200,200,200", "important")), ApplyTheme(), await DELAY(500), $ = !1, u && (u = !1, k()))
+        };
+        k(), new MutationObserver((function(t) {
+            t.forEach((function(t) {
+                "attributes" == t.type && "style" == t.attributeName && E.style.getPropertyValue("--mainaccentcolor").trim() !== y && k()
+            }))
+        })).observe(E, {
+            attributes: !0,
+            attributeFilter: ["style"]
+        })
+    }
+    async function updateUserStatus(t) {
+        if (updateDebounce) updateRecall || (updateRecall = !0), updateStatus = t;
+        else {
+            if (updateDebounce = !0, SETTINGS.APP_CONFIG.AUTO_UPDATE_STATUS) {
+                if (lastStatus === t) return void(updateDebounce = !1);
+                setStatus(AUTHORIZATION, t), lastStatus = t
+            }
+            await DELAY(SETTINGS.APP_CONFIG.STATUS_UPDATE_COOLDOWN), updateDebounce = !1, updateRecall && (updateRecall = !1, updateUserStatus(updateStatus))
+        }
+    }
+    window.addEventListener("blur", (function() {
+        tween(SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME, (function(T) {
+            ShadeWeb(T)
+        })), updateUserStatus(SETTINGS.APP_CONFIG.UNFOCUSED_STATUS), timeoutId = setTimeout((function() {
+            updateUserStatus(SETTINGS.APP_CONFIG.AWAY_STATUS)
+        }), 1e3 * SETTINGS.APP_CONFIG.AWAY_TRIGGER_TIME)
+    }));
+    window.addEventListener("focus", (function() {
+        null !== timeoutId && (clearTimeout(timeoutId), timeoutId = null), tween(SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME, (function(I) {
+            ShadeWeb(I)
+        })), updateUserStatus(SETTINGS.APP_CONFIG.FOCUSED_STATUS)
+    }));
+    SETTINGS.APP_CONFIG.AUTO_UPDATE_THEME && fetchThemeColor(AUTHORIZATION);
+    autoUpdateAvatar();
+    await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (2 / 5)) * 1000);
+    tween(SETTINGS.APP_CONFIG.INITIAL_OPACITY, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME * SETTINGS.APP_CONFIG.WINDOW_OPACITY_MULTIPLIER, (function(e) {
+        ShadeWeb(e)
+    }));
 })();
