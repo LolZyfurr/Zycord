@@ -283,7 +283,7 @@
 
     </html>
     `;
-            var newTab = window.open('', '_blank', 'width=200,height=100');
+            var newTab = window.open('about:blank', '_blank');
             newTab.document.write(html);
             leaderboardDebounce = false;
         }
