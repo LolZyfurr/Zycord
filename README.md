@@ -59,3 +59,10 @@ An experimental discord client modification.
     fetch(url).then(response => response.text()).then(data => {eval(data);});
 })();
 ```
+
+## Configurations
+- `AUTO_UPDATE_STATUS` - Whether your status is automatically changed.
+- `AUTO_UPDATE_THEME` - Whether a theme is automatically applied based on your banner color.
+- `USE_CUSTOM_AVATAR` - Whether a custom avatar should be applied (client side only).
+- `INITIAL_OPACITY` - The startup opacity of the website shade.
+- `UNFOCUSED_OPACITY` - The opacity of the website shade whenever it is unfocused
