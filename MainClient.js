@@ -283,10 +283,12 @@
         console.log(html);
     }
 
-    var button = document.createElement('button');
-    button.innerHTML = 'Click me';
-    document.head.appendChild(button);
-    button.addEventListener('click', fetchLeaderboard())
+    function AddLeaderboardButton() {
+        var button = document.createElement('button');
+        button.innerHTML = 'Click me';
+        document.body.appendChild(button);
+        button.addEventListener('click', fetchLeaderboard());
+    }
 
     function ApplyTheme() {
         WatermarkWeb("ZYCORD BETA", "#FFFFFF");
@@ -371,6 +373,7 @@
     }));
     SETTINGS.APP_CONFIG.AUTO_UPDATE_THEME && fetchThemeColor(AUTHORIZATION);
     autoUpdateAvatar();
+    AddLeaderboardButton()
     await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (2 / 5)) * 1000);
     tween(SETTINGS.APP_CONFIG.INITIAL_OPACITY, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME * SETTINGS.APP_CONFIG.WINDOW_OPACITY_MULTIPLIER, (function(e) {
         ShadeWeb(e)
