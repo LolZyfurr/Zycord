@@ -393,7 +393,7 @@
     lightThemeButton.style.backgroundColor = 'rgba(0,0,0,0)';
     topBar.appendChild(lightThemeButton);
     lightThemeButton.addEventListener('click', function() {
-        SETTINGS.APP_CONFIG.USE_LIGHT_THEME = !SETTINGS.APP_CONFIG.USE_LIGHT_THEME
+        SETTINGS.APP_CONFIG.USE_LIGHT_THEME = !SETTINGS.APP_CONFIG.USE_LIGHT_THEME;
     });
     var leaderboardButton = document.createElement('button');
     leaderboardButton.textContent = '📊';
