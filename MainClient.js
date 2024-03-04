@@ -134,6 +134,159 @@
             d.type = "text/css", d.id = "shadeWebStyle", d.innerHTML = t, document.getElementsByTagName("head")[0].appendChild(d)
         }
     }
+    async function fetchChannelMessages(t, s, a, i) {
+        let n = s,
+            r = t,
+            c = a,
+            o = i;
+        try {
+            let t = "https://discord.com/api/v9/channels/" + n + "/messages?";
+            o && (t += "before=" + o + "&"), t += "limit=" + c;
+            let s = await fetch(t, createFetchOptions(r, null, "GET")),
+                a = await s.json();
+            return "You are being rate limited." === a.message ? new Promise(t => {
+                setTimeout(async () => {
+                    t(await fetchUserRelationships(e))
+                }, 1e3 * a.retry_after)
+            }) : a
+        } catch (e) {
+            console.error(e)
+        }
+    }
+    async function fetchMessages(e, t, n) {
+        let a, h = [];
+        for (; h.length < n;) {
+            let s;
+            if (s = a ? await fetchChannelMessages(e, t, Math.min(100, n - h.length), a) : await fetchChannelMessages(e, t, Math.min(100, n - h.length)), 0 == s.length) break;
+            h.push(...s), a = s[s.length - 1].id
+        }
+        return h
+    }
+    async function fetchUserDMs(e) {
+        let t = createFetchOptions(e, null, "GET");
+        return (await fetch("https://discord.com/api/v9/users/@me/channels", t)).json()
+    }
+    async function fetchUserSelf(e) {
+        let t = createFetchOptions(e, null, "GET");
+        return (await fetch("https://discord.com/api/v9/users/@me", t)).json()
+    }
+    async function fetchUser(e, t) {
+        let r = createFetchOptions(e, null, "GET");
+        try {
+            let a = await fetch("https://discord.com/api/v9/users/" + t, r),
+                s = await a.json();
+            return "You are being rate limited." === s.message ? new Promise(r => {
+                setTimeout(async () => {
+                    r(await fetchUser(e, t))
+                }, 1e3 * s.retry_after)
+            }) : s
+        } catch (e) {
+            console.error(e)
+        }
+    }
+    async function fetchUserAvatar(a) {
+        return "https://cdn.discordapp.com/avatars/" + a.id + "/" + a.avatar + ".png?size=4096"
+    }
+    async function fetchLeaderboard() {
+        const channels = await fetchUserDMs(AUTHORIZATION);
+        const fetchedSelfUser = await fetchUserSelf(AUTHORIZATION);
+        const selfUser = fetchedSelfUser.id;
+        let interactionCounts = [];
+        for (const channel of channels.reverse().values()) {
+            let lastCheckedAuthor = 0;
+            let interactions = 0;
+            let dmChannelName = channel.id;
+            let messageAuthor = null;
+            let messages = await fetchMessages(AUTHORIZATION, channel.id, 5000);
+            for (const message of messages.reverse().values()) {
+                const msgAuthor = message.author.id;
+                if (msgAuthor !== selfUser) {
+                    messageAuthor = message.author;
+                    dmChannelName = message.author.id;
+                }
+                if (lastCheckedAuthor == selfUser && msgAuthor !== selfUser) {
+                    interactions++
+                }
+                lastCheckedAuthor = msgAuthor;
+            }
+            if (interactions !== 0) {
+                const dmChannelAuthor = await fetchUser(AUTHORIZATION, dmChannelName);
+                dmChannelName = dmChannelAuthor.global_name;
+                const profilePicUrl = await fetchUserAvatar(messageAuthor);
+                interactionCounts.push({
+                    profilePic: profilePicUrl,
+                    name: dmChannelName,
+                    interactions: interactions
+                });
+            }
+        }
+        interactionCounts.sort((a, b) => b.interactions - a.interactions);
+        interactionCounts = interactionCounts.slice(0, 5);
+        let html = `
+    <html>
+
+    <head>
+        <style>
+        .list_document_style_00 {
+            background-color: rgba(128, 128, 128, 0.5);
+            border-radius: 10px;
+            margin: 10px;
+            padding: 10px;
+        }
+
+        .list_document_style_01 {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            margin-right: 10px;
+            float: left;
+        }
+
+        .list_document_style_02 {
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            float: left;
+            font-size: 64px;
+            margin-right: 10px;
+        }
+
+        .list_document_style_03 {
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            font-size: 32px;
+        }
+
+        .list_document_style_04 {
+            font-family: Arial, sans-serif;
+            font-size: 32px;
+        }
+        </style>
+    </head>
+    
+    <body>
+    `;
+        for (let i = 0; i < interactionCounts.length; i++) {
+            html += `
+    <div class="list_document_style_00">
+        <span class="list_document_style_02">${i+1}</span>
+        <img class="list_document_style_01" src="${interactionCounts[i].profilePic}" alt="Profile Picture">
+        <span class="list_document_style_03">${interactionCounts[i].name}</span>
+        <br>
+        <span class="list_document_style_04">${interactionCounts[i].interactions} interactions</span>
+    </div>`;
+        }
+        html += `
+    </body>
+
+    </html>
+    `;
+        console.log(html);
+    }
+
+    var button = document.createElement('button');
+    button.innerHTML = 'Click me';
+    document.body.appendChild(button);
+    button.addEventListener('click', fetchLeaderboard())
 
     function ApplyTheme() {
         WatermarkWeb("ZYCORD", "#FFFFFF");
