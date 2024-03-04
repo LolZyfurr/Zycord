@@ -1,6 +1,5 @@
 # Zycord
 An experimental discord client modification.
-
 ## Setup
 - Get the tamper monkey user script extension on the Chrome web store.
 - Once the extension is installed create a new workspace.
@@ -59,11 +58,11 @@ An experimental discord client modification.
     fetch(url).then(response => response.text()).then(data => {eval(data);});
 })();
 ```
-
-## Status Configurations
+---
+## Configurations
+### Status
 I currently only have an array of manually encoded statuses because I do not know how the Discord API encodes statuses.
-
-## App Configurations
+### App
 A list of each app configuration and what it does.
 - `AUTO_UPDATE_STATUS` - Whether your status is automatically changed.
 - `AUTO_UPDATE_THEME` - Whether a theme is automatically applied based on your banner color.
@@ -81,3 +80,6 @@ A list of each app configuration and what it does.
 - `UNFOCUSED_STATUS` - The status is applied when the website is unfocused.
 - `FOCUSED_STATUS` - The status applied whenever the website is focused.
 - `AVATAR_SHAPE` - The roundness of the avatar shape.
+---
+## Disclaimer
+Discord is a trademark of Discord Inc. and is solely mentioned for the sake of descriptivity. Mention of it does not imply any affiliation with or endorsement by Discord Inc. Using Zycord violates Discord's terms of service
