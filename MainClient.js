@@ -1,5 +1,6 @@
 (async function() {
     ShadeWeb(SETTINGS.APP_CONFIG.INITIAL_OPACITY);
+    let SETTINGS.APP_CONFIG.USE_CUSTOM_AVATAR = true;
     let AUTHORIZATION = getToken();
     let LAST_AUTH = AUTHORIZATION;
     let THEME_COLOR = null;
