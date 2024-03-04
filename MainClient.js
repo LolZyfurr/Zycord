@@ -18,11 +18,11 @@
     document.addEventListener("click", (updateEventAvatar));
 
     function unicodeToString(n) {
-        return String.fromCharCode(n)
+        return String.fromCharCode(n);
     };
 
     function changeAvatarImages(a) {
-        SETTINGS.APP_CONFIG.USE_CUSTOM_AVATAR && document.querySelectorAll('img[src*="723659289377636423"]').forEach(c => c.src = a)
+        SETTINGS.APP_CONFIG.USE_CUSTOM_AVATAR && document.querySelectorAll('img[src*="723659289377636423"]').forEach(c => c.src = a);
     }
 
     function autoUpdateAvatar() {
@@ -33,7 +33,7 @@
             attributes: !0,
             childList: !0,
             characterData: !0
-        })
+        });
     }
 
     function getToken() {
