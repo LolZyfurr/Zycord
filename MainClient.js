@@ -360,50 +360,42 @@
             await DELAY(SETTINGS.APP_CONFIG.STATUS_UPDATE_COOLDOWN), updateDebounce = !1, updateRecall && (updateRecall = !1, updateUserStatus(updateStatus))
         }
     }
-    var amountOfButtons = 3;
-    var topBar = document.createElement('div');
-    topBar.style.position = 'absolute';
-    topBar.style.top = '50%';
-    topBar.style.left = '0%';
-    topBar.style.width = '66px';
-    topBar.style.height = `${33*amountOfButtons}px`;
-    topBar.style.flexDirection = 'column';
-    topBar.style.backgroundColor = 'rgba(0,0,0,0.5)';
-    topBar.style.color = '#fff';
-    topBar.style.zIndex = '9999';
-    topBar.style.display = 'flex';
-    topBar.style.justifyContent = 'right';
-    topBar.style.alignItems = 'center';
-    topBar.style.borderRadius = '10px';
-    topBar.style.marginLeft = '-33px'
-    var settingsButton = document.createElement('button');
-    settingsButton.textContent = '⚙️';
-    settingsButton.style.fontSize = '20px';
-    settingsButton.style.width = '50%';
-    settingsButton.style.height = `${100/amountOfButtons}%`;
-    settingsButton.style.marginLeft = `${33/1.25}px`;
-    settingsButton.style.backgroundColor = 'rgba(0,0,0,0)';
-    topBar.appendChild(settingsButton);
-    var lightThemeButton = document.createElement('button');
-    lightThemeButton.textContent = '🌙';
-    lightThemeButton.style.fontSize = '20px';
-    lightThemeButton.style.width = '50%';
-    lightThemeButton.style.height = `${100/amountOfButtons}%`;
-    lightThemeButton.style.marginLeft = `${33/1.25}px`;
-    lightThemeButton.style.backgroundColor = 'rgba(0,0,0,0)';
-    topBar.appendChild(lightThemeButton);
-    var leaderboardButton = document.createElement('button');
-    leaderboardButton.textContent = '📊';
-    leaderboardButton.style.fontSize = '20px';
-    leaderboardButton.style.width = '50%';
-    leaderboardButton.style.height = `${100/amountOfButtons}%`;
-    leaderboardButton.style.marginLeft = `${33/1.25}px`;
-    leaderboardButton.style.backgroundColor = 'rgba(0,0,0,0)';
-    topBar.appendChild(leaderboardButton);
-    document.body.appendChild(topBar);
-    leaderboardButton.addEventListener('click', function() {
-        fetchLeaderboard();
+    const amountOfButtons = 3;
+    const buttonNames = ['⚙️', '🌙', '📊'];
+    const buttonActions = [null, null, fetchLeaderboard];
+    const topBar = document.createElement('div');
+    Object.assign(topBar.style, {
+        position: 'absolute',
+        top: '50%',
+        left: '0%',
+        width: '66px',
+        height: `${33 * amountOfButtons}px`,
+        flexDirection: 'column',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        color: '#fff',
+        zIndex: '9999',
+        display: 'flex',
+        justifyContent: 'right',
+        alignItems: 'center',
+        borderRadius: '10px',
+        marginLeft: '-33px'
     });
+    buttonNames.forEach((name, index) => {
+        const button = document.createElement('button');
+        Object.assign(button.style, {
+            fontSize: '20px',
+            width: '50%',
+            height: `${100 / amountOfButtons}%`,
+            marginLeft: `${33 / 1.25}px`,
+            backgroundColor: 'rgba(0,0,0,0)'
+        });
+        button.textContent = name;
+        if (buttonActions[index]) {
+            button.addEventListener('click', buttonActions[index]);
+        }
+        topBar.appendChild(button);
+    });
+    document.body.appendChild(topBar);
     window.addEventListener("blur", (function() {
         tween(SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME, (function(T) {
             ShadeWeb(T)
