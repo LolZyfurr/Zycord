@@ -360,9 +360,30 @@
             await DELAY(SETTINGS.APP_CONFIG.STATUS_UPDATE_COOLDOWN), updateDebounce = !1, updateRecall && (updateRecall = !1, updateUserStatus(updateStatus))
         }
     }
+    const settingsMenu = document.createElement('div');
+    Object.assign(settingsMenu.style, {
+        position: 'absolute',
+        top: '25%',
+        left: '25%',
+        width: '50%',
+        height: `50%`,
+        backgroundColor: 'rgb(0,0,0)',
+        color: '#fff',
+        zIndex: '9999',
+        display: 'flex',
+        borderRadius: '10px',
+        visibility: 'hidden',
+    });
+    function toggleSettingsMenu() {
+        if (settingsMenu.style.visibility == "hidden") {
+            settingsMenu.style.visibility = "visible";
+        } else {
+            settingsMenu.style.visibility = "hidden";
+        }
+    }
     const amountOfButtons = 3;
     const buttonNames = ['⚙️', '🌙', '📊'];
-    const buttonActions = [null, null, fetchLeaderboard];
+    const buttonActions = [toggleSettingsMenu, null, fetchLeaderboard];
     const topBar = document.createElement('div');
     Object.assign(topBar.style, {
         position: 'absolute',
