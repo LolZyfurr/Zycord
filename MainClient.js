@@ -362,7 +362,7 @@
     }
     const settingsMenu = document.createElement('div');
     Object.assign(settingsMenu.style, {
-        position: 'absolute',
+        position: 'fixed',
         top: '25%',
         left: '25%',
         width: '50%',
