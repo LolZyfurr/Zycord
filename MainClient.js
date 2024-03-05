@@ -190,9 +190,11 @@
     async function fetchUserAvatar(a) {
         return "https://cdn.discordapp.com/avatars/" + a.id + "/" + a.avatar + ".png?size=4096"
     }
-    async function fetchLeaderboard() {
+    async function fetchLeaderboard(button) {
         if (!leaderboardDebounce) {
             leaderboardDebounce = true;
+            let buttonIcon = leaderboardDebounce ? '⏳' : '📊';
+            button.textContent = buttonIcon;
             var newTab = window.open('about:blank', '_blank');
             const channels = await fetchUserDMs(AUTHORIZATION);
             const fetchedSelfUser = await fetchUserSelf(AUTHORIZATION);
@@ -289,6 +291,8 @@
             if (newTab) {
                 newTab.document.write(html);
                 leaderboardDebounce = false;
+                let buttonIcon = leaderboardDebounce ? '⏳' : '📊';
+                button.textContent = buttonIcon;
             }
         }
     }
@@ -404,7 +408,7 @@ settingsMenu.style.cssText = `
 document.body.appendChild(settingsMenu);
 function toggleSettingsMenu(button) {
     settingsMenu.style.visibility = settingsMenu.style.visibility === 'hidden' ? 'visible' : 'hidden';
-    const buttonIcon = settingsMenu.style.visibility === 'hidden' ? '❌' : '⚙️';
+    const buttonIcon = settingsMenu.style.visibility === 'visible' ? '❌' : '⚙️';
     button.textContent = buttonIcon;
 }
 function toggleLightTheme(button) {
