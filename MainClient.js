@@ -4,6 +4,7 @@
     let LAST_AUTH = AUTHORIZATION;
     let THEME_COLOR = null;
     let lastStatus = "";
+    let lightTheme = SETTINGS.APP_CONFIG.USE_LIGHT_THEME;
     let updateDebounce = false;
     let updateRecall = false;
     let updateStatus = "";
@@ -317,14 +318,14 @@
     }
     async function changeElementColor(t) {
         const r = hexToRgb(t),
-            e = SETTINGS.APP_CONFIG.USE_LIGHT_THEME ? 155 : 0,
-            o = (SETTINGS.APP_CONFIG.USE_LIGHT_THEME, SETTINGS.THEME_COLORS.PRIMARY),
-            s = SETTINGS.APP_CONFIG.USE_LIGHT_THEME ? SETTINGS.THEME_COLORS.SENARY : SETTINGS.THEME_COLORS.SECONDARY,
-            l = SETTINGS.APP_CONFIG.USE_LIGHT_THEME ? SETTINGS.THEME_COLORS.QUINARY : SETTINGS.THEME_COLORS.TERTIARY,
-            p = (SETTINGS.APP_CONFIG.USE_LIGHT_THEME, SETTINGS.THEME_COLORS.QUATERNARY),
-            a = SETTINGS.APP_CONFIG.USE_LIGHT_THEME ? SETTINGS.THEME_COLORS.TERTIARY : SETTINGS.THEME_COLORS.QUINARY,
-            i = SETTINGS.APP_CONFIG.USE_LIGHT_THEME ? SETTINGS.THEME_COLORS.SECONDARY : SETTINGS.THEME_COLORS.SENARY,
-            n = SETTINGS.APP_CONFIG.USE_LIGHT_THEME ? SETTINGS.THEME_COLORS.PRIMARY : SETTINGS.THEME_COLORS.SEPTENARY;
+            e = lightTheme ? 155 : 0,
+            o = (lightTheme, SETTINGS.THEME_COLORS.PRIMARY),
+            s = lightTheme ? SETTINGS.THEME_COLORS.SENARY : SETTINGS.THEME_COLORS.SECONDARY,
+            l = lightTheme ? SETTINGS.THEME_COLORS.QUINARY : SETTINGS.THEME_COLORS.TERTIARY,
+            p = (lightTheme, SETTINGS.THEME_COLORS.QUATERNARY),
+            a = lightTheme ? SETTINGS.THEME_COLORS.TERTIARY : SETTINGS.THEME_COLORS.QUINARY,
+            i = lightTheme ? SETTINGS.THEME_COLORS.SECONDARY : SETTINGS.THEME_COLORS.SENARY,
+            n = lightTheme ? SETTINGS.THEME_COLORS.PRIMARY : SETTINGS.THEME_COLORS.SEPTENARY;
         let y = `${r.r},${r.g},${r.b}`,
             m = `${r.r*o},${r.g*o},${r.b*o}`,
             c = `${r.r*s+e},${r.g*s+e},${r.b*s+e}`,
@@ -379,6 +380,9 @@
 
     function toggleSettingsMenu() {
         settingsMenu.style.visibility = settingsMenu.style.visibility === "hidden" ? "visible" : "hidden";
+    }
+    function toggleLightTheme() {
+        lightTheme = !lightTheme;
     }
     const amountOfButtons = 3;
     const buttonNames = ['⚙️', '🌙', '📊'];
