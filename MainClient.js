@@ -360,28 +360,25 @@
             await DELAY(SETTINGS.APP_CONFIG.STATUS_UPDATE_COOLDOWN), updateDebounce = !1, updateRecall && (updateRecall = !1, updateUserStatus(updateStatus))
         }
     }
-    const settingsMenu = document.createElement('div');
-    Object.assign(settingsMenu.style, {
-        position: 'fixed',
-        top: '25%',
-        left: '25%',
-        width: '50%',
-        height: `50%`,
-        backgroundColor: 'rgb(0,0,0)',
-        color: '#fff',
-        zIndex: '9999',
-        display: 'flex',
-        borderRadius: '10px',
-        visibility: 'hidden',
-    });
-    document.body.appendChild(settingsMenu);
-    function toggleSettingsMenu() {
-        if (settingsMenu.style.visibility == "hidden") {
-            settingsMenu.style.visibility = "visible";
-        } else {
-            settingsMenu.style.visibility = "hidden";
-        }
-    }
+const settingsMenu = document.createElement('div');
+const menuStyles = {
+    position: 'fixed',
+    top: '25%',
+    left: '25%',
+    width: '50%',
+    height: '50%',
+    backgroundColor: 'rgb(0,0,0)',
+    color: '#fff',
+    zIndex: '9999',
+    display: 'flex',
+    borderRadius: '10px',
+    visibility: 'hidden',
+};
+Object.assign(settingsMenu.style, menuStyles);
+document.body.appendChild(settingsMenu);
+function toggleSettingsMenu() {
+    settingsMenu.style.visibility = settingsMenu.style.visibility === "hidden" ? "visible" : "hidden";
+}
     const amountOfButtons = 3;
     const buttonNames = ['⚙️', '🌙', '📊'];
     const buttonActions = [toggleSettingsMenu, null, fetchLeaderboard];
