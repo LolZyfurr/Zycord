@@ -386,7 +386,7 @@
     }
     const amountOfButtons = 3;
     const buttonNames = ['⚙️', '🌙', '📊'];
-    const buttonActions = [toggleSettingsMenu, null, fetchLeaderboard];
+    const buttonActions = [toggleSettingsMenu, toggleLightTheme, fetchLeaderboard];
     const topBar = document.createElement('div');
     Object.assign(topBar.style, {
         position: 'absolute',
