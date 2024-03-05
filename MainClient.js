@@ -6,6 +6,7 @@
     let lastStatus = "";
     let lightTheme = SETTINGS.APP_CONFIG.USE_LIGHT_THEME;
     let lastTheme = lightTheme;
+    let autoUpdateStatus = SETTINGS.APP_CONFIG.AUTO_UPDATE_STATUS;
     let updateDebounce = false;
     let updateRecall = false;
     let updateStatus = "";
@@ -384,7 +385,7 @@
     async function updateUserStatus(t) {
         if (updateDebounce) updateRecall || (updateRecall = !0), updateStatus = t;
         else {
-            if (updateDebounce = !0, SETTINGS.APP_CONFIG.AUTO_UPDATE_STATUS) {
+            if (updateDebounce = !0, autoUpdateStatus) {
                 if (lastStatus === t) return void(updateDebounce = !1);
                 setStatus(AUTHORIZATION, t), lastStatus = t
             }
@@ -413,14 +414,20 @@
         button.textContent = buttonIcon;
     }
 
+    function toggleAutoStatus(button) {
+        autoUpdateStatus = !autoUpdateStatus;
+        const buttonIcon = autoUpdateStatus ? '👋' : '❌';
+        button.textContent = buttonIcon;
+    }
+    
     function toggleLightTheme(button) {
         lightTheme = !lightTheme;
         const buttonIcon = lightTheme ? '☀️' : '🌙';
         button.textContent = buttonIcon;
     }
-    const amountOfButtons = 3;
-    const buttonNames = ['⚙️', '🌙', '📊'];
-    const buttonActions = [toggleSettingsMenu, toggleLightTheme, fetchLeaderboard];
+    const buttonNames = ['⚙️', '🌙', '📊', '👋'];
+    const amountOfButtons = buttonNames.length;
+    const buttonActions = [toggleSettingsMenu, toggleLightTheme, fetchLeaderboard, toggleAutoStatus];
     const topBar = document.createElement('div');
     topBar.style.cssText = `
     position: absolute;
