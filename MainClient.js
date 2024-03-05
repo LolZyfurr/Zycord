@@ -443,7 +443,7 @@
         });
         button.textContent = name;
         if (buttonActions[index]) {
-            button.addEventListener('click', buttonActions[index](button));
+            button.addEventListener('click', buttonActions[index]);
         }
         topBar.appendChild(button);
     });
