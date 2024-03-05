@@ -374,6 +374,7 @@
         borderRadius: '10px',
         visibility: 'hidden',
     });
+    document.body.appendChild(settingsMenu);
     function toggleSettingsMenu() {
         if (settingsMenu.style.visibility == "hidden") {
             settingsMenu.style.visibility = "visible";
