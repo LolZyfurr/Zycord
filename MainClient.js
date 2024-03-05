@@ -5,6 +5,7 @@
     let THEME_COLOR = null;
     let lastStatus = "";
     let lightTheme = SETTINGS.APP_CONFIG.USE_LIGHT_THEME;
+    let lastTheme = lightTheme;
     let updateDebounce = false;
     let updateRecall = false;
     let updateStatus = "";
@@ -317,7 +318,7 @@
         changeAvatarImages(USER_AVATAR_URL), await DELAY(500), changeAvatarImages(USER_AVATAR_URL), await DELAY(1500), changeAvatarImages(USER_AVATAR_URL)
     }
     async function changeElementColor(t) {
-        const r = hexToRgb(t),
+        let r = hexToRgb(t),
             e = lightTheme ? 155 : 0,
             o = (lightTheme, SETTINGS.THEME_COLORS.PRIMARY),
             s = lightTheme ? SETTINGS.THEME_COLORS.SENARY : SETTINGS.THEME_COLORS.SECONDARY,
@@ -325,8 +326,8 @@
             p = (lightTheme, SETTINGS.THEME_COLORS.QUATERNARY),
             a = lightTheme ? SETTINGS.THEME_COLORS.TERTIARY : SETTINGS.THEME_COLORS.QUINARY,
             i = lightTheme ? SETTINGS.THEME_COLORS.SECONDARY : SETTINGS.THEME_COLORS.SENARY,
-            n = lightTheme ? SETTINGS.THEME_COLORS.PRIMARY : SETTINGS.THEME_COLORS.SEPTENARY;
-        let y = `${r.r},${r.g},${r.b}`,
+            n = lightTheme ? SETTINGS.THEME_COLORS.PRIMARY : SETTINGS.THEME_COLORS.SEPTENARY,
+            y = `${r.r},${r.g},${r.b}`,
             m = `${r.r*o},${r.g*o},${r.b*o}`,
             c = `${r.r*s+e},${r.g*s+e},${r.b*s+e}`,
             P = `${r.r*l+e},${r.g*l+e},${r.b*l+e}`,
@@ -340,6 +341,31 @@
             x = [y, m, c, P, g, b, h, d].join(",").split(",").map(Number),
             _ = x.reduce((t, r) => t + r, 0) / x.length >= 155;
         const k = async () => {
+            if (lightTheme !== lastTheme) {
+                r = hexToRgb(t);
+                e = lightTheme ? 155 : 0;
+                o = (lightTheme, SETTINGS.THEME_COLORS.PRIMARY);
+                s = lightTheme ? SETTINGS.THEME_COLORS.SENARY : SETTINGS.THEME_COLORS.SECONDARY;
+                l = lightTheme ? SETTINGS.THEME_COLORS.QUINARY : SETTINGS.THEME_COLORS.TERTIARY;
+                p = (lightTheme, SETTINGS.THEME_COLORS.QUATERNARY);
+                a = lightTheme ? SETTINGS.THEME_COLORS.TERTIARY : SETTINGS.THEME_COLORS.QUINARY;
+                i = lightTheme ? SETTINGS.THEME_COLORS.SECONDARY : SETTINGS.THEME_COLORS.SENARY;
+                n = lightTheme ? SETTINGS.THEME_COLORS.PRIMARY : SETTINGS.THEME_COLORS.SEPTENARY;
+                y = `${r.r},${r.g},${r.b}`;
+                m = `${r.r*o},${r.g*o},${r.b*o}`;
+                c = `${r.r*s+e},${r.g*s+e},${r.b*s+e}`;
+                P = `${r.r*l+e},${r.g*l+e},${r.b*l+e}`;
+                g = `${r.r*p+e},${r.g*p+e},${r.b*p+e}`;
+                b = `${r.r*a+e},${r.g*a+e},${r.b*a+e}`;
+                h = `${r.r*i+e},${r.g*i+e},${r.b*i+e}`;
+                d = `${r.r*n+e},${r.g*n+e},${r.b*n+e}`;
+                E = document.documentElement;
+                $ = !1;
+                u = !1;
+                x = [y, m, c, P, g, b, h, d].join(",").split(",").map(Number);
+                _ = x.reduce((t, r) => t + r, 0) / x.length >= 155;
+                lastTheme = lightTheme;
+            }
             $ ? u = !0 : ($ = !0, WatermarkWeb("ZYCORD BETA", m), E.style.setProperty("--mainaccentcolor", y, "important"), E.style.setProperty("--accentcolor", m, "important"), E.style.setProperty("--accentcolor2", m, "important"), E.style.setProperty("--linkcolor", m, "important"), E.style.setProperty("--mentioncolor", m, "important"), E.style.setProperty("--backgroundaccent", c, "important"), E.style.setProperty("--backgroundprimary", P, "important"), E.style.setProperty("--backgroundsecondary", g, "important"), E.style.setProperty("--backgroundsecondaryalt", b, "important"), E.style.setProperty("--backgroundtertiary", h, "important"), E.style.setProperty("--backgroundfloating", d, "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-medium-spacing", "3px", "important"), E.style.setProperty("--rs-large-spacing", "4px", "important"), E.style.setProperty("--rs-small-width", "2px", "important"), E.style.setProperty("--rs-medium-width", "3px", "important"), E.style.setProperty("--rs-large-width", "4px", "important"), E.style.setProperty("--rs-avatar-shape", SETTINGS.APP_CONFIG.AVATAR_SHAPE, "important"), E.style.setProperty("--rs-online-color", "#43b581", "important"), E.style.setProperty("--rs-idle-color", "#faa61a", "important"), E.style.setProperty("--rs-dnd-color", "#f04747", "important"), E.style.setProperty("--rs-offline-color", "#636b75", "important"), E.style.setProperty("--rs-streaming-color", "#643da7", "important"), E.style.setProperty("--rs-invisible-color", "#747f8d", "important"), E.style.setProperty("--rs-phone-color", "var(--rs-online-color)", "important"), E.style.setProperty("--rs-phone-visible", "none", "important"), _ ? (E.style.setProperty("--textbrightest", "100,100,100", "important"), E.style.setProperty("--embed-title", "100,100,100", "important"), E.style.setProperty("--textbrighter", "90,90,90", "important"), E.style.setProperty("--textbright", "80,80,80", "important"), E.style.setProperty("--textdark", "70,70,70", "important"), E.style.setProperty("--textdarker", "60,60,60", "important"), E.style.setProperty("--textdarkest", "50,50,50", "important")) : (E.style.setProperty("--textbrightest", "250,250,250", "important"), E.style.setProperty("--textbrighter", "240,240,240", "important"), E.style.setProperty("--textbright", "230,230,230", "important"), E.style.setProperty("--textdark", "220,220,220", "important"), E.style.setProperty("--textdarker", "210,210,210", "important"), E.style.setProperty("--textdarkest", "200,200,200", "important")), ApplyTheme(), await DELAY(500), $ = !1, u && (u = !1, k()))
         };
         k(), new MutationObserver((function(t) {
