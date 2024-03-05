@@ -404,11 +404,13 @@
     Object.assign(settingsMenu.style, menuStyles);
     document.body.appendChild(settingsMenu);
 
-    function toggleSettingsMenu() {
+    function toggleSettingsMenu(button) {
         settingsMenu.style.visibility = settingsMenu.style.visibility === "hidden" ? "visible" : "hidden";
     }
-    function toggleLightTheme() {
+    function toggleLightTheme(button) {
         lightTheme = !lightTheme;
+        let buttonIcon = lightTheme?("☀️"):("🌙");
+        button.textContent = buttonIcon;
     }
     const amountOfButtons = 3;
     const buttonNames = ['⚙️', '🌙', '📊'];
@@ -441,7 +443,7 @@
         });
         button.textContent = name;
         if (buttonActions[index]) {
-            button.addEventListener('click', buttonActions[index]);
+            button.addEventListener('click', buttonActions[index](button));
         }
         topBar.appendChild(button);
     });
