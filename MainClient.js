@@ -441,7 +441,7 @@ buttonNames.forEach((name, index) => {
     `;
     button.textContent = name;
     if (buttonActions[index]) {
-        button.addEventListener('click', () => buttonActions[index]);
+        button.addEventListener('click', () => buttonActions[index](button));
     }
     topBar.appendChild(button);
 });
