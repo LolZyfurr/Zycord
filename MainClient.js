@@ -391,8 +391,8 @@
             await DELAY(SETTINGS.APP_CONFIG.STATUS_UPDATE_COOLDOWN), updateDebounce = !1, updateRecall && (updateRecall = !1, updateUserStatus(updateStatus))
         }
     }
-const settingsMenu = document.createElement('div');
-settingsMenu.style.cssText = `
+    const settingsMenu = document.createElement('div');
+    settingsMenu.style.cssText = `
     position: fixed;
     top: 25%;
     left: 25%;
@@ -405,22 +405,24 @@ settingsMenu.style.cssText = `
     border-radius: 10px;
     visibility: hidden;
 `;
-document.body.appendChild(settingsMenu);
-function toggleSettingsMenu(button) {
-    settingsMenu.style.visibility = settingsMenu.style.visibility === 'hidden' ? 'visible' : 'hidden';
-    const buttonIcon = settingsMenu.style.visibility === 'visible' ? '❌' : '⚙️';
-    button.textContent = buttonIcon;
-}
-function toggleLightTheme(button) {
-    lightTheme = !lightTheme;
-    const buttonIcon = lightTheme ? '☀️' : '🌙';
-    button.textContent = buttonIcon;
-}
-const amountOfButtons = 3;
-const buttonNames = ['⚙️', '🌙', '📊'];
-const buttonActions = [toggleSettingsMenu, toggleLightTheme, fetchLeaderboard];
-const topBar = document.createElement('div');
-topBar.style.cssText = `
+    document.body.appendChild(settingsMenu);
+
+    function toggleSettingsMenu(button) {
+        settingsMenu.style.visibility = settingsMenu.style.visibility === 'hidden' ? 'visible' : 'hidden';
+        const buttonIcon = settingsMenu.style.visibility === 'visible' ? '❌' : '⚙️';
+        button.textContent = buttonIcon;
+    }
+
+    function toggleLightTheme(button) {
+        lightTheme = !lightTheme;
+        const buttonIcon = lightTheme ? '☀️' : '🌙';
+        button.textContent = buttonIcon;
+    }
+    const amountOfButtons = 3;
+    const buttonNames = ['⚙️', '🌙', '📊'];
+    const buttonActions = [toggleSettingsMenu, toggleLightTheme, fetchLeaderboard];
+    const topBar = document.createElement('div');
+    topBar.style.cssText = `
     position: absolute;
     top: 40%;
     left: 0%;
@@ -436,22 +438,22 @@ topBar.style.cssText = `
     border-radius: 10px;
     margin-left: -33px;
 `;
-buttonNames.forEach((name, index) => {
-    const button = document.createElement('button');
-    button.style.cssText = `
+    buttonNames.forEach((name, index) => {
+        const button = document.createElement('button');
+        button.style.cssText = `
         font-size: 20px;
         width: 50%;
         height: ${100 / amountOfButtons}%;
         margin-left: ${33 / 1.25}px;
         background-color: rgba(0, 0, 0, 0);
     `;
-    button.textContent = name;
-    if (buttonActions[index]) {
-        button.addEventListener('click', () => buttonActions[index](button));
-    }
-    topBar.appendChild(button);
-});
-document.body.appendChild(topBar);
+        button.textContent = name;
+        if (buttonActions[index]) {
+            button.addEventListener('click', () => buttonActions[index](button));
+        }
+        topBar.appendChild(button);
+    });
+    document.body.appendChild(topBar);
     window.addEventListener("blur", (function() {
         tween(SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME, (function(T) {
             ShadeWeb(T)
