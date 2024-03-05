@@ -409,7 +409,7 @@
 
     function toggleSettingsMenu(button) {
         settingsMenu.style.visibility = settingsMenu.style.visibility === 'hidden' ? 'visible' : 'hidden';
-        const buttonIcon = settingsMenu.style.visibility === 'visible' ? '❌' : '⚙️';
+        const buttonIcon = settingsMenu.style.visibility === 'hidden' ? '⚙️' : '❌';
         button.textContent = buttonIcon;
     }
 
