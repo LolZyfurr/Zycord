@@ -371,7 +371,7 @@
         width: '66px',
         height: `${33 * amountOfButtons}px`,
         flexDirection: 'column',
-        backgroundColor: 'rgba(0,0,0,0.5)',
+        backgroundColor: 'rgb(0,0,0)',
         color: '#fff',
         zIndex: '9999',
         display: 'flex',
