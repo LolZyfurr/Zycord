@@ -387,67 +387,65 @@
             await DELAY(SETTINGS.APP_CONFIG.STATUS_UPDATE_COOLDOWN), updateDebounce = !1, updateRecall && (updateRecall = !1, updateUserStatus(updateStatus))
         }
     }
-    const settingsMenu = document.createElement('div');
-    const menuStyles = {
-        position: 'fixed',
-        top: '25%',
-        left: '25%',
-        width: '50%',
-        height: '50%',
-        backgroundColor: 'rgb(0,0,0)',
-        color: '#fff',
-        zIndex: '9999',
-        display: 'flex',
-        borderRadius: '10px',
-        visibility: 'hidden',
-    };
-    Object.assign(settingsMenu.style, menuStyles);
-    document.body.appendChild(settingsMenu);
-
-    function toggleSettingsMenu(button) {
-        settingsMenu.style.visibility = settingsMenu.style.visibility === "hidden" ? "visible" : "hidden";
+const settingsMenu = document.createElement('div');
+settingsMenu.style.cssText = `
+    position: fixed;
+    top: 25%;
+    left: 25%;
+    width: 50%;
+    height: 50%;
+    background-color: rgb(0, 0, 0);
+    color: #fff;
+    z-index: 9999;
+    display: flex;
+    border-radius: 10px;
+    visibility: hidden;
+`;
+document.body.appendChild(settingsMenu);
+function toggleSettingsMenu() {
+    settingsMenu.style.visibility = settingsMenu.style.visibility === 'hidden' ? 'visible' : 'hidden';
+}
+function toggleLightTheme(button) {
+    lightTheme = !lightTheme;
+    const buttonIcon = lightTheme ? '☀️' : '🌙';
+    button.textContent = buttonIcon;
+}
+const amountOfButtons = 3;
+const buttonNames = ['⚙️', '🌙', '📊'];
+const buttonActions = [toggleSettingsMenu, toggleLightTheme, fetchLeaderboard];
+const topBar = document.createElement('div');
+topBar.style.cssText = `
+    position: absolute;
+    top: 40%;
+    left: 0%;
+    width: 66px;
+    height: ${33 * amountOfButtons}px;
+    flex-direction: column;
+    background-color: rgb(0, 0, 0);
+    color: #fff;
+    z-index: 9999;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    border-radius: 10px;
+    margin-left: -33px;
+`;
+buttonNames.forEach((name, index) => {
+    const button = document.createElement('button');
+    button.style.cssText = `
+        font-size: 20px;
+        width: 50%;
+        height: ${100 / amountOfButtons}%;
+        margin-left: ${33 / 1.25}px;
+        background-color: rgba(0, 0, 0, 0);
+    `;
+    button.textContent = name;
+    if (buttonActions[index]) {
+        button.addEventListener('click', () => buttonActionsindex);
     }
-    function toggleLightTheme(button) {
-        lightTheme = !lightTheme;
-        let buttonIcon = lightTheme?("☀️"):("🌙");
-        button.textContent = buttonIcon;
-    }
-    const amountOfButtons = 3;
-    const buttonNames = ['⚙️', '🌙', '📊'];
-    const buttonActions = [toggleSettingsMenu, toggleLightTheme, fetchLeaderboard];
-    const topBar = document.createElement('div');
-    Object.assign(topBar.style, {
-        position: 'absolute',
-        top: '40%',
-        left: '0%',
-        width: '66px',
-        height: `${33 * amountOfButtons}px`,
-        flexDirection: 'column',
-        backgroundColor: 'rgb(0,0,0)',
-        color: '#fff',
-        zIndex: '9999',
-        display: 'flex',
-        justifyContent: 'right',
-        alignItems: 'center',
-        borderRadius: '10px',
-        marginLeft: '-33px'
-    });
-    buttonNames.forEach((name, index) => {
-        const button = document.createElement('button');
-        Object.assign(button.style, {
-            fontSize: '20px',
-            width: '50%',
-            height: `${100 / amountOfButtons}%`,
-            marginLeft: `${33 / 1.25}px`,
-            backgroundColor: 'rgba(0,0,0,0)'
-        });
-        button.textContent = name;
-        if (buttonActions[index]) {
-            button.addEventListener('click', buttonActions[index]);
-        }
-        topBar.appendChild(button);
-    });
-    document.body.appendChild(topBar);
+    topBar.appendChild(button);
+});
+document.body.appendChild(topBar);
     window.addEventListener("blur", (function() {
         tween(SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME, (function(T) {
             ShadeWeb(T)
