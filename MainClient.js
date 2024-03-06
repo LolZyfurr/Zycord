@@ -453,7 +453,7 @@
     display: flex;
     justify-content: right;
     align-items: center;
-    border-radius: 10px;
+    border-radius: 33px;
     margin-left: -33px;
 `;
     buttonNames.forEach((name, index) => {
