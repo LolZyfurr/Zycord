@@ -422,7 +422,7 @@
     
     function toggleLightTheme(button) {
         lightTheme = !lightTheme;
-        const buttonSettings = lightTheme ? '255,255,255,0' : '0,0,0,1';
+        const buttonSettings = lightTheme ? '255,255,255,1' : '0,0,0,0';
         button.backgroundColor = buttonSettings;
     }
     const buttonNames = ['⚙️', '🌙', '📊', '👋'];
