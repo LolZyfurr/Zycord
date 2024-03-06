@@ -422,8 +422,8 @@
     
     function toggleLightTheme(button) {
         lightTheme = !lightTheme;
-        const buttonIcon = lightTheme ? '☀️' : '🌙';
-        button.textContent = buttonIcon;
+        const buttonSettings = lightTheme ? '255,255,255,0' : '0,0,0,1';
+        button.backgroundColor = buttonSettings;
     }
     const buttonNames = ['⚙️', '🌙', '📊', '👋'];
     const amountOfButtons = buttonNames.length;
@@ -449,9 +449,8 @@
         const button = document.createElement('button');
         button.style.cssText = `
         font-size: 20px;
-        width: 50%;
+        width: 100%;
         height: ${100 / amountOfButtons}%;
-        margin-left: ${33 / 1.25}px;
         background-color: rgba(0, 0, 0, 0);
     `;
         button.textContent = name;
