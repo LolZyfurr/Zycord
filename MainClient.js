@@ -417,7 +417,7 @@
         if (!startup) {
             settingsMenu.style.visibility = settingsMenu.style.visibility === 'hidden' ? 'visible' : 'hidden';
         }
-        const buttonSettings = settingsMenu.style.visibility === 'hidden' ? '0,0,0,0' : '128,128,128,0.5';
+        const buttonSettings = settingsMenu.style.visibility === 'hidden' ? '0,0,0,0' : '128,128,128,1';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
 
@@ -425,7 +425,7 @@
         if (!startup) {
             autoUpdateStatus = !autoUpdateStatus;   
         }
-        const buttonSettings = autoUpdateStatus ? '128,128,128,0.5' : '0,0,0,0';
+        const buttonSettings = autoUpdateStatus ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
     
@@ -433,7 +433,7 @@
         if (!startup) {
             lightTheme = !lightTheme;
         }
-        const buttonSettings = lightTheme ? '128,128,128,0.5' : '0,0,0,0';
+        const buttonSettings = lightTheme ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
     const buttonNames = ['⚙️', '🌙', '📊', '👋'];
