@@ -417,7 +417,7 @@
         if (!startup) {
             settingsMenu.style.visibility = settingsMenu.style.visibility === 'hidden' ? 'visible' : 'hidden';
         }
-        const buttonIcon = settingsMenu.style.visibility === 'hidden' ? '255,255,255,1' : '0,0,0,0';
+        const buttonSettings = settingsMenu.style.visibility === 'hidden' ? '255,255,255,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
 
@@ -425,7 +425,7 @@
         if (!startup) {
             autoUpdateStatus = !autoUpdateStatus;   
         }
-        const buttonIcon = autoUpdateStatus ? '255,255,255,1' : '0,0,0,0';
+        const buttonSettings = autoUpdateStatus ? '255,255,255,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
     
