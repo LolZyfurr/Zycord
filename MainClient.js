@@ -191,7 +191,12 @@
     async function fetchUserAvatar(a) {
         return "https://cdn.discordapp.com/avatars/" + a.id + "/" + a.avatar + ".png?size=4096"
     }
-    async function fetchLeaderboard(button) {
+    async function fetchLeaderboard(button, startup) {
+        if (startup) {
+            let buttonIcon = leaderboardDebounce ? '⏳' : '📊';
+            button.textContent = buttonIcon;
+            return
+        }
         if (!leaderboardDebounce) {
             leaderboardDebounce = true;
             let buttonIcon = leaderboardDebounce ? '⏳' : '📊';
@@ -408,20 +413,26 @@
 `;
     document.body.appendChild(settingsMenu);
 
-    function toggleSettingsMenu(button) {
-        settingsMenu.style.visibility = settingsMenu.style.visibility === 'hidden' ? 'visible' : 'hidden';
+    function toggleSettingsMenu(button, startup) {
+        if (!startup) {
+            settingsMenu.style.visibility = settingsMenu.style.visibility === 'hidden' ? 'visible' : 'hidden';
+        }
         const buttonIcon = settingsMenu.style.visibility === 'hidden' ? '⚙️' : '❌';
         button.textContent = buttonIcon;
     }
 
-    function toggleAutoStatus(button) {
-        autoUpdateStatus = !autoUpdateStatus;
+    function toggleAutoStatus(button, startup) {
+        if (!startup) {
+            autoUpdateStatus = !autoUpdateStatus;   
+        }
         const buttonIcon = autoUpdateStatus ? '👋' : '❌';
         button.textContent = buttonIcon;
     }
     
-    function toggleLightTheme(button) {
-        lightTheme = !lightTheme;
+    function toggleLightTheme(button, startup) {
+        if (!startup) {
+            lightTheme = !lightTheme;
+        }
         const buttonSettings = lightTheme ? '255,255,255,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
@@ -455,7 +466,8 @@
     `;
         button.textContent = name;
         if (buttonActions[index]) {
-            button.addEventListener('click', () => buttonActions[index](button));
+            buttonActions[index](button, true)
+            button.addEventListener('click', () => buttonActions[index](button, false));
         }
         topBar.appendChild(button);
     });
