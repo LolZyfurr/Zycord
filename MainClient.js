@@ -444,7 +444,7 @@
     position: absolute;
     top: 40%;
     left: 0%;
-    width: 66px;
+    width: 33px;
     height: ${33 * amountOfButtons}px;
     flex-direction: column;
     background-color: rgb(0, 0, 0);
@@ -453,8 +453,8 @@
     display: flex;
     justify-content: right;
     align-items: center;
-    border-radius: ${33/2};
-    margin-left: -33px;
+    border-top-right-radius: ${33/2};
+    border-bottom-right-radius: ${33/2};
 `;
     buttonNames.forEach((name, index) => {
         const button = document.createElement('button');
