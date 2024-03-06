@@ -464,6 +464,7 @@
         height: ${100 / amountOfButtons}%;
         background-color: rgba(0, 0, 0, 0);
         border-radius: ${33/2}px;
+        text-align: center;
     `;
         button.textContent = name;
         if (buttonActions[index]) {
