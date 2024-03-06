@@ -453,7 +453,7 @@
     display: flex;
     justify-content: right;
     align-items: center;
-    border-radius: 33px;
+    border-radius: ${33/2};
     margin-left: -33px;
 `;
     buttonNames.forEach((name, index) => {
@@ -463,6 +463,7 @@
         width: 100%;
         height: ${100 / amountOfButtons}%;
         background-color: rgba(0, 0, 0, 0);
+        border-radius: ${33/2}px;
     `;
         button.textContent = name;
         if (buttonActions[index]) {
