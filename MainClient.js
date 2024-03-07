@@ -24,7 +24,7 @@
     document.addEventListener("keydown", (updateEventAvatar));
     document.addEventListener("click", (updateEventAvatar));
 
-    if (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.RADIAL_STATUS_CSS === true ? (true) : (false)) : (true) === false) {
+    if (!(SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.RADIAL_STATUS_CSS === true ? (true) : (false)) : (true))) {
         avatarShapeConfig = '50%';
     }
 
