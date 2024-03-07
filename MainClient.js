@@ -6,8 +6,8 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 7
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 50
-    let TIME_UPDATED = 12+2
+    let MINUTES_UPDATED = 5
+    let TIME_UPDATED = 12+3
 
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64) // Convert to letter A-Z
     let ALPHA_DAY = DAY_UPDATED.toString(36) // Convert to base 36 (0-9, a-z)
@@ -256,70 +256,72 @@
             interactionCounts.sort((a, b) => b.interactions - a.interactions);
             interactionCounts = interactionCounts.slice(0, 5);
             let html = `
-    <html>
-
-    <head>
-        <style>
-        body {
-            background-color: rgb(50,50,50);
-        }
-
-        .list_document_style_00 {
-            background-color: rgba(128, 128, 128, 0.5);
-            border-radius: 10px;
-            margin: 10px;
-            padding: 10px;
-        }
-
-        .list_document_style_01 {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            margin-right: 10px;
-            float: left;
-        }
-
-        .list_document_style_02 {
-            font-family: Arial, sans-serif;
-            font-weight: bold;
-            float: left;
-            font-size: 64px;
-            margin-right: 10px;
-            color: rgb(200,200,200);
-        }
-
-        .list_document_style_03 {
-            font-family: Arial, sans-serif;
-            font-weight: bold;
-            font-size: 32px;
-            color: rgb(200,200,200);
-        }
-
-        .list_document_style_04 {
-            font-family: Arial, sans-serif;
-            font-size: 32px;
-            color: rgb(150,150,150);
-        }
-        </style>
-    </head>
-    
-    <body>
-    `;
+<html>
+<head>
+<style> 
+body { 
+    background-color: rgb(50,50,50); 
+    margin: 0; 
+    padding: 0; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    height: 100vh;
+} 
+.list_document_style_00 { 
+    background-color: rgba(128, 128, 128, 0.5); 
+    border-radius: 10px; 
+    margin: 10px; 
+    padding: 10px; 
+    width: 90%; 
+    max-width: 600px; 
+} 
+.list_document_style_01 { 
+    width: 70px; 
+    height: 70px; 
+    border-radius: 50%; 
+    margin-right: 10px; 
+    float: left; 
+} 
+.list_document_style_02 { 
+    font-family: Arial, sans-serif; 
+    font-weight: bold; 
+    float: left; 
+    font-size: 64px; 
+    margin-right: 10px; 
+    color: rgb(200,200,200); 
+} 
+.list_document_style_03 { 
+    font-family: Arial, sans-serif; 
+    font-weight: bold; 
+    font-size: 32px; 
+    color: rgb(200,200,200); 
+} 
+.list_document_style_04 { 
+    font-family: Arial, sans-serif; 
+    font-size: 32px; 
+    color: rgb(150,150,150); 
+} 
+</style>
+</head>    
+<body>
+`;
             for (let i = 0; i < interactionCounts.length; i++) {
                 html += `
-    <div class="list_document_style_00">
-        <span class="list_document_style_02">${i+1}</span>
-        <img class="list_document_style_01" src="${interactionCounts[i].profilePic}" alt="Profile Picture">
-        <span class="list_document_style_03">${interactionCounts[i].name}</span>
-        <br>
-        <span class="list_document_style_04">${interactionCounts[i].interactions} interactions${today ? (today === true ? (" today") : ("")) : ("")}</span>
-    </div>`;
+<div class="list_document_style_00">
+<span class="list_document_style_02">${i+1}</span>
+<img class="list_document_style_01" src="${interactionCounts[i].profilePic}" alt="Profile Picture">
+<span class="list_document_style_03">${interactionCounts[i].name}</span>
+<br>
+<span class="list_document_style_04">${interactionCounts[i].interactions} interactions${today ? (today === true ? (" today") : ("")) : ("")}</span>
+</div>
+`;
             }
             html += `
-    </body>
-
-    </html>
-    `;
+</body>
+</html>
+`;
             if (newTab) {
                 newTab.document.write(html);
                 leaderboardDebounce = false;
