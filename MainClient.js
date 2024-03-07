@@ -2,6 +2,7 @@
     let AUTHORIZATION = getToken();
     let LAST_AUTH = AUTHORIZATION;
     let THEME_COLOR = null;
+    
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 7
     let YEAR_UPDATED = 24
