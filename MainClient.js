@@ -474,7 +474,7 @@
         const buttonSettings = leaderboardDebounce ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
-    let SETTINGS_ICON = 'https://media.discordapp.net/attachments/1205660691500105730/1215348125317992580/file.png';
+    let SETTINGS_ICON = 'https://media.discordapp.net/attachments/1205660691500105730/1215348125317992580/file.png?ex=65fc6c25&is=65e9f725&hm=2c61be850593bed1f81e04c4ba0a49a9d9af647f7b9ebc69fcd979eb89063e6e&=&format=webp&quality=lossless';
     let LIGHT_THEME_ICON = '';
     let LEADERBOARD_ICON = '';
     const buttonNames = [SETTINGS_ICON, LIGHT_THEME_ICON, LEADERBOARD_ICON, '👋', '✨'];
