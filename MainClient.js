@@ -6,8 +6,8 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 7
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 30
-    let TIME_UPDATED = 12
+    let MINUTES_UPDATED = 50
+    let TIME_UPDATED = 12+2
 
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64) // Convert to letter A-Z
     let ALPHA_DAY = DAY_UPDATED.toString(36) // Convert to base 36 (0-9, a-z)
