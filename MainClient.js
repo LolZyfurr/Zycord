@@ -260,6 +260,10 @@
 
     <head>
         <style>
+        body {
+            background-color: rgb(50,50,50);
+        }
+
         .list_document_style_00 {
             background-color: rgba(128, 128, 128, 0.5);
             border-radius: 10px;
@@ -281,17 +285,20 @@
             float: left;
             font-size: 64px;
             margin-right: 10px;
+            color: rgb(200,200,200);
         }
 
         .list_document_style_03 {
             font-family: Arial, sans-serif;
             font-weight: bold;
             font-size: 32px;
+            color: rgb(200,200,200);
         }
 
         .list_document_style_04 {
             font-family: Arial, sans-serif;
             font-size: 32px;
+            color: rgb(150,150,150);
         }
         </style>
     </head>
