@@ -494,7 +494,6 @@
     border-top-right-radius: ${33/2}px;
     border-bottom-right-radius: ${33/2}px;
 `;
-    button.appendChild(buttonIcon);
     buttonNames.forEach((name, index) => {
         const button = document.createElement('button');
         button.style.cssText = `
@@ -512,6 +511,7 @@
         width: 100%;
         height: 100%;
     `;
+        button.appendChild(buttonIcon);
         if (buttonActions[index]) {
             buttonActions[index](button, true)
             button.addEventListener('click', () => buttonActions[index](button, false));
