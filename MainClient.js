@@ -5,10 +5,10 @@
     let THEME_COLOR = null;
     let DATE_UPDATED = `3.7.24`
     let APP_VERSION = `BETA v${DATE_UPDATED}`
-    let lastStatus = "";
-    let lightTheme = SETTINGS.APP_CONFIG.USE_LIGHT_THEME;
-    let lastTheme = lightTheme;
-    let autoUpdateStatus = SETTINGS.APP_CONFIG.AUTO_UPDATE_STATUS;
+    let VALUE_LAST_STATUS = "";
+    let VALUE_LIGHT_THEME = SETTINGS.APP_CONFIG.USE_LIGHT_THEME;
+    let VALUE_LAST_THEME = VALUE_LIGHT_THEME;
+    let VALUE_AUTO_UPDATE_STATUS = SETTINGS.APP_CONFIG.AUTO_UPDATE_STATUS;
     let avatarShapeConfig = SETTINGS.APP_CONFIG.AVATAR_SHAPE;
     let updateDebounce = false;
     let updateRecall = false;
@@ -342,14 +342,14 @@
     }
     async function changeElementColor(t) {
         let r = hexToRgb(t),
-            e = lightTheme ? 155 : 0,
-            o = (lightTheme, SETTINGS.THEME_COLORS.PRIMARY),
-            s = lightTheme ? SETTINGS.THEME_COLORS.SENARY : SETTINGS.THEME_COLORS.SECONDARY,
-            l = lightTheme ? SETTINGS.THEME_COLORS.QUINARY : SETTINGS.THEME_COLORS.TERTIARY,
-            p = (lightTheme, SETTINGS.THEME_COLORS.QUATERNARY),
-            a = lightTheme ? SETTINGS.THEME_COLORS.TERTIARY : SETTINGS.THEME_COLORS.QUINARY,
-            i = lightTheme ? SETTINGS.THEME_COLORS.SECONDARY : SETTINGS.THEME_COLORS.SENARY,
-            n = lightTheme ? SETTINGS.THEME_COLORS.PRIMARY : SETTINGS.THEME_COLORS.SEPTENARY,
+            e = VALUE_LIGHT_THEME ? 155 : 0,
+            o = (VALUE_LIGHT_THEME, SETTINGS.THEME_COLORS.PRIMARY),
+            s = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.SENARY : SETTINGS.THEME_COLORS.SECONDARY,
+            l = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.QUINARY : SETTINGS.THEME_COLORS.TERTIARY,
+            p = (VALUE_LIGHT_THEME, SETTINGS.THEME_COLORS.QUATERNARY),
+            a = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.TERTIARY : SETTINGS.THEME_COLORS.QUINARY,
+            i = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.SECONDARY : SETTINGS.THEME_COLORS.SENARY,
+            n = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.PRIMARY : SETTINGS.THEME_COLORS.SEPTENARY,
             y = `${r.r},${r.g},${r.b}`,
             m = `${r.r*o},${r.g*o},${r.b*o}`,
             c = `${r.r*s+e},${r.g*s+e},${r.b*s+e}`,
@@ -364,16 +364,16 @@
             x = [y, m, c, P, g, b, h, d].join(",").split(",").map(Number),
             _ = x.reduce((t, r) => t + r, 0) / x.length >= 155;
         const k = async () => {
-            if (lightTheme !== lastTheme) {
+            if (VALUE_LIGHT_THEME !== VALUE_LAST_THEME) {
                 r = hexToRgb(t);
-                e = lightTheme ? 155 : 0;
-                o = (lightTheme, SETTINGS.THEME_COLORS.PRIMARY);
-                s = lightTheme ? SETTINGS.THEME_COLORS.SENARY : SETTINGS.THEME_COLORS.SECONDARY;
-                l = lightTheme ? SETTINGS.THEME_COLORS.QUINARY : SETTINGS.THEME_COLORS.TERTIARY;
-                p = (lightTheme, SETTINGS.THEME_COLORS.QUATERNARY);
-                a = lightTheme ? SETTINGS.THEME_COLORS.TERTIARY : SETTINGS.THEME_COLORS.QUINARY;
-                i = lightTheme ? SETTINGS.THEME_COLORS.SECONDARY : SETTINGS.THEME_COLORS.SENARY;
-                n = lightTheme ? SETTINGS.THEME_COLORS.PRIMARY : SETTINGS.THEME_COLORS.SEPTENARY;
+                e = VALUE_LIGHT_THEME ? 155 : 0;
+                o = (VALUE_LIGHT_THEME, SETTINGS.THEME_COLORS.PRIMARY);
+                s = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.SENARY : SETTINGS.THEME_COLORS.SECONDARY;
+                l = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.QUINARY : SETTINGS.THEME_COLORS.TERTIARY;
+                p = (VALUE_LIGHT_THEME, SETTINGS.THEME_COLORS.QUATERNARY);
+                a = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.TERTIARY : SETTINGS.THEME_COLORS.QUINARY;
+                i = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.SECONDARY : SETTINGS.THEME_COLORS.SENARY;
+                n = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.PRIMARY : SETTINGS.THEME_COLORS.SEPTENARY;
                 y = `${r.r},${r.g},${r.b}`;
                 m = `${r.r*o},${r.g*o},${r.b*o}`;
                 c = `${r.r*s+e},${r.g*s+e},${r.b*s+e}`;
@@ -387,7 +387,7 @@
                 u = !1;
                 x = [y, m, c, P, g, b, h, d].join(",").split(",").map(Number);
                 _ = x.reduce((t, r) => t + r, 0) / x.length >= 155;
-                lastTheme = lightTheme;
+                VALUE_LAST_THEME = VALUE_LIGHT_THEME;
             }
             $ ? u = !0 : ($ = !0, WatermarkWeb(`ZYCORD ${APP_VERSION}`, m), E.style.setProperty("--mainaccentcolor", y, "important"), E.style.setProperty("--accentcolor", m, "important"), E.style.setProperty("--accentcolor2", m, "important"), E.style.setProperty("--linkcolor", m, "important"), E.style.setProperty("--mentioncolor", m, "important"), E.style.setProperty("--backgroundaccent", c, "important"), E.style.setProperty("--backgroundprimary", P, "important"), E.style.setProperty("--backgroundsecondary", g, "important"), E.style.setProperty("--backgroundsecondaryalt", b, "important"), E.style.setProperty("--backgroundtertiary", h, "important"), E.style.setProperty("--backgroundfloating", d, "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-medium-spacing", "3px", "important"), E.style.setProperty("--rs-large-spacing", "4px", "important"), E.style.setProperty("--rs-small-width", "2px", "important"), E.style.setProperty("--rs-medium-width", "3px", "important"), E.style.setProperty("--rs-large-width", "4px", "important"), E.style.setProperty("--rs-avatar-shape", avatarShapeConfig, "important"), E.style.setProperty("--rs-online-color", "#43b581", "important"), E.style.setProperty("--rs-idle-color", "#faa61a", "important"), E.style.setProperty("--rs-dnd-color", "#f04747", "important"), E.style.setProperty("--rs-offline-color", "#636b75", "important"), E.style.setProperty("--rs-streaming-color", "#643da7", "important"), E.style.setProperty("--rs-invisible-color", "#747f8d", "important"), E.style.setProperty("--rs-phone-color", "var(--rs-online-color)", "important"), E.style.setProperty("--rs-phone-visible", "none", "important"), _ ? (E.style.setProperty("--textbrightest", "100,100,100", "important"), E.style.setProperty("--embed-title", "100,100,100", "important"), E.style.setProperty("--textbrighter", "90,90,90", "important"), E.style.setProperty("--textbright", "80,80,80", "important"), E.style.setProperty("--textdark", "70,70,70", "important"), E.style.setProperty("--textdarker", "60,60,60", "important"), E.style.setProperty("--textdarkest", "50,50,50", "important")) : (E.style.setProperty("--textbrightest", "250,250,250", "important"), E.style.setProperty("--textbrighter", "240,240,240", "important"), E.style.setProperty("--textbright", "230,230,230", "important"), E.style.setProperty("--textdark", "220,220,220", "important"), E.style.setProperty("--textdarker", "210,210,210", "important"), E.style.setProperty("--textdarkest", "200,200,200", "important")), ApplyTheme(), await DELAY(500), $ = !1, u && (u = !1, k()))
         };
@@ -403,9 +403,9 @@
     async function updateUserStatus(t) {
         if (updateDebounce) updateRecall || (updateRecall = !0), updateStatus = t;
         else {
-            if (updateDebounce = !0, autoUpdateStatus) {
-                if (lastStatus === t) return void(updateDebounce = !1);
-                setStatus(AUTHORIZATION, t), lastStatus = t
+            if (updateDebounce = !0, VALUE_AUTO_UPDATE_STATUS) {
+                if (VALUE_LAST_STATUS === t) return void(updateDebounce = !1);
+                setStatus(AUTHORIZATION, t), VALUE_LAST_STATUS = t
             }
             await DELAY(SETTINGS.APP_CONFIG.STATUS_UPDATE_COOLDOWN), updateDebounce = !1, updateRecall && (updateRecall = !1, updateUserStatus(updateStatus))
         }
@@ -436,22 +436,22 @@
 
     function toggleAutoStatus(button, startup) {
         if (!startup) {
-            autoUpdateStatus = !autoUpdateStatus;   
+            VALUE_AUTO_UPDATE_STATUS = !VALUE_AUTO_UPDATE_STATUS;   
         }
-        const buttonSettings = autoUpdateStatus ? '128,128,128,1' : '0,0,0,0';
+        const buttonSettings = VALUE_AUTO_UPDATE_STATUS ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
     
-    function toggleLightTheme(button, startup) {
+    function toggleVALUE_LIGHT_THEME(button, startup) {
         if (!startup) {
-            lightTheme = !lightTheme;
+            VALUE_LIGHT_THEME = !VALUE_LIGHT_THEME;
         }
-        const buttonSettings = lightTheme ? '128,128,128,1' : '0,0,0,0';
+        const buttonSettings = VALUE_LIGHT_THEME ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
     const buttonNames = ['⚙️', '🌙', '📊', '👋'];
     const amountOfButtons = buttonNames.length;
-    const buttonActions = [toggleSettingsMenu, toggleLightTheme, fetchLeaderboard, toggleAutoStatus];
+    const buttonActions = [toggleSettingsMenu, toggleVALUE_LIGHT_THEME, fetchLeaderboard, toggleAutoStatus];
     const topBar = document.createElement('div');
     topBar.style.cssText = `
     position: absolute;
