@@ -511,7 +511,7 @@
         buttonIcon.src = name;
         buttonIcon.alt = '';
         buttonIcon.style.cssText = `
-        width: 100%;
+        width: 33px;
         height: 100%;
         filter: brightness(1000);
     `;
