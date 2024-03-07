@@ -6,8 +6,8 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 7
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 15
-    let TIME_UPDATED = 11
+    let MINUTES_UPDATED = 25
+    let TIME_UPDATED = 12
 
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64) // Convert to letter A-Z
     let ALPHA_DAY = DAY_UPDATED.toString(36) // Convert to base 36 (0-9, a-z)
@@ -433,7 +433,7 @@
     color: #fff;
     z-index: 9999;
     display: flex;
-    border-radius: 10px;
+    border-radius: 33px;
     visibility: hidden;
     outline: solid;
 `;
