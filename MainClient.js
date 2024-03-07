@@ -5,7 +5,8 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 7
     let YEAR_UPDATED = 24
-    let TIME_UPDATED = 10.10
+    let MINUTES_UPDATED = 28
+    let TIME_UPDATED = 10+(MINUTES_UPDATED/60)
     let DATE_UPDATED = `${MONTH_UPDATED}.${DAY_UPDATED}.${YEAR_UPDATED}.${Math.floor(TIME_UPDATED)}`
     let APP_VERSION = `BETA v${DATE_UPDATED}`
     let VALUE_LAST_STATUS = "";
@@ -505,13 +506,13 @@
         height: ${100 / amountOfButtons}%;
         background-color: rgba(0, 0, 0, 0);
         border-radius: ${33/2}px;
-        text-align: center;
+        padding: 0px;
     `;
         const buttonIcon = document.createElement('img');
         buttonIcon.src = name;
         buttonIcon.alt = '';
         buttonIcon.style.cssText = `
-        width: 33px;
+        width: 100%;
         height: 100%;
         filter: brightness(1000);
     `;
