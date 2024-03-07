@@ -198,16 +198,9 @@
     async function fetchUserAvatar(a) {
         return "https://cdn.discordapp.com/avatars/" + a.id + "/" + a.avatar + ".png?size=4096"
     }
-    async function fetchLeaderboard(button, startup, today) {
-        if (startup) {
-            let buttonIcon = leaderboardDebounce ? '⏳' : '📊';
-            button.textContent = buttonIcon;
-            return
-        }
+    async function fetchLeaderboard(today) {
         if (!leaderboardDebounce) {
             leaderboardDebounce = true;
-            let buttonIcon = leaderboardDebounce ? '⏳' : '📊';
-            button.textContent = buttonIcon;
             var newTab = window.open('about:blank', '_blank');
             const channels = await fetchUserDMs(AUTHORIZATION);
             const fetchedSelfUser = await fetchUserSelf(AUTHORIZATION);
@@ -307,8 +300,6 @@
             if (newTab) {
                 newTab.document.write(html);
                 leaderboardDebounce = false;
-                let buttonIcon = leaderboardDebounce ? '⏳' : '📊';
-                button.textContent = buttonIcon;
             }
         }
     }
@@ -452,7 +443,7 @@
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
     
-    function toggleVALUE_LIGHT_THEME(button, startup) {
+    function toggleLightTheme(button, startup) {
         if (!startup) {
             VALUE_LIGHT_THEME = !VALUE_LIGHT_THEME;
         }
@@ -461,15 +452,15 @@
     }
     
     function leaderboardButtonPress(button, startup) {
-        fetchLeaderboard(button, startup, false);
+        fetchLeaderboard(false);
     }
     
     function leaderboardTodayButtonPress(button, startup) {
-        fetchLeaderboard(button, startup, true);
+        fetchLeaderboard(true);
     }
     const buttonNames = ['⚙️', '🌙', '📊', '👋', '✨'];
     const amountOfButtons = buttonNames.length;
-    const buttonActions = [toggleSettingsMenu, toggleVALUE_LIGHT_THEME, leaderboardButtonPress, toggleAutoStatus, leaderboardTodayButtonPress];
+    const buttonActions = [toggleSettingsMenu, toggleLightTheme, leaderboardButtonPress, toggleAutoStatus, leaderboardTodayButtonPress];
     const topBar = document.createElement('div');
     topBar.style.cssText = `
     position: absolute;
