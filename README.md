@@ -68,7 +68,7 @@ A list of each app configuration and what it does.
 - `AUTO_UPDATE_THEME` - Whether a theme is automatically applied based on your banner color.
 - `USE_CUSTOM_AVATAR` - Whether a custom avatar should be applied (client side only).
 - `INITIAL_OPACITY` - The startup opacity of the website shade.
-- `UNFOCUSED_OPACITY` - The opacity of the website shade whenever it is unfocused.
+- `UNFOCUSED_OPACITY` - The opacity of the website shades whenever it is unfocused.
 - `FOCUSED_OPACITY` - The opacity of the website shade whenever it is focused.
 - `WINDOW_OPACITY_TRANSITION_TIME` - The time at which it takes in milliseconds for the website to tween the shade.
 - `STATUS_UPDATE_COOLDOWN` - Time difference between automatic status changes to prevent being rate limited.
@@ -80,6 +80,17 @@ A list of each app configuration and what it does.
 - `UNFOCUSED_STATUS` - The status is applied when the website is unfocused.
 - `FOCUSED_STATUS` - The status applied whenever the website is focused.
 - `AVATAR_SHAPE` - The roundness of the avatar shape.
+### Theme
+If you don't want radial statuses or need more theme configurations, put this code in the `SETTINGS` constant otherwise it is automatically defaulted to true.
+```js
+THEME_CONFIG: {
+    RADIAL_STATUS_CSS: true,
+    DISCORD_RECOLOR_CSS: true,
+},
+```
+A list of each theme configuration and what it does.
+- `RADIAL_STATUS_CSS` - Decides whether to load the radial status theme.
+- `DISCORD_RECOLOR_CSS` - Decides whether to load the discord recolor theme.
 ---
 ## Disclaimer
 Discord is a trademark of Discord Inc. and is solely mentioned for the sake of descriptivity. Mention of it does not imply any affiliation with or endorsement by Discord Inc. Using Zycord violates Discord's terms of service
