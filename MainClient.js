@@ -198,7 +198,7 @@
     async function fetchUserAvatar(a) {
         return "https://cdn.discordapp.com/avatars/" + a.id + "/" + a.avatar + ".png?size=4096"
     }
-    async function fetchLeaderboard(button, startup) {
+    async function fetchLeaderboard(button, startup, today) {
         if (startup) {
             let buttonIcon = leaderboardDebounce ? '⏳' : '📊';
             button.textContent = buttonIcon;
@@ -226,7 +226,10 @@
                         dmChannelName = message.author.id;
                     }
                     if (lastCheckedAuthor == selfUser && msgAuthor !== selfUser) {
-                        interactions++
+                        const validInteraction = today ? (isToday(message.timestamp) === true ? (true) : (false)) : (true)
+                        if (validInteraction) {
+                            interactions++
+                        }
                     }
                     lastCheckedAuthor = msgAuthor;
                 }
@@ -293,7 +296,7 @@
         <img class="list_document_style_01" src="${interactionCounts[i].profilePic}" alt="Profile Picture">
         <span class="list_document_style_03">${interactionCounts[i].name}</span>
         <br>
-        <span class="list_document_style_04">${interactionCounts[i].interactions} interactions</span>
+        <span class="list_document_style_04">${interactionCounts[i].interactions} interactions${today ? (today === true ? (" today") : ("")) : ("")}</span>
     </div>`;
             }
             html += `
@@ -425,6 +428,13 @@
     visibility: hidden;
 `;
     document.body.appendChild(settingsMenu);
+    function isToday(timestamp) {
+        const date = new Date(timestamp);
+        const today = new Date();
+        return date.getDate() == today.getDate() &&
+            date.getMonth() == today.getMonth() &&
+            date.getFullYear() == today.getFullYear();
+    }
 
     function toggleSettingsMenu(button, startup) {
         if (!startup) {
@@ -449,9 +459,17 @@
         const buttonSettings = VALUE_LIGHT_THEME ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
-    const buttonNames = ['⚙️', '🌙', '📊', '👋'];
+    
+    function leaderboardButtonPress(button, startup) {
+        fetchLeaderboard(button, startup, false);
+    }
+    
+    function leaderboardTodayButtonPress(button, startup) {
+        fetchLeaderboard(button, startup, true);
+    }
+    const buttonNames = ['⚙️', '🌙', '📊', '👋', '✨'];
     const amountOfButtons = buttonNames.length;
-    const buttonActions = [toggleSettingsMenu, toggleVALUE_LIGHT_THEME, fetchLeaderboard, toggleAutoStatus];
+    const buttonActions = [toggleSettingsMenu, toggleVALUE_LIGHT_THEME, leaderboardButtonPress, toggleAutoStatus, leaderboardTodayButtonPress];
     const topBar = document.createElement('div');
     topBar.style.cssText = `
     position: absolute;
