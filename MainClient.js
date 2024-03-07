@@ -6,14 +6,15 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 7
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 40
-    let TIME_UPDATED = 12+3
+    let MINUTES_UPDATED = 45
+    let TIME_AFTERNOON = 3
+    let TIME_UPDATED = 12
 
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64) // Convert to letter A-Z
     let ALPHA_DAY = DAY_UPDATED.toString(36) // Convert to base 36 (0-9, a-z)
     let ALPHA_YEAR = YEAR_UPDATED.toString(36) // Convert to base 36 (0-9, a-z)
     let ALPHA_MINUTES = MINUTES_UPDATED.toString(36) // Convert to base 36 (0-9, a-z)
-    let ALPHA_TIME = TIME_UPDATED.toString(36) // Convert to base 36 (0-9, a-z)
+    let ALPHA_TIME = (TIME_UPDATED+TIME_AFTERNOON).toString(36) // Convert to base 36 (0-9, a-z)
 
     let DATE_UPDATED = `${ALPHA_MONTH}${ALPHA_DAY}${ALPHA_YEAR}${ALPHA_MINUTES}${ALPHA_TIME}`
     let APP_VERSION = `BETA ${DATE_UPDATED}`
