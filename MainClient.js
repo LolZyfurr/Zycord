@@ -6,7 +6,7 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 7
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 30
+    let MINUTES_UPDATED = 40
     let TIME_UPDATED = 12+3
 
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64) // Convert to letter A-Z
@@ -270,7 +270,7 @@ body {
     height: 100vh;
 } 
 .list_document_style_00 { 
-    background-color: rgb(115, 115, 125); 
+    background-color: rgb(70, 70, 80); 
     border-radius: 10px; 
     margin: 10px; 
     padding: 10px; 
