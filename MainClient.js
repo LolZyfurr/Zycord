@@ -476,8 +476,8 @@
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
     let SETTINGS_ICON = 'https://media.discordapp.net/attachments/1205660691500105730/1215348125317992580/file.png?ex=65fc6c25&is=65e9f725&hm=2c61be850593bed1f81e04c4ba0a49a9d9af647f7b9ebc69fcd979eb89063e6e&=&format=webp&quality=lossless';
-    let LIGHT_THEME_ICON = '';
-    let LEADERBOARD_ICON = '';
+    let LIGHT_THEME_ICON = 'https://media.discordapp.net/attachments/1205660691500105730/1215353120599707688/file.png?ex=65fc70cc&is=65e9fbcc&hm=a0aaf2943817e47eb1a55b23b2d2ed8015cf96bba85dffa3b526170518af3dee&=&format=webp&quality=lossless';
+    let LEADERBOARD_ICON = 'https://media.discordapp.net/attachments/1205660691500105730/1215352625164197939/file.png?ex=65fc7055&is=65e9fb55&hm=db2390e46423d91536a94fff1aa11a22f2387d60f3032155dd5ca756323f1d7f&=&format=webp&quality=lossless';
     const buttonNames = [SETTINGS_ICON, LIGHT_THEME_ICON, LEADERBOARD_ICON, '👋', '✨'];
     const amountOfButtons = buttonNames.length;
     const buttonActions = [toggleSettingsMenu, toggleLightTheme, leaderboardButtonPress, toggleAutoStatus, leaderboardTodayButtonPress];
@@ -509,11 +509,14 @@
         padding: 0px;
     `;
         const buttonIcon = document.createElement('img');
+        const iconSize = 75;
         buttonIcon.src = name;
         buttonIcon.alt = '';
         buttonIcon.style.cssText = `
-        width: 100%;
-        height: 100%;
+        position: relative;
+        top: ${(100-iconSize)/2}%;
+        width: ${iconSize}%;
+        height: ${iconSize}%;
         filter: brightness(1000);
     `;
         button.appendChild(buttonIcon);
