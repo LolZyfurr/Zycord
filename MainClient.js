@@ -474,7 +474,7 @@
         const buttonSettings = leaderboardDebounce ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
-    const buttonNames = ['⚙️', '🌙', '📊', '👋', '✨'];
+    const buttonNames = ['https://media.discordapp.net/attachments/1035261677802881065/1035266867717218335/11111unknown.png?ex=65f34967&is=65e0d467&hm=ff45c5a237f9c70f400de8e7c8e60e95df4d71aff839cabf059747041e022b73&=&format=webp&quality=lossless', '🌙', '📊', '👋', '✨'];
     const amountOfButtons = buttonNames.length;
     const buttonActions = [toggleSettingsMenu, toggleLightTheme, leaderboardButtonPress, toggleAutoStatus, leaderboardTodayButtonPress];
     const topBar = document.createElement('div');
@@ -494,6 +494,7 @@
     border-top-right-radius: ${33/2}px;
     border-bottom-right-radius: ${33/2}px;
 `;
+    button.appendChild(buttonIcon);
     buttonNames.forEach((name, index) => {
         const button = document.createElement('button');
         button.style.cssText = `
@@ -504,7 +505,13 @@
         border-radius: ${33/2}px;
         text-align: center;
     `;
-        button.textContent = name;
+        const buttonIcon = document.createElement('img');
+        buttonIcon.src = name;
+        buttonIcon.alt = '';
+        buttonIcon.style.cssText = `
+        width: 100%;
+        height: 100%;
+    `;
         if (buttonActions[index]) {
             buttonActions[index](button, true)
             button.addEventListener('click', () => buttonActions[index](button, false));
