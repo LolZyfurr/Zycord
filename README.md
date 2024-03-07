@@ -54,8 +54,16 @@ An experimental discord client modification.
             SEPTENARY: 0.25,
         },
     }
-    const url = 'https://raw.githubusercontent.com/Zy1ux/Zycord/main/MainClient.js';
-    fetch(url).then(response => response.text()).then(data => {eval(data);});
+    let url = 'https://raw.githubusercontent.com/Zy1ux/Zycord/main/MainClient.js';
+    fetch(url)
+        .then(response => response.text())
+        .then(data => {eval(data);})
+        .catch(error => {
+        console.error('Error:', error);
+        setTimeout(() => {
+            location.reload();
+        }, 5000);
+    });
 })();
 ```
 ---
