@@ -434,6 +434,7 @@
     display: flex;
     border-radius: 10px;
     visibility: hidden;
+    outline: solid;
 `;
     document.body.appendChild(settingsMenu);
     function isToday(timestamp) {
@@ -507,6 +508,7 @@
     align-items: center;
     border-top-right-radius: ${33/2}px;
     border-bottom-right-radius: ${33/2}px;
+    outline: solid;
 `;
     buttonNames.forEach((name, index) => {
         const button = document.createElement('button');
