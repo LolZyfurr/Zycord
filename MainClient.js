@@ -7,8 +7,16 @@
     let YEAR_UPDATED = 24
     let MINUTES_UPDATED = 45
     let TIME_UPDATED = 10
-    let DATE_UPDATED = `${MONTH_UPDATED}.${DAY_UPDATED}.${YEAR_UPDATED}.${Math.floor(TIME_UPDATED+(MINUTES_UPDATED/60))}`
+
+    let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64) // Convert to letter A-Z
+    let ALPHA_DAY = DAY_UPDATED.toString(36) // Convert to base 36 (0-9, a-z)
+    let ALPHA_YEAR = YEAR_UPDATED.toString(36) // Convert to base 36 (0-9, a-z)
+    let ALPHA_MINUTES = MINUTES_UPDATED.toString(36) // Convert to base 36 (0-9, a-z)
+    let ALPHA_TIME = TIME_UPDATED.toString(36) // Convert to base 36 (0-9, a-z)
+
+    let DATE_UPDATED = `${ALPHA_MONTH}${ALPHA_DAY}${ALPHA_YEAR}${ALPHA_MINUTES}${ALPHA_TIME}`
     let APP_VERSION = `BETA v${DATE_UPDATED}`
+
     let VALUE_LAST_STATUS = "";
     let VALUE_LIGHT_THEME = SETTINGS.APP_CONFIG.USE_LIGHT_THEME;
     let VALUE_LAST_THEME = VALUE_LIGHT_THEME;
