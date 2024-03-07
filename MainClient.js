@@ -2,7 +2,7 @@
     let AUTHORIZATION = getToken();
     let LAST_AUTH = AUTHORIZATION;
     let THEME_COLOR = null;
-    let DATE_UPDATED = `3.7.24`
+    let DATE_UPDATED = `3.7.24.9`
     let APP_VERSION = `BETA v${DATE_UPDATED}`
     let VALUE_LAST_STATUS = "";
     let VALUE_LIGHT_THEME = SETTINGS.APP_CONFIG.USE_LIGHT_THEME;
