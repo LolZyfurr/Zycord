@@ -227,7 +227,7 @@
                 let interactions = 0;
                 let dmChannelName = channel.id;
                 let messageAuthor = null;
-                let messages = await fetchMessages(AUTHORIZATION, channel.id, 50000);
+                let messages = await fetchMessages(AUTHORIZATION, channel.id, today ? (today === true ? (500) : (50000)) : (50000));
                 for (const message of messages.reverse().values()) {
                     const msgAuthor = message.author.id;
                     if (msgAuthor !== selfUser) {
