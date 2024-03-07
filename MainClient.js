@@ -198,9 +198,11 @@
     async function fetchUserAvatar(a) {
         return "https://cdn.discordapp.com/avatars/" + a.id + "/" + a.avatar + ".png?size=4096"
     }
-    async function fetchLeaderboard(today) {
+    async function fetchLeaderboard(button, today) {
         if (!leaderboardDebounce) {
             leaderboardDebounce = true;
+            leaderboardTodayButtonPress(button, true);
+            leaderboardButtonPress(button, true);
             var newTab = window.open('about:blank', '_blank');
             const channels = await fetchUserDMs(AUTHORIZATION);
             const fetchedSelfUser = await fetchUserSelf(AUTHORIZATION);
@@ -300,6 +302,8 @@
             if (newTab) {
                 newTab.document.write(html);
                 leaderboardDebounce = false;
+                leaderboardTodayButtonPress(button, true);
+                leaderboardButtonPress(button, true);
             }
         }
     }
@@ -452,11 +456,19 @@
     }
     
     function leaderboardButtonPress(button, startup) {
-        fetchLeaderboard(false);
+        if (!startup) {
+            fetchLeaderboard(button, false);
+        }
+        const buttonSettings = leaderboardDebounce ? '128,128,128,1' : '0,0,0,0';
+        button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
     
     function leaderboardTodayButtonPress(button, startup) {
-        fetchLeaderboard(true);
+        if (!startup) {
+            fetchLeaderboard(button, true);
+        }
+        const buttonSettings = leaderboardDebounce ? '128,128,128,1' : '0,0,0,0';
+        button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
     const buttonNames = ['⚙️', '🌙', '📊', '👋', '✨'];
     const amountOfButtons = buttonNames.length;
