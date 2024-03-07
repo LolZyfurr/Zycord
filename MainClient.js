@@ -6,7 +6,7 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 7
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 5
+    let MINUTES_UPDATED = 25
     let TIME_UPDATED = 12+3
 
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64) // Convert to letter A-Z
@@ -260,7 +260,7 @@
 <head>
 <style> 
 body { 
-    background-color: rgb(50,50,50); 
+    background-color: rgb(100,100,100); 
     margin: 0; 
     padding: 0; 
     display: flex; 
@@ -270,12 +270,14 @@ body {
     height: 100vh;
 } 
 .list_document_style_00 { 
-    background-color: rgba(128, 128, 128, 0.5); 
+    background-color: rgb(125, 125, 125); 
     border-radius: 10px; 
     margin: 10px; 
     padding: 10px; 
     width: 90%; 
     max-width: 600px; 
+    display: -webkit-inline-box;
+    overflow: hidden;
 } 
 .list_document_style_01 { 
     width: 70px; 
@@ -296,13 +298,16 @@ body {
     font-family: Arial, sans-serif; 
     font-weight: bold; 
     font-size: 32px; 
-    color: rgb(200,200,200); 
+    color: rgb(200,200,200);
+    overflow: hidden;
+    position: relative;
+    text-overflow: ellipsis;
 } 
 .list_document_style_04 { 
     font-family: Arial, sans-serif; 
     font-size: 32px; 
-    color: rgb(150,150,150); 
-} 
+    color: rgb(175,175,175); 
+}
 </style>
 </head>    
 <body>
