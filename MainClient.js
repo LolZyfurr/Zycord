@@ -474,7 +474,10 @@
         const buttonSettings = leaderboardDebounce ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
-    const buttonNames = ['https://media.discordapp.net/attachments/1035261677802881065/1035266867717218335/11111unknown.png?ex=65f34967&is=65e0d467&hm=ff45c5a237f9c70f400de8e7c8e60e95df4d71aff839cabf059747041e022b73&=&format=webp&quality=lossless', '🌙', '📊', '👋', '✨'];
+    let SETTINGS_ICON = 'https://media.discordapp.net/attachments/1205660691500105730/1215348125317992580/file.png';
+    let LIGHT_THEME_ICON = '';
+    let LEADERBOARD_ICON = '';
+    const buttonNames = [SETTINGS_ICON, LIGHT_THEME_ICON, LEADERBOARD_ICON, '👋', '✨'];
     const amountOfButtons = buttonNames.length;
     const buttonActions = [toggleSettingsMenu, toggleLightTheme, leaderboardButtonPress, toggleAutoStatus, leaderboardTodayButtonPress];
     const topBar = document.createElement('div');
@@ -510,6 +513,7 @@
         buttonIcon.style.cssText = `
         width: 100%;
         height: 100%;
+        filter: brightness(1000);
     `;
         button.appendChild(buttonIcon);
         if (buttonActions[index]) {
