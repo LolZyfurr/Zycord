@@ -3,6 +3,8 @@
     let AUTHORIZATION = getToken();
     let LAST_AUTH = AUTHORIZATION;
     let THEME_COLOR = null;
+    let DATE_UPDATED = `3.7.24`
+    let APP_VERSION = `BETA v${DATE_UPDATED}`
     let lastStatus = "";
     let lightTheme = SETTINGS.APP_CONFIG.USE_LIGHT_THEME;
     let lastTheme = lightTheme;
