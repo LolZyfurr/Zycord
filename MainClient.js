@@ -523,8 +523,8 @@ body {
     display: flex;
     justify-content: right;
     align-items: center;
-    border-top-right-radius: ${TOPBAR_SIZE/2}px;
-    border-bottom-right-radius: ${TOPBAR_SIZE/2}px;
+    border-top-${SETTINGS.UI_CONFIG ? ((SETTINGS.UI_CONFIG.INTERACTIVE_MENU_LOCATION).toUpperCase() === ("right").toUpperCase() ? ("left") : ("right")) : ("right")}-radius: ${TOPBAR_SIZE/2}px;
+    border-bottom-${SETTINGS.UI_CONFIG ? ((SETTINGS.UI_CONFIG.INTERACTIVE_MENU_LOCATION).toUpperCase() === ("right").toUpperCase() ? ("left") : ("right")) : ("right")}-radius: ${TOPBAR_SIZE/2}px;
     outline: solid;
 `;
     buttonNames.forEach((name, index) => {
