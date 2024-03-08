@@ -6,7 +6,7 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 8
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 5
+    let MINUTES_UPDATED = 10
     let TIME_AFTERNOON = 4
     let TIME_UPDATED = 12
 
@@ -523,8 +523,8 @@ body {
     display: flex;
     justify-content: right;
     align-items: center;
-    border-top-right-radius: ${33/2}px;
-    border-bottom-right-radius: ${33/2}px;
+    border-top-right-radius: ${TOPBAR_SIZE/2}px;
+    border-bottom-right-radius: ${TOPBAR_SIZE/2}px;
     outline: solid;
 `;
     buttonNames.forEach((name, index) => {
