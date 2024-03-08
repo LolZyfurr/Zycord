@@ -4,10 +4,10 @@
     let THEME_COLOR = null;
     
     let MONTH_UPDATED = 3
-    let DAY_UPDATED = 7
+    let DAY_UPDATED = 8
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 45
-    let TIME_AFTERNOON = 3
+    let MINUTES_UPDATED = 5
+    let TIME_AFTERNOON = 4
     let TIME_UPDATED = 12
 
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
