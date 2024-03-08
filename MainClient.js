@@ -6,7 +6,7 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 8
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 10
+    let MINUTES_UPDATED = 125
     let TIME_AFTERNOON = 4
     let TIME_UPDATED = 12
 
@@ -513,7 +513,7 @@ body {
     topBar.style.cssText = `
     position: absolute;
     top: 40%;
-    left: 0%;
+    ${SETTINGS.UI_CONFIG ? ((SETTINGS.UI_CONFIG.INTERACTIVE_MENU_LOCATION).toUpperCase() === ("right").toUpperCase() ? ("right") : ("left")) : ("left")}: 0%;
     width: ${TOPBAR_SIZE}px;
     height: ${TOPBAR_SIZE * amountOfButtons}px;
     flex-direction: column;
