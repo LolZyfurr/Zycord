@@ -10,11 +10,11 @@
     let TIME_AFTERNOON = 3
     let TIME_UPDATED = 12
 
-    let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64) // Convert to letter A-Z
-    let ALPHA_DAY = DAY_UPDATED.toString(36) // Convert to base 36 (0-9, a-z)
-    let ALPHA_YEAR = YEAR_UPDATED.toString(36) // Convert to base 36 (0-9, a-z)
-    let ALPHA_MINUTES = MINUTES_UPDATED.toString(36) // Convert to base 36 (0-9, a-z)
-    let ALPHA_TIME = (TIME_UPDATED+TIME_AFTERNOON).toString(36) // Convert to base 36 (0-9, a-z)
+    let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
+    let ALPHA_DAY = DAY_UPDATED.toString(36)
+    let ALPHA_YEAR = YEAR_UPDATED.toString(36)
+    let ALPHA_MINUTES = MINUTES_UPDATED.toString(36)
+    let ALPHA_TIME = (TIME_UPDATED+TIME_AFTERNOON).toString(36)
 
     let DATE_UPDATED = `${ALPHA_MONTH}${ALPHA_DAY}${ALPHA_YEAR}${ALPHA_MINUTES}${ALPHA_TIME}`
     let APP_VERSION = `BETA ${DATE_UPDATED}`
@@ -500,6 +500,7 @@ body {
         const buttonSettings = leaderboardDebounce ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
+    let TOPBAR_SIZE = 11
     let SETTINGS_ICON = 'https://media.discordapp.net/attachments/1205660691500105730/1215348125317992580/file.png?ex=65fc6c25&is=65e9f725&hm=2c61be850593bed1f81e04c4ba0a49a9d9af647f7b9ebc69fcd979eb89063e6e&=&format=webp&quality=lossless';
     let LIGHT_THEME_ICON = 'https://media.discordapp.net/attachments/1205660691500105730/1215353120599707688/file.png?ex=65fc70cc&is=65e9fbcc&hm=a0aaf2943817e47eb1a55b23b2d2ed8015cf96bba85dffa3b526170518af3dee&=&format=webp&quality=lossless';
     let LEADERBOARD_ICON = 'https://media.discordapp.net/attachments/1205660691500105730/1215352625164197939/file.png?ex=65fc7055&is=65e9fb55&hm=db2390e46423d91536a94fff1aa11a22f2387d60f3032155dd5ca756323f1d7f&=&format=webp&quality=lossless';
@@ -513,8 +514,8 @@ body {
     position: absolute;
     top: 40%;
     left: 0%;
-    width: 33px;
-    height: ${33 * amountOfButtons}px;
+    width: ${TOPBAR_SIZE}px;
+    height: ${TOPBAR_SIZE * amountOfButtons}px;
     flex-direction: column;
     background-color: rgb(0, 0, 0);
     color: #fff;
@@ -533,7 +534,7 @@ body {
         width: 100%;
         height: ${100 / amountOfButtons}%;
         background-color: rgba(0, 0, 0, 0);
-        border-radius: ${33/2}px;
+        border-radius: ${TOPBAR_SIZE/2}px;
         padding: 0px;
     `;
         const buttonIcon = document.createElement('img');
