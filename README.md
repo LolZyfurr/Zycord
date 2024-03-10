@@ -45,7 +45,7 @@ An experimental discord client modification.
             AVATAR_SHAPE: "10%",
         },
         THEME_COLORS: {
-            PRIMARY: 0.55,
+            PRIMARY: 0.75,
             SECONDARY: 0.5,
             TERTIARY: 0.45,
             QUATERNARY: 0.4,
