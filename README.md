@@ -94,7 +94,7 @@ This code is optional. If you include it in the `SETTINGS` constant, you can dis
 THEME_CONFIG: {
     RADIAL_STATUS_CSS: true,
     DISCORD_RECOLOR_CSS: true,
-    CUSTOM_THEME_COLOR: "#222222",
+    CUSTOM_THEME_COLOR: "#333333",
 },
 ```
 A description of the different theme settings and their functions.
