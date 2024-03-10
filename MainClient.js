@@ -1,7 +1,7 @@
 (async function() {
     let AUTHORIZATION = getToken();
     let LAST_AUTH = AUTHORIZATION;
-    let THEME_COLOR = null;
+    let THEME_COLOR = SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR !== false ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR) : (null)) : (null);
     
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 8
