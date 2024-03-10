@@ -66,6 +66,7 @@ An experimental discord client modification.
     });
 })();
 ```
+
 ---
 ## Configurations
 ### Status
@@ -101,6 +102,18 @@ A description of the different theme settings and their functions.
 - `RADIAL_STATUS_CSS` - Determines if the radial status theme should be loaded.
 - `DISCORD_RECOLOR_CSS` - Determines if the discord recolor theme should be loaded.
 - `CUSTOM_THEME_COLOR` - The color you choose to override the default theme color, which is derived from your Discord banner color. (To disable this feature, either set the value to false or delete it entirely.)
+### Interactive Menu
+You can use this code to customize the menu's position and size. It is not required. Add it to the `SETTINGS` constant if you want to use it.
+```js
+UI_CONFIG: {
+    INTERACTIVE_MENU_SIZE: 30,
+    INTERACTIVE_MENU_LOCATION: "right",
+},
+```
+A description of the different menu options and their functions.
+- `INTERACTIVE_MENU_SIZE` - Adjusts the interactive menu to the desired size. (Icons may not display properly if the size is too small.)
+- `INTERACTIVE_MENU_LOCATION` - Adjusts the location of the interactive menu on the screen. (Only left and right options are available now. Top and bottom options will be added later.)
+
 ---
 ## Disclaimer
 Discord is a trademark of Discord Inc. and is solely mentioned for the sake of descriptivity. Mention of it does not imply any affiliation with or endorsement by Discord Inc. Using Zycord violates Discord's terms of service
