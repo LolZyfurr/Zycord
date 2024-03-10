@@ -89,16 +89,18 @@ A list of each app configuration and what it does.
 - `FOCUSED_STATUS` - The status applied whenever the website is focused.
 - `AVATAR_SHAPE` - The roundness of the avatar shape.
 ### Theme
-If you don't want radial statuses or need more theme configurations, put this code in the `SETTINGS` constant otherwise it is automatically defaulted to true.
+This code is optional. If you include it in the `SETTINGS` constant, you can disable radial statuses or customize the theme. The default value is true.
 ```js
 THEME_CONFIG: {
     RADIAL_STATUS_CSS: true,
     DISCORD_RECOLOR_CSS: true,
+    CUSTOM_THEME_COLOR: "#222222",
 },
 ```
-A list of each theme configuration and what it does.
-- `RADIAL_STATUS_CSS` - Decides whether to load the radial status theme.
-- `DISCORD_RECOLOR_CSS` - Decides whether to load the discord recolor theme.
+A description of the different theme settings and their functions.
+- `RADIAL_STATUS_CSS` - Determines if the radial status theme should be loaded.
+- `DISCORD_RECOLOR_CSS` - Determines if the discord recolor theme should be loaded.
+- `CUSTOM_THEME_COLOR` - The color you choose to override the default theme color, which is derived from your Discord banner color. (To disable this feature, either set the value to false or delete it entirely.)
 ---
 ## Disclaimer
 Discord is a trademark of Discord Inc. and is solely mentioned for the sake of descriptivity. Mention of it does not imply any affiliation with or endorsement by Discord Inc. Using Zycord violates Discord's terms of service
