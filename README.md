@@ -9,7 +9,7 @@ An experimental discord client modification.
 // ==UserScript==
 // @name         Zycord
 // @namespace    http://tampermonkey.net/
-// @version      2024.02.28
+// @version      0.0.0
 // @description  An experimental discord client modification.
 // @author       Zy1ux
 // @match        *://*.discord.com/*
