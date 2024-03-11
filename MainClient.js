@@ -6,7 +6,7 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 11
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 10
+    let MINUTES_UPDATED = 15
     let TIME_AFTERNOON = 3
     let TIME_UPDATED = 10
 
@@ -352,6 +352,7 @@ body {
 </html>
 `;
             if (newTab) {
+                newTab.document = "";
                 newTab.document.write(html);
                 leaderboardDebounce = false;
                 leaderboardTodayButtonPress(button, true);
