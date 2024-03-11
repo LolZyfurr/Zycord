@@ -6,7 +6,7 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 11
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 44
+    let MINUTES_UPDATED = 50
     let TIME_AFTERNOON = 2
     let TIME_UPDATED = 10
 
@@ -255,7 +255,7 @@
                 }
             }
             interactionCounts.sort((a, b) => b.interactions - a.interactions);
-            interactionCounts = interactionCounts.slice(0, 10);
+            interactionCounts = interactionCounts.slice(0, 5);
             let html = `
 <html>
 <head>
