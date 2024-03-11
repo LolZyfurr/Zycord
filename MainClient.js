@@ -6,7 +6,7 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 11
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 22
+    let MINUTES_UPDATED = 33
     let TIME_AFTERNOON = 3
     let TIME_UPDATED = 10
 
@@ -352,8 +352,17 @@ body {
 </html>
 `;
             if (newTab) {
-                newTab.reload();
-                newTab.document.write(html);
+                newTab.document.location.reload();
+                let loadCount = 0;
+                newTab.window.addEventListener('load', function() {
+                    loadCount++;
+                    if (loadCount === 1) {
+                        newTab.document.write(html);
+                    }
+                    if (loadCount === 2) {
+                        newTab.window.close();
+                    }
+                });
                 leaderboardDebounce = false;
                 leaderboardTodayButtonPress(button, true);
                 leaderboardButtonPress(button, true);
