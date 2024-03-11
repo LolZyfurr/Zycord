@@ -6,8 +6,8 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 11
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 50
-    let TIME_AFTERNOON = 2
+    let MINUTES_UPDATED = 5
+    let TIME_AFTERNOON = 3
     let TIME_UPDATED = 10
 
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
@@ -259,6 +259,7 @@
             let html = `
 <html>
 <head>
+<title>Discord | ${today ? (today === true ? ("Today's ") : ("")) : ("")}Leaderboard</title>
 <style> 
 body { 
     background-color: rgb(90,90,100); 
