@@ -255,7 +255,7 @@
                 }
             }
             interactionCounts.sort((a, b) => b.interactions - a.interactions);
-            interactionCounts = interactionCounts.slice(0, 5);
+            interactionCounts = interactionCounts.slice(0, 10);
             let html = `
 <html>
 <head>
