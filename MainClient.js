@@ -6,7 +6,7 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 11
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 5
+    let MINUTES_UPDATED = 10
     let TIME_AFTERNOON = 3
     let TIME_UPDATED = 10
 
@@ -219,6 +219,28 @@
             leaderboardTodayButtonPress(button, true);
             leaderboardButtonPress(button, true);
             var newTab = window.open('about:blank', '_blank');
+            let loaderHtml = `
+<html>
+<head>
+<title>Discord | Loading...</title>
+<style> 
+body { 
+    background-color: rgb(90,90,100); 
+    margin: 0; 
+    padding: 0; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    height: 100vh;
+} 
+</style>
+</head>    
+<body>
+</body>
+</html>
+`;
+            newTab.document.write(loaderHtml);
             const channels = await fetchUserDMs(AUTHORIZATION);
             const fetchedSelfUser = await fetchUserSelf(AUTHORIZATION);
             const selfUser = fetchedSelfUser.id;
