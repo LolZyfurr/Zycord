@@ -6,8 +6,8 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 11
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 42
-    let TIME_AFTERNOON = 3
+    let MINUTES_UPDATED = 7
+    let TIME_AFTERNOON = 10
     let TIME_UPDATED = 10
 
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
@@ -277,7 +277,7 @@ body {
                 }
             }
             interactionCounts.sort((a, b) => b.interactions - a.interactions);
-            interactionCounts = interactionCounts.slice(0, 5);
+            interactionCounts = interactionCounts.slice(0, 6);
             let html = `
 <html>
 <head>
