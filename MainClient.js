@@ -6,7 +6,7 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 12
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 12
+    let MINUTES_UPDATED = 24
     let TIME_AFTERNOON = 10
     let TIME_UPDATED = 10
 
