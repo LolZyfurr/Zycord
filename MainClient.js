@@ -4,9 +4,9 @@
     let THEME_COLOR = SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR !== false ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR) : (null)) : (null);
     
     let MONTH_UPDATED = 3
-    let DAY_UPDATED = 11
+    let DAY_UPDATED = 12
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 7
+    let MINUTES_UPDATED = 1
     let TIME_AFTERNOON = 10
     let TIME_UPDATED = 10
 
@@ -266,14 +266,18 @@ body {
                     lastCheckedAuthor = msgAuthor;
                 }
                 if (interactions !== 0) {
+                    const interactionBlacklist = SETTINGS.APP_CONFIG ? (SETTINGS.APP_CONFIG.LEADERBOARD_BLACKLIST ? (SETTINGS.APP_CONFIG.LEADERBOARD_BLACKLIST) : ([0])) : ([0]);
                     const dmChannelAuthor = await fetchUser(AUTHORIZATION, dmChannelName);
                     dmChannelName = dmChannelAuthor.global_name;
+                    const dmChannelUserID = dmChannelAuthor.id
                     const profilePicUrl = await fetchUserAvatar(messageAuthor);
-                    interactionCounts.push({
-                        profilePic: profilePicUrl,
-                        name: dmChannelName,
-                        interactions: interactions
-                    });
+                    if (!interactionBlacklist.includes(dmChannelUserID)) {
+                        interactionCounts.push({
+                            profilePic: profilePicUrl,
+                            name: dmChannelName,
+                            interactions: interactions
+                        });
+                    }
                 }
             }
             interactionCounts.sort((a, b) => b.interactions - a.interactions);
