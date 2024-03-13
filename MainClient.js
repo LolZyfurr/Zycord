@@ -6,7 +6,7 @@
     let MONTH_UPDATED = 3
     let DAY_UPDATED = 12
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 8
+    let MINUTES_UPDATED = 12
     let TIME_AFTERNOON = 10
     let TIME_UPDATED = 10
 
@@ -269,9 +269,9 @@ body {
                     const interactionBlacklist = SETTINGS.APP_CONFIG ? (SETTINGS.APP_CONFIG.LEADERBOARD_BLACKLIST ? (SETTINGS.APP_CONFIG.LEADERBOARD_BLACKLIST) : ([0])) : ([0]);
                     const dmChannelAuthor = await fetchUser(AUTHORIZATION, dmChannelName);
                     dmChannelName = dmChannelAuthor.global_name;
-                    const dmChannelUserID = dmChannelAuthor.id
+                    const dmChannelUserID = dmChannelAuthor.id;
                     const profilePicUrl = await fetchUserAvatar(messageAuthor);
-                    console.log(interactionBlacklist);
+                    console.log(interactionBlacklist.includes(dmChannelUserID));
                     if (!interactionBlacklist.includes(dmChannelUserID)) {
                         interactionCounts.push({
                             profilePic: profilePicUrl,
