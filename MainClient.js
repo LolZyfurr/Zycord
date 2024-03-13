@@ -271,6 +271,7 @@ body {
                     dmChannelName = dmChannelAuthor.global_name;
                     const dmChannelUserID = dmChannelAuthor.id
                     const profilePicUrl = await fetchUserAvatar(messageAuthor);
+                    console.log(interactionBlacklist);
                     if (!interactionBlacklist.includes(dmChannelUserID)) {
                         interactionCounts.push({
                             profilePic: profilePicUrl,
