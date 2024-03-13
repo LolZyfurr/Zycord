@@ -266,12 +266,11 @@ body {
                     lastCheckedAuthor = msgAuthor;
                 }
                 if (interactions !== 0) {
-                    const interactionBlacklist = SETTINGS.APP_CONFIG ? (SETTINGS.APP_CONFIG.LEADERBOARD_BLACKLIST ? (SETTINGS.APP_CONFIG.LEADERBOARD_BLACKLIST) : ([0])) : ([0]);
+                    const interactionBlacklist = SETTINGS.APP_CONFIG ? (SETTINGS.APP_CONFIG.LEADERBOARD_BLACKLIST ? (SETTINGS.APP_CONFIG.LEADERBOARD_BLACKLIST) : (['0'])) : (['0']);
                     const dmChannelAuthor = await fetchUser(AUTHORIZATION, dmChannelName);
                     dmChannelName = dmChannelAuthor.global_name;
                     const dmChannelUserID = dmChannelAuthor.id;
                     const profilePicUrl = await fetchUserAvatar(messageAuthor);
-                    console.log(interactionBlacklist.includes(dmChannelUserID));
                     if (!interactionBlacklist.includes(dmChannelUserID)) {
                         interactionCounts.push({
                             profilePic: profilePicUrl,
