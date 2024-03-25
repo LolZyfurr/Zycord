@@ -4,11 +4,11 @@
     let THEME_COLOR = SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR !== false ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR) : (null)) : (null);
     
     let MONTH_UPDATED = 3
-    let DAY_UPDATED = 12
+    let DAY_UPDATED = 25
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 24
-    let TIME_AFTERNOON = 10
-    let TIME_UPDATED = 10
+    let MINUTES_UPDATED = 52
+    let TIME_AFTERNOON = 3
+    let TIME_UPDATED = 12
 
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
@@ -473,13 +473,15 @@ body {
     left: 25%;
     width: 50%;
     height: 50%;
-    background-color: rgb(0, 0, 0);
+    background-color: rgb(0, 0, 0, 0.25);
+    backdrop-filter: blur(10px);
     color: #fff;
     z-index: 9999;
     display: flex;
     border-radius: 10px;
     visibility: hidden;
     outline: solid;
+    outline-width: 2px;
 `;
     document.body.appendChild(settingsMenu);
     function isToday(timestamp) {
@@ -546,7 +548,8 @@ body {
     width: ${TOPBAR_SIZE}px;
     height: ${TOPBAR_SIZE * amountOfButtons}px;
     flex-direction: column;
-    background-color: rgb(0, 0, 0);
+    background-color: rgb(0, 0, 0, 0.25);
+    backdrop-filter: blur(10px);
     color: #fff;
     z-index: 9999;
     display: flex;
@@ -555,6 +558,7 @@ body {
     border-top-${SETTINGS.UI_CONFIG ? ((SETTINGS.UI_CONFIG.INTERACTIVE_MENU_LOCATION).toUpperCase() === ("right").toUpperCase() ? ("left") : ("right")) : ("right")}-radius: ${TOPBAR_SIZE/2}px;
     border-bottom-${SETTINGS.UI_CONFIG ? ((SETTINGS.UI_CONFIG.INTERACTIVE_MENU_LOCATION).toUpperCase() === ("right").toUpperCase() ? ("left") : ("right")) : ("right")}-radius: ${TOPBAR_SIZE/2}px;
     outline: solid;
+    outline-width: 2px;
 `;
     buttonNames.forEach((name, index) => {
         const button = document.createElement('button');
