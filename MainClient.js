@@ -7,9 +7,9 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 1
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 59
+    let MINUTES_UPDATED = 30
     let TIME_AFTERNOON = 0
-    let TIME_UPDATED = 9
+    let TIME_UPDATED = 10
 
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
@@ -154,7 +154,7 @@
     function ShadeWeb(e) {
         WatermarkWeb(`ZYCORD ${APP_VERSION}`, "#FFFFFF");
         var n = document.getElementById("shadeWebStyle"),
-            t = `\nbody::before {\ncontent: "";\nposition: fixed;\ntop: 0;\nleft: 0;\nwidth: 100%;\nheight: 100%;\nz-index: 999998;\npointer-events: none;\n${BLUR_WEB === true ? (`backdrop-filter: blur(${20/(1-e)}px);`) : (`background-color: rgba(0,0,0,${e});`)}\nbackground-image: url('');\nbackground-size: cover;\n}\n`;
+            t = `\nbody::before {\ncontent: "";\nposition: fixed;\ntop: 0;\nleft: 0;\nwidth: 100%;\nheight: 100%;\nz-index: 999998;\npointer-events: none;\n${BLUR_WEB === true ? (`backdrop-filter: blur(${ e === 0 ? (0) : (20/(1-e)) }px);`) : (`background-color: rgba(0,0,0,${e});`)}\nbackground-image: url('');\nbackground-size: cover;\n}\n`;
         if (n) n.innerHTML = t;
         else {
             var d = document.createElement("style");
