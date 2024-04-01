@@ -153,8 +153,8 @@
     }
     function ShadeWeb(tweenType, originalValue, goalValue, timeValue) {
         if (tweenType) {
-            const valueOriginalShade = BLUR_WEB ? (goalValue === 0 ? 0 : BLUR_WEB_AMOUNT / (1 - originalValue)) : originalValue;
-            const valueGoalShade = BLUR_WEB ? (goalValue === 0 ? 0 : BLUR_WEB_AMOUNT / (1 - goalValue)) : goalValue;
+            const valueOriginalShade = BLUR_WEB ? (BLUR_WEB_AMOUNT / (1 - originalValue)) : originalValue;
+            const valueGoalShade = BLUR_WEB ? (BLUR_WEB_AMOUNT / (1 - goalValue)) : goalValue;
             tween(valueOriginalShade, valueGoalShade, timeValue, T => ShadeWeb(false, false, T, false));
         } else {
             WatermarkWeb(`ZYCORD ${APP_VERSION}`, "#FFFFFF");
