@@ -8,7 +8,7 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 1
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 57
+    let MINUTES_UPDATED = 59
     let TIME_AFTERNOON = 0
     let TIME_UPDATED = 10
 
@@ -153,8 +153,8 @@
     }
     function ShadeWeb(tweenType, originalValue, goalValue, timeValue) {
         if (tweenType) {
-            let valueOriginalShade = BLUR_WEB === true ? (e === 0 ? (0) : (BLUR_WEB_AMOUNT/(1-originalValue))) : (originalValue)
-            let valueGoalShade = BLUR_WEB === true ? (e === 0 ? (0) : (BLUR_WEB_AMOUNT/(1-goalValue))) : (goalValue)
+            let valueOriginalShade = BLUR_WEB === true ? (goalValue === 0 ? (0) : (BLUR_WEB_AMOUNT/(1-originalValue))) : (originalValue)
+            let valueGoalShade = BLUR_WEB === true ? (goalValue === 0 ? (0) : (BLUR_WEB_AMOUNT/(1-goalValue))) : (goalValue)
             tween(valueOriginalShade, valueGoalShade, timeValue, (function(T) {
                 ShadeWeb(false, false, T, false);
             }))
