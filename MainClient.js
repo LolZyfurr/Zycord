@@ -4,7 +4,7 @@
     let THEME_COLOR = SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR !== false ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR) : (null)) : (null);
     let BLUR_WEB = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD === true ? (true) : (false)) : (false)) : (false)) : (false);
     let BLUR_WEB_AMOUNT = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT) : (10)) : (10)) : (10);
-    
+
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 1
     let YEAR_UPDATED = 24
@@ -92,22 +92,22 @@
 
     function uwuify(l) {
         const a = ["rawr x3", "OwO", "UwU", "o.O", "-.-", ">w<", "(⑅˘꒳˘)", "(ꈍᴗꈍ)", "(˘ω˘)", "(U ᵕ U❁)", "σωσ", "òωó", "(///ˬ///✿)", "(U ﹏ U)", "( ͡o ω ͡o )", "ʘwʘ", ":3", ":3", "XD", "nyaa~~", "mya", ">_<", "😳", "🥺", "😳😳😳", "rawr", "^^", "^^;;", "(ˆ ﻌ ˆ)♡", "^•ﻌ•^", "/(^•ω•^)", "(✿oωo)"],
-            o = [
-                ["small", "smol"],
-                ["cute", "kawaii~"],
-                ["fluff", "floof"],
-                ["love", "luv"],
-                ["stupid", "baka"],
-                ["what", "nani"],
-                ["meow", "nya~"],
-                ["hello", "hewwo"]
-            ];
+              o = [
+                  ["small", "smol"],
+                  ["cute", "kawaii~"],
+                  ["fluff", "floof"],
+                  ["love", "luv"],
+                  ["stupid", "baka"],
+                  ["what", "nani"],
+                  ["meow", "nya~"],
+                  ["hello", "hewwo"]
+              ];
         l = l.toLowerCase();
         for (const a of o) l = l.replaceAll(a[0], a[1]);
         return l = l.replaceAll(/([ \t\n])n/g, "$1ny").replaceAll(/[lr]/g, "w").replaceAll(/([ \t\n])([a-z])/g, (l, a, o) => Math.random() < .5 ? `${a}${o}-${o}` : `${a}${o}`).replaceAll(/([^.,!][.,!])([ \t\n])/g, (l, o, e) => {
             return `${o} ${r=a,r[Math.floor(Math.random()*r.length)]}${e}`;
             var r
-        })
+            })
     }
 
     function setStatus(t, e) {
@@ -153,8 +153,8 @@
     }
     function ShadeWeb(tweenType, originalValue, goalValue, timeValue) {
         if (tweenType) {
-            const valueOriginalShade = BLUR_WEB ? (BLUR_WEB_AMOUNT / (1 - originalValue)) : originalValue;
-            const valueGoalShade = BLUR_WEB ? (BLUR_WEB_AMOUNT / (1 - goalValue)) : goalValue;
+            const valueOriginalShade = BLUR_WEB ? (BLUR_WEB_AMOUNT * originalValue) : originalValue;
+            const valueGoalShade = BLUR_WEB ? (BLUR_WEB_AMOUNT * goalValue) : goalValue;
             tween(valueOriginalShade, valueGoalShade, timeValue, T => ShadeWeb(false, false, T, false));
         } else {
             WatermarkWeb(`ZYCORD ${APP_VERSION}`, "#FFFFFF");
@@ -244,19 +244,19 @@
 <html>
 <head>
 <title>Discord | Loading...</title>
-<style> 
-body { 
-    background-color: rgb(90,90,100); 
-    margin: 0; 
-    padding: 0; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
+<style>
+body {
+    background-color: rgb(90,90,100);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     height: 100vh;
-} 
+}
 </style>
-</head>    
+</head>
 <body>
 </body>
 </html>
@@ -307,58 +307,58 @@ body {
 <html>
 <head>
 <title>Discord | ${today ? (today === true ? ("Today's ") : ("")) : ("")}Leaderboard</title>
-<style> 
-body { 
-    background-color: rgb(90,90,100); 
-    margin: 0; 
-    padding: 0; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
+<style>
+body {
+    background-color: rgb(90,90,100);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     height: 100vh;
-} 
-.list_document_style_00 { 
-    background-color: rgb(70, 70, 80); 
-    border-radius: 10px; 
-    margin: 10px; 
-    padding: 10px; 
-    width: 90%; 
-    max-width: 600px; 
+}
+.list_document_style_00 {
+    background-color: rgb(70, 70, 80);
+    border-radius: 10px;
+    margin: 10px;
+    padding: 10px;
+    width: 90%;
+    max-width: 600px;
     display: -webkit-inline-box;
     overflow: hidden;
-} 
-.list_document_style_01 { 
-    width: 70px; 
-    height: 70px; 
-    border-radius: 50%; 
-    margin-right: 10px; 
-    float: left; 
-} 
-.list_document_style_02 { 
-    font-family: Arial, sans-serif; 
-    font-weight: bold; 
-    float: left; 
-    font-size: 64px; 
-    margin-right: 10px; 
-    color: rgb(240,240,250); 
-} 
-.list_document_style_03 { 
-    font-family: Arial, sans-serif; 
-    font-weight: bold; 
-    font-size: 32px; 
+}
+.list_document_style_01 {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin-right: 10px;
+    float: left;
+}
+.list_document_style_02 {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    float: left;
+    font-size: 64px;
+    margin-right: 10px;
+    color: rgb(240,240,250);
+}
+.list_document_style_03 {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 32px;
     color: rgb(240,240,250);
     overflow: hidden;
     position: relative;
     text-overflow: ellipsis;
-} 
-.list_document_style_04 { 
-    font-family: Arial, sans-serif; 
-    font-size: 32px; 
-    color: rgb(165,165,175); 
+}
+.list_document_style_04 {
+    font-family: Arial, sans-serif;
+    font-size: 32px;
+    color: rgb(165,165,175);
 }
 </style>
-</head>    
+</head>
 <body>
 `;
             for (let i = 0; i < interactionCounts.length; i++) {
@@ -390,9 +390,9 @@ body {
     function ApplyTheme() {
         WatermarkWeb(`ZYCORD ${APP_VERSION}`, "#FFFFFF");
         var t = document.createElement("style");
-        t.type = "text/css", t.innerHTML = "div.banner__6d414{background-color: rgba(0,0,0,0);}div.peopleListItem_d14722{background-color:rgb(var(--backgroundsecondaryalt));border-radius:10px;padding-left:10px;padding-right:10px;}div.interactive__776ee.interactive_a868bc{background-color:rgb(var(--backgroundsecondaryalt));border-radius:10px;}div.wrapper_edb6e0{outline-width:8px;outline-style:solid;outline-color:rgba(var(--backgroundsecondaryalt),1)}img.executedCommandAvatar__939bc,img.replyAvatar_cea07c,button.shinyButton_fc8363.giftButton_ff61dc,div.repliedMessage_e2bf4a::before,span.latin24CompactTimeStamp__21614.timestamp_cdbd93,.avatarDecoration_ae35e3,.avatarDecoration__14b3c{display:none}img.avatar__08316{top:-20px;border-radius:var(--rs-avatar-shape)}div.wrapper_edb6e0,img.avatar__08316{background-color:rgb(var(--backgroundsecondaryalt))}div.message__80c10.cozyMessage__64ce7{margin-left:70px;background-color:rgba(var(--backgroundsecondary),1);border-radius:10px;margin-right:15px}img.avatar__08316,h3.header__39b23,div.markup_a7e664.messageContent__21e69,div.repliedMessage_e2bf4a,div.container_dbadf5{left:-55px}div.cozyMessage__64ce7::before{border-bottom-left-radius:10px;border-top-left-radius:10px;width:75%;background:linear-gradient(90deg,rgba(var(--mentioncolor),0.5) 0,rgba(0,0,0,0) 100%) !important}div.message__80c10.cozyMessage__64ce7{margin-top:5px}div.message__80c10.cozyMessage__64ce7.groupStart__56db5{margin-top:24px}div.message__80c10.cozyMessage__64ce7.groupStart__56db5,div.message__80c10.cozyMessage__64ce7.groupStart__56db5::before{border-top-left-radius:5px}", document.getElementsByTagName("head")[0].appendChild(t); 
+        t.type = "text/css", t.innerHTML = "div.banner__6d414{background-color: rgba(0,0,0,0);}div.peopleListItem_d14722{background-color:rgb(var(--backgroundsecondaryalt));border-radius:10px;padding-left:10px;padding-right:10px;}div.interactive__776ee.interactive_a868bc{background-color:rgb(var(--backgroundsecondaryalt));border-radius:10px;}div.wrapper_edb6e0{outline-width:8px;outline-style:solid;outline-color:rgba(var(--backgroundsecondaryalt),1)}img.executedCommandAvatar__939bc,img.replyAvatar_cea07c,button.shinyButton_fc8363.giftButton_ff61dc,div.repliedMessage_e2bf4a::before,span.latin24CompactTimeStamp__21614.timestamp_cdbd93,.avatarDecoration_ae35e3,.avatarDecoration__14b3c{display:none}img.avatar__08316{top:-20px;border-radius:var(--rs-avatar-shape)}div.wrapper_edb6e0,img.avatar__08316{background-color:rgb(var(--backgroundsecondaryalt))}div.message__80c10.cozyMessage__64ce7{margin-left:70px;background-color:rgba(var(--backgroundsecondary),1);border-radius:10px;margin-right:15px}img.avatar__08316,h3.header__39b23,div.markup_a7e664.messageContent__21e69,div.repliedMessage_e2bf4a,div.container_dbadf5{left:-55px}div.cozyMessage__64ce7::before{border-bottom-left-radius:10px;border-top-left-radius:10px;width:75%;background:linear-gradient(90deg,rgba(var(--mentioncolor),0.5) 0,rgba(0,0,0,0) 100%) !important}div.message__80c10.cozyMessage__64ce7{margin-top:5px}div.message__80c10.cozyMessage__64ce7.groupStart__56db5{margin-top:24px}div.message__80c10.cozyMessage__64ce7.groupStart__56db5,div.message__80c10.cozyMessage__64ce7.groupStart__56db5::before{border-top-left-radius:5px}", document.getElementsByTagName("head")[0].appendChild(t);
         if (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.DISCORD_RECOLOR_CSS === true ? (true) : (false)) : (true)) {
-            loadCSS("https://mwittrien.github.io/BetterDiscordAddons/Themes/DiscordRecolor/DiscordRecolor.css");   
+            loadCSS("https://mwittrien.github.io/BetterDiscordAddons/Themes/DiscordRecolor/DiscordRecolor.css");
         }
         if (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.RADIAL_STATUS_CSS === true ? (true) : (false)) : (true)) {
             loadCSS("https://discordstyles.github.io/RadialStatus/dist/RadialStatus.css");
@@ -523,12 +523,12 @@ body {
 
     function toggleAutoStatus(button, startup) {
         if (!startup) {
-            VALUE_AUTO_UPDATE_STATUS = !VALUE_AUTO_UPDATE_STATUS;   
+            VALUE_AUTO_UPDATE_STATUS = !VALUE_AUTO_UPDATE_STATUS;
         }
         const buttonSettings = VALUE_AUTO_UPDATE_STATUS ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
-    
+
     function toggleLightTheme(button, startup) {
         if (!startup) {
             VALUE_LIGHT_THEME = !VALUE_LIGHT_THEME;
@@ -536,7 +536,7 @@ body {
         const buttonSettings = VALUE_LIGHT_THEME ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
-    
+
     function leaderboardButtonPress(button, startup) {
         if (!startup) {
             fetchLeaderboard(button, false);
@@ -544,7 +544,7 @@ body {
         const buttonSettings = leaderboardDebounce ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
-    
+
     function leaderboardTodayButtonPress(button, startup) {
         if (!startup) {
             fetchLeaderboard(button, true);
