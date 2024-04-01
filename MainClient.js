@@ -3,11 +3,12 @@
     let LAST_AUTH = AUTHORIZATION;
     let THEME_COLOR = SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR !== false ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR) : (null)) : (null);
     let BLUR_WEB = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD === true ? (true) : (false)) : (false)) : (false)) : (false);
+    let BLUR_WEB_AMOUNT = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT) : (10)) : (10)) : (10);
     
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 1
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 30
+    let MINUTES_UPDATED = 57
     let TIME_AFTERNOON = 0
     let TIME_UPDATED = 10
 
@@ -30,7 +31,7 @@
     let updateStatus = "";
     let timeoutId = null;
     let leaderboardDebounce = false;
-    ShadeWeb(SETTINGS.APP_CONFIG.INITIAL_OPACITY);
+    ShadeWeb(false, false, SETTINGS.APP_CONFIG.INITIAL_OPACITY, false);
     const DELAY = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (3 / 5)) * 1000);
     const STATUS_API_URL = "https://discord.com/api/v9/users/@me/settings-proto/1";
@@ -150,15 +151,22 @@
             n && (console.log(n), THEME_COLOR = n, changeElementColor(THEME_COLOR))
         }) : changeElementColor(THEME_COLOR)
     }
-
-    function ShadeWeb(e) {
-        WatermarkWeb(`ZYCORD ${APP_VERSION}`, "#FFFFFF");
-        var n = document.getElementById("shadeWebStyle"),
-            t = `\nbody::before {\ncontent: "";\nposition: fixed;\ntop: 0;\nleft: 0;\nwidth: 100%;\nheight: 100%;\nz-index: 999998;\npointer-events: none;\n${BLUR_WEB === true ? (`backdrop-filter: blur(${ e === 0 ? (0) : (20/(1-e)) }px);`) : (`background-color: rgba(0,0,0,${e});`)}\nbackground-image: url('');\nbackground-size: cover;\n}\n`;
-        if (n) n.innerHTML = t;
-        else {
-            var d = document.createElement("style");
-            d.type = "text/css", d.id = "shadeWebStyle", d.innerHTML = t, document.getElementsByTagName("head")[0].appendChild(d)
+    function ShadeWeb(tweenType, originalValue, goalValue, timeValue) {
+        if (tweenType) {
+            let valueOriginalShade = BLUR_WEB === true ? (e === 0 ? (0) : (BLUR_WEB_AMOUNT/(1-originalValue))) : (originalValue)
+            let valueGoalShade = BLUR_WEB === true ? (e === 0 ? (0) : (BLUR_WEB_AMOUNT/(1-goalValue))) : (goalValue)
+            tween(valueOriginalShade, valueGoalShade, timeValue, (function(T) {
+                ShadeWeb(false, false, T, false);
+            }))
+        } else {
+            WatermarkWeb(`ZYCORD ${APP_VERSION}`, "#FFFFFF");
+            var n = document.getElementById("shadeWebStyle"),
+            t = `\nbody::before {\ncontent: "";\nposition: fixed;\ntop: 0;\nleft: 0;\nwidth: 100%;\nheight: 100%;\nz-index: 999998;\npointer-events: none;\n${BLUR_WEB === true ? (`backdrop-filter: blur(${goalValue}px);`) : (`background-color: rgba(0,0,0,${goalValue});`)}\nbackground-image: url('');\nbackground-size: cover;\n}\n`;
+            if (n) n.innerHTML = t;
+            else {
+                var d = document.createElement("style");
+                d.type = "text/css", d.id = "shadeWebStyle", d.innerHTML = t, document.getElementsByTagName("head")[0].appendChild(d)
+            }
         }
     }
     async function fetchChannelMessages(t, s, a, i) {
@@ -591,21 +599,18 @@ body {
     });
     document.body.appendChild(topBar);
     window.addEventListener("blur", (function() {
-        tween(SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME, (function(T) {
-            ShadeWeb(T)
-        })), updateUserStatus(SETTINGS.APP_CONFIG.UNFOCUSED_STATUS), timeoutId = setTimeout((function() {
-            updateUserStatus(SETTINGS.APP_CONFIG.AWAY_STATUS)
-        }), 1e3 * SETTINGS.APP_CONFIG.AWAY_TRIGGER_TIME)
+        ShadeWeb(true, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME);
+        updateUserStatus(SETTINGS.APP_CONFIG.UNFOCUSED_STATUS), timeoutId = setTimeout((function() {
+            updateUserStatus(SETTINGS.APP_CONFIG.AWAY_STATUS);
+        }), 1e3 * SETTINGS.APP_CONFIG.AWAY_TRIGGER_TIME);
     }));
     window.addEventListener("focus", (function() {
-        null !== timeoutId && (clearTimeout(timeoutId), timeoutId = null), tween(SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME, (function(I) {
-            ShadeWeb(I)
-        })), updateUserStatus(SETTINGS.APP_CONFIG.FOCUSED_STATUS)
+        null !== timeoutId && (clearTimeout(timeoutId), timeoutId = null);
+        ShadeWeb(true, SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME);
+        updateUserStatus(SETTINGS.APP_CONFIG.FOCUSED_STATUS);
     }));
     SETTINGS.APP_CONFIG.AUTO_UPDATE_THEME && fetchThemeColor(AUTHORIZATION);
     autoUpdateAvatar();
     await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (2 / 5)) * 1000);
-    tween(SETTINGS.APP_CONFIG.INITIAL_OPACITY, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME * SETTINGS.APP_CONFIG.WINDOW_OPACITY_MULTIPLIER, (function(e) {
-        ShadeWeb(e)
-    }));
+    ShadeWeb(true, SETTINGS.APP_CONFIG.INITIAL_OPACITY, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME * SETTINGS.APP_CONFIG.WINDOW_OPACITY_MULTIPLIER);
 })();
