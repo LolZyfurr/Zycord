@@ -153,19 +153,31 @@
     }
     function ShadeWeb(tweenType, originalValue, goalValue, timeValue) {
         if (tweenType) {
-            let valueOriginalShade = BLUR_WEB === true ? (goalValue === 0 ? (0) : (BLUR_WEB_AMOUNT/(1-originalValue))) : (originalValue)
-            let valueGoalShade = BLUR_WEB === true ? (goalValue === 0 ? (0) : (BLUR_WEB_AMOUNT/(1-goalValue))) : (goalValue)
-            tween(valueOriginalShade, valueGoalShade, timeValue, (function(T) {
-                ShadeWeb(false, false, T, false);
-            }))
+            const valueOriginalShade = BLUR_WEB ? (goalValue === 0 ? 0 : BLUR_WEB_AMOUNT / (1 - originalValue)) : originalValue;
+            const valueGoalShade = BLUR_WEB ? (goalValue === 0 ? 0 : BLUR_WEB_AMOUNT / (1 - goalValue)) : goalValue;
+            tween(valueOriginalShade, valueGoalShade, timeValue, T => ShadeWeb(false, false, T, false));
         } else {
             WatermarkWeb(`ZYCORD ${APP_VERSION}`, "#FFFFFF");
-            var n = document.getElementById("shadeWebStyle"),
-            t = `\nbody::before {\ncontent: "";\nposition: fixed;\ntop: 0;\nleft: 0;\nwidth: 100%;\nheight: 100%;\nz-index: 999998;\npointer-events: none;\n${BLUR_WEB === true ? (`backdrop-filter: blur(${goalValue}px);`) : (`background-color: rgba(0,0,0,${goalValue});`)}\nbackground-image: url('');\nbackground-size: cover;\n}\n`;
-            if (n) n.innerHTML = t;
-            else {
-                var d = document.createElement("style");
-                d.type = "text/css", d.id = "shadeWebStyle", d.innerHTML = t, document.getElementsByTagName("head")[0].appendChild(d)
+            const styleElement = document.getElementById("shadeWebStyle") || document.createElement("style");
+            styleElement.type = "text/css";
+            styleElement.id = "shadeWebStyle";
+            styleElement.innerHTML = `
+                body::before {
+                    content: "";
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 999998;
+                    pointer-events: none;
+                    ${BLUR_WEB ? `backdrop-filter: blur(${goalValue}px);` : `background-color: rgba(0,0,0,${goalValue});`}
+                    background-image: url('');
+                    background-size: cover;
+                }
+            `;
+            if (!document.getElementById("shadeWebStyle")) {
+                document.getElementsByTagName("head")[0].appendChild(styleElement);
             }
         }
     }
