@@ -8,9 +8,9 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 1
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 59
+    let MINUTES_UPDATED = 22
     let TIME_AFTERNOON = 0
-    let TIME_UPDATED = 10
+    let TIME_UPDATED = 11
 
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
@@ -31,7 +31,7 @@
     let updateStatus = "";
     let timeoutId = null;
     let leaderboardDebounce = false;
-    ShadeWeb(false, false, SETTINGS.APP_CONFIG.INITIAL_OPACITY, false);
+    ShadeWeb(false, false, BLUR_WEB ? (BLUR_WEB_AMOUNT / (1 - SETTINGS.APP_CONFIG.INITIAL_OPACITY)) : (SETTINGS.APP_CONFIG.INITIAL_OPACITY), false);
     const DELAY = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (3 / 5)) * 1000);
     const STATUS_API_URL = "https://discord.com/api/v9/users/@me/settings-proto/1";
