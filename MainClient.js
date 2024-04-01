@@ -6,7 +6,7 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 1
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 41
+    let MINUTES_UPDATED = 46
     let TIME_AFTERNOON = 0
     let TIME_UPDATED = 9
 
@@ -151,10 +151,10 @@
     }
 
     function ShadeWeb(e) {
-        const blurWebInsteadCheck = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.USE_BLUR_INSTEAD ? (SETTINGS.USE_BLUR_INSTEAD === true ? (true) : (false)) : (false)) : (false)) : (false);
+        const blurWebInsteadCheck = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD === true ? (true) : (false)) : (false)) : (false)) : (false);
         WatermarkWeb(`ZYCORD ${APP_VERSION}`, "#FFFFFF");
         var n = document.getElementById("shadeWebStyle"),
-            t = `\nbody::before {\ncontent: "";\nposition: fixed;\ntop: 0;\nleft: 0;\nwidth: 100%;\nheight: 100%;\nz-index: 999998;\npointer-events: none;\n${blurWebInsteadCheck ? (`backdrop-filter: blur(${100/e}px);`) : (`background-color: rgba(0,0,0,${e});`)}\nbackground-image: url('');\nbackground-size: cover;\n}\n`;
+            t = `\nbody::before {\ncontent: "";\nposition: fixed;\ntop: 0;\nleft: 0;\nwidth: 100%;\nheight: 100%;\nz-index: 999998;\npointer-events: none;\n${blurWebInsteadCheck === true ? (`backdrop-filter: blur(${100/e}px);`) : (`background-color: rgba(0,0,0,${e});`)}\nbackground-image: url('');\nbackground-size: cover;\n}\n`;
         if (n) n.innerHTML = t;
         else {
             var d = document.createElement("style");
