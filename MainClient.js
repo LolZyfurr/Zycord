@@ -8,7 +8,7 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 2
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 5
+    let MINUTES_UPDATED = 10
     let TIME_AFTERNOON = 0
     let TIME_UPDATED = 7
 
@@ -259,14 +259,13 @@
         return "https://cdn.discordapp.com/avatars/" + a.id + "/" + a.avatar + ".png?size=4096"
     }
     async function fetchLeaderboard(button, today) {
+        if (leaderboardDiv.style.visibility === "visible") {
+            leaderboardDiv.style.visibility = "hidden";
+        } else {
+            leaderboardDiv.style.visibility = "visible";
+        }
         if (!leaderboardDebounce) {
-            if (leaderboardDiv.style.visibility === "visible") {
-                leaderboardDiv.style.visibility = "hidden";
-            } else {
-                leaderboardDiv.style.visibility = "visible";
-            }
             leaderboardDebounce = true;
-
             const channels = await fetchUserDMs(AUTHORIZATION);
             const fetchedSelfUser = await fetchUserSelf(AUTHORIZATION);
             const selfUser = fetchedSelfUser.id;
@@ -381,16 +380,9 @@ body {
 </body>
 </html>
 `;
-
-            // Append the leaderboard HTML to the new div
             leaderboardDiv.innerHTML = html;
-
-            // Append the new div to the body
             document.body.appendChild(leaderboardDiv);
-
-            // Make the new div visible
             leaderboardDiv.style.visibility = 'visible';
-
             leaderboardDebounce = false;
         }
     }
