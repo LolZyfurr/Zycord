@@ -6,11 +6,11 @@
     let BLUR_WEB_AMOUNT = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT) : (10)) : (10)) : (10);
 
     let MONTH_UPDATED = 4
-    let DAY_UPDATED = 1
+    let DAY_UPDATED = 2
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 9
-    let TIME_AFTERNOON = 9
-    let TIME_UPDATED = 12
+    let MINUTES_UPDATED = 5
+    let TIME_AFTERNOON = 0
+    let TIME_UPDATED = 7
 
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
@@ -44,6 +44,30 @@
     if (!(SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.RADIAL_STATUS_CSS === true ? (true) : (false)) : (true))) {
         avatarShapeConfig = '50%';
     }
+
+    // Create a new div for the leaderboard
+    const leaderboardDiv = document.createElement('div');
+    leaderboardDiv.style.cssText = `
+        justify-content: center;
+        position: fixed;
+        top: 12.5%;
+        left: 12.5%;
+        width: 75%;
+        height: 75%;
+        background-color: rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(10px);
+        color: #fff;
+        z-index: 9999;
+        display: flex;
+        border-radius: 10px;
+        visibility: hidden;
+        outline: solid;
+        outline-width: 2px;
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    `;
 
     function unicodeToString(n) {
         return String.fromCharCode(n);
@@ -236,33 +260,12 @@
     }
     async function fetchLeaderboard(button, today) {
         if (!leaderboardDebounce) {
+            if (leaderboardDiv.style.visibility === "visible") {
+                leaderboardDiv.style.visibility = "hidden";
+            } else {
+                leaderboardDiv.style.visibility = "visible";
+            }
             leaderboardDebounce = true;
-            leaderboardTodayButtonPress(button, true);
-            leaderboardButtonPress(button, true);
-
-            // Create a new div for the leaderboard
-            const leaderboardDiv = document.createElement('div');
-            leaderboardDiv.style.cssText = `
-                justify-content: center;
-                position: fixed;
-                top: 12.5%;
-                left: 12.5%;
-                width: 75%;
-                height: 75%;
-                background-color: rgba(0, 0, 0, 0.25);
-                backdrop-filter: blur(10px);
-                color: #fff;
-                z-index: 9999;
-                display: flex;
-                border-radius: 10px;
-                visibility: hidden;
-                outline: solid;
-                outline-width: 2px;
-                overflow: auto;  // Add scrolling if the content is too large
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            `;
 
             const channels = await fetchUserDMs(AUTHORIZATION);
             const fetchedSelfUser = await fetchUserSelf(AUTHORIZATION);
@@ -389,8 +392,6 @@ body {
             leaderboardDiv.style.visibility = 'visible';
 
             leaderboardDebounce = false;
-            leaderboardTodayButtonPress(button, true);
-            leaderboardButtonPress(button, true);
         }
     }
 
