@@ -553,11 +553,11 @@ body {
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
     let TOPBAR_SIZE = SETTINGS.UI_CONFIG ? (SETTINGS.UI_CONFIG.INTERACTIVE_MENU_SIZE ? (SETTINGS.UI_CONFIG.INTERACTIVE_MENU_SIZE) : (33)) : (33)
-    let SETTINGS_ICON = 'https://media.discordapp.net/attachments/1205660691500105730/1215348125317992580/file.png?ex=65fc6c25&is=65e9f725&hm=2c61be850593bed1f81e04c4ba0a49a9d9af647f7b9ebc69fcd979eb89063e6e&=&format=webp&quality=lossless';
-    let LIGHT_THEME_ICON = 'https://media.discordapp.net/attachments/1205660691500105730/1215353120599707688/file.png?ex=65fc70cc&is=65e9fbcc&hm=a0aaf2943817e47eb1a55b23b2d2ed8015cf96bba85dffa3b526170518af3dee&=&format=webp&quality=lossless';
-    let LEADERBOARD_ICON = 'https://media.discordapp.net/attachments/1205660691500105730/1215352625164197939/file.png?ex=65fc7055&is=65e9fb55&hm=db2390e46423d91536a94fff1aa11a22f2387d60f3032155dd5ca756323f1d7f&=&format=webp&quality=lossless';
-    let AUTO_STATUS_ICON = 'https://media.discordapp.net/attachments/1205660691500105730/1215353611198926908/file.png?ex=65fc7141&is=65e9fc41&hm=cdce2d415bbf6812b2ec16ecbcb84f21c3d2111a6a5a61252c8ce68f3e2c1f94&=&format=webp&quality=lossless';
-    let LEADERBOARD_TODAY_ICON = 'https://media.discordapp.net/attachments/1205660691500105730/1215354284913197197/file.png?ex=65fc71e1&is=65e9fce1&hm=ece02af22008fee40d730a5c6dff3d8bbcfe24e0cb7432bde732ce714893586f&=&format=webp&quality=lossless';
+    let SETTINGS_ICON = 'https://github.com/Zy1ux/Zycord/blob/main/Images/2888-settings.png?raw=true';
+    let LIGHT_THEME_ICON = 'https://github.com/Zy1ux/Zycord/blob/main/Images/8410-appearance-mobile-white.png?raw=true';
+    let LEADERBOARD_ICON = 'https://github.com/Zy1ux/Zycord/blob/main/Images/5971-forum.png?raw=true';
+    let AUTO_STATUS_ICON = 'https://github.com/Zy1ux/Zycord/blob/main/Images/1731-discord-profile-activity-white.png?raw=true';
+    let LEADERBOARD_TODAY_ICON = 'https://github.com/Zy1ux/Zycord/blob/main/Images/8312-active-threads.png?raw=true';
     const buttonNames = [SETTINGS_ICON, LIGHT_THEME_ICON, LEADERBOARD_ICON, AUTO_STATUS_ICON, LEADERBOARD_TODAY_ICON];
     const amountOfButtons = buttonNames.length;
     const buttonActions = [toggleSettingsMenu, toggleLightTheme, leaderboardButtonPress, toggleAutoStatus, leaderboardTodayButtonPress];
