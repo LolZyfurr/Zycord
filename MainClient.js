@@ -8,7 +8,7 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 1
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 38
+    let MINUTES_UPDATED = 57
     let TIME_AFTERNOON = 8
     let TIME_UPDATED = 12
 
@@ -337,7 +337,27 @@ body {
     font-family: Arial, sans-serif;
     font-weight: bold;
     float: left;
-    font-size:
+    font-size: 64px;
+    margin-right: 10px;
+    color: rgb(240,240,250);
+}
+.list_document_style_03 {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 32px;
+    color: rgb(240,240,250);
+    overflow: hidden;
+    position: relative;
+    text-overflow: ellipsis;
+}
+.list_document_style_04 {
+    font-family: Arial, sans-serif;
+    font-size: 32px;
+    color: rgb(165,165,175);
+}
+</style>
+</head>
+<body>
 `;
             for (let i = 0; i < interactionCounts.length; i++) {
                 html += `
