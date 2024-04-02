@@ -142,7 +142,7 @@
 
     function WatermarkWeb(n, e) {
         var t = document.createElement("style");
-        t.type = "text/css", t.innerHTML = `\nbody::after {\n  content: "${n}";\n  position: fixed;\n  bottom: 10px;\n  right: 10px;\n  font-size: 25px;\n  font-weight: 900;\n  opacity: 1;\n}\n  z-index: 999999;\n`, document.getElementsByTagName("head")[0].appendChild(t)
+        t.type = "text/css", t.innerHTML = `\nbody::after {\n color: ${e};\n content: "${n}";\n  position: fixed;\n  bottom: 10px;\n  right: 10px;\n  font-size: 25px;\n  font-weight: 900;\n  opacity: 1;\n}\n  z-index: 999999;\n`, document.getElementsByTagName("head")[0].appendChild(t)
     }
 
     function fetchThemeColor(e) {
