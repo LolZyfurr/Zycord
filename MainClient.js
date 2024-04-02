@@ -4,14 +4,13 @@
     let THEME_COLOR = SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR !== false ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR) : (null)) : (null);
     let BLUR_WEB = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD === true ? (true) : (false)) : (false)) : (false)) : (false);
     let BLUR_WEB_AMOUNT = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT) : (10)) : (10)) : (10);
-    let CUSTOM_THEME_CSS = false
 
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 2
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 5
+    let MINUTES_UPDATED = 40
     let TIME_AFTERNOON = 0
-    let TIME_UPDATED = 8
+    let TIME_UPDATED = 12
 
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
@@ -410,7 +409,7 @@ body {
 
     function ApplyTheme() {
         WatermarkWeb(`ZYCORD ${APP_VERSION}`, "#FFFFFF");
-        if (CUSTOM_THEME_CSS) {
+        if (!CUSTOM_THEME_CSS) {
             var t = document.createElement("style");
             t.type = "text/css", t.innerHTML = "div.banner__6d414{background-color: rgba(0,0,0,0);}div.peopleListItem_d14722{background-color:rgb(var(--backgroundsecondaryalt));border-radius:10px;padding-left:10px;padding-right:10px;}div.interactive__776ee.interactive_a868bc{background-color:rgb(var(--backgroundsecondaryalt));border-radius:10px;}div.wrapper_edb6e0{outline-width:8px;outline-style:solid;outline-color:rgba(var(--backgroundsecondaryalt),1)}img.executedCommandAvatar__939bc,img.replyAvatar_cea07c,button.shinyButton_fc8363.giftButton_ff61dc,div.repliedMessage_e2bf4a::before,span.latin24CompactTimeStamp__21614.timestamp_cdbd93,.avatarDecoration_ae35e3,.avatarDecoration__14b3c{display:none}img.avatar__08316{top:-20px;border-radius:var(--rs-avatar-shape)}div.wrapper_edb6e0,img.avatar__08316{background-color:rgb(var(--backgroundsecondaryalt))}div.message__80c10.cozyMessage__64ce7{margin-left:70px;background-color:rgba(var(--backgroundsecondary),1);border-radius:10px;margin-right:15px}img.avatar__08316,h3.header__39b23,div.markup_a7e664.messageContent__21e69,div.repliedMessage_e2bf4a,div.container_dbadf5{left:-55px}div.cozyMessage__64ce7::before{border-bottom-left-radius:10px;border-top-left-radius:10px;width:75%;background:linear-gradient(90deg,rgba(var(--mentioncolor),0.5) 0,rgba(0,0,0,0) 100%) !important}div.message__80c10.cozyMessage__64ce7{margin-top:5px}div.message__80c10.cozyMessage__64ce7.groupStart__56db5{margin-top:24px}div.message__80c10.cozyMessage__64ce7.groupStart__56db5,div.message__80c10.cozyMessage__64ce7.groupStart__56db5::before{border-top-left-radius:5px}", document.getElementsByTagName("head")[0].appendChild(t);
         }
