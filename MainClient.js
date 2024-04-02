@@ -243,11 +243,12 @@
             // Create a new div for the leaderboard
             const leaderboardDiv = document.createElement('div');
             leaderboardDiv.style.cssText = `
+                justify-content: center;
                 position: fixed;
-                top: 25%;
-                left: 25%;
-                width: 50%;
-                height: 50%;
+                top: 12.5%;
+                left: 12.5%;
+                width: 75%;
+                height: 75%;
                 background-color: rgba(0, 0, 0, 0.25);
                 backdrop-filter: blur(10px);
                 color: #fff;
@@ -258,6 +259,9 @@
                 outline: solid;
                 outline-width: 2px;
                 overflow: auto;  // Add scrolling if the content is too large
+                display: flex;
+                flex-direction: column;
+                align-items: center;
             `;
 
             const channels = await fetchUserDMs(AUTHORIZATION);
