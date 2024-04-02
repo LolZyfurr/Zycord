@@ -239,29 +239,27 @@
             leaderboardDebounce = true;
             leaderboardTodayButtonPress(button, true);
             leaderboardButtonPress(button, true);
-            let newTab = window.open('about:blank', '_blank');
-            let loaderHtml = `
-<html>
-<head>
-<title>Discord | Loading...</title>
-<style>
-body {
-    background-color: rgb(90,90,100);
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-}
-</style>
-</head>
-<body>
-</body>
-</html>
-`;
-            newTab.document.write(loaderHtml);
+
+            // Create a new div for the leaderboard
+            const leaderboardDiv = document.createElement('div');
+            leaderboardDiv.style.cssText = `
+                position: fixed;
+                top: 25%;
+                left: 25%;
+                width: 50%;
+                height: 50%;
+                background-color: rgba(0, 0, 0, 0.25);
+                backdrop-filter: blur(10px);
+                color: #fff;
+                z-index: 9999;
+                display: flex;
+                border-radius: 10px;
+                visibility: hidden;
+                outline: solid;
+                outline-width: 2px;
+                overflow: auto;  // Add scrolling if the content is too large
+            `;
+
             const channels = await fetchUserDMs(AUTHORIZATION);
             const fetchedSelfUser = await fetchUserSelf(AUTHORIZATION);
             const selfUser = fetchedSelfUser.id;
@@ -339,27 +337,7 @@ body {
     font-family: Arial, sans-serif;
     font-weight: bold;
     float: left;
-    font-size: 64px;
-    margin-right: 10px;
-    color: rgb(240,240,250);
-}
-.list_document_style_03 {
-    font-family: Arial, sans-serif;
-    font-weight: bold;
-    font-size: 32px;
-    color: rgb(240,240,250);
-    overflow: hidden;
-    position: relative;
-    text-overflow: ellipsis;
-}
-.list_document_style_04 {
-    font-family: Arial, sans-serif;
-    font-size: 32px;
-    color: rgb(165,165,175);
-}
-</style>
-</head>
-<body>
+    font-size:
 `;
             for (let i = 0; i < interactionCounts.length; i++) {
                 html += `
@@ -376,14 +354,19 @@ body {
 </body>
 </html>
 `;
-            if (newTab) {
-                newTab.document.body.innerHTML = "";
-                newTab.document.head.innerHTML = "";
-                newTab.document.write(html);
-                leaderboardDebounce = false;
-                leaderboardTodayButtonPress(button, true);
-                leaderboardButtonPress(button, true);
-            }
+
+            // Append the leaderboard HTML to the new div
+            leaderboardDiv.innerHTML = html;
+
+            // Append the new div to the body
+            document.body.appendChild(leaderboardDiv);
+
+            // Make the new div visible
+            leaderboardDiv.style.visibility = 'visible';
+
+            leaderboardDebounce = false;
+            leaderboardTodayButtonPress(button, true);
+            leaderboardButtonPress(button, true);
         }
     }
 
