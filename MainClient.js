@@ -8,9 +8,9 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 1
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 22
-    let TIME_AFTERNOON = 0
-    let TIME_UPDATED = 11
+    let MINUTES_UPDATED = 38
+    let TIME_AFTERNOON = 8
+    let TIME_UPDATED = 12
 
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
@@ -239,7 +239,7 @@
             leaderboardDebounce = true;
             leaderboardTodayButtonPress(button, true);
             leaderboardButtonPress(button, true);
-            var newTab = window.open('about:blank', '_blank');
+            let newTab = window.open('about:blank', '_blank');
             let loaderHtml = `
 <html>
 <head>
