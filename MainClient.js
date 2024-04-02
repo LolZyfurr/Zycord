@@ -384,6 +384,7 @@ body {
             document.body.appendChild(leaderboardDiv);
             leaderboardDiv.style.visibility = 'visible';
             leaderboardDebounce = false;
+            leaderboardButtonPress(button, true)
         }
     }
 
