@@ -46,7 +46,23 @@
         avatarShapeConfig = '50%';
     }
 
-    // Create a new div for the leaderboard
+    const settingsMenu = document.createElement('div');
+    settingsMenu.style.cssText = `
+        position: fixed;
+        top: 25%;
+        left: 25%;
+        width: 50%;
+        height: 50%;
+        background-color: rgb(0, 0, 0, 0.25);
+        backdrop-filter: blur(10px);
+        color: #fff;
+        z-index: 9999;
+        display: flex;
+        border-radius: 10px;
+        visibility: hidden;
+        outline: solid;
+        outline-width: 2px;
+    `;
     const leaderboardDiv = document.createElement('div');
     leaderboardDiv.style.cssText = `
         justify-content: center;
@@ -261,6 +277,9 @@
     }
     async function fetchLeaderboard(button, today) {
         if (leaderboardDiv.style.visibility === "visible") {
+            if (settingsMenu.style.visibility === "visible") {
+                settingsMenu.style.visibility = "hidden";
+            }
             leaderboardDiv.style.visibility = "hidden";
         } else {
             leaderboardDiv.style.visibility = "visible";
@@ -491,23 +510,6 @@ body {
             await DELAY(SETTINGS.APP_CONFIG.STATUS_UPDATE_COOLDOWN), updateDebounce = !1, updateRecall && (updateRecall = !1, updateUserStatus(updateStatus))
         }
     }
-    const settingsMenu = document.createElement('div');
-    settingsMenu.style.cssText = `
-    position: fixed;
-    top: 25%;
-    left: 25%;
-    width: 50%;
-    height: 50%;
-    background-color: rgb(0, 0, 0, 0.25);
-    backdrop-filter: blur(10px);
-    color: #fff;
-    z-index: 9999;
-    display: flex;
-    border-radius: 10px;
-    visibility: hidden;
-    outline: solid;
-    outline-width: 2px;
-`;
     document.body.appendChild(settingsMenu);
     function isToday(timestamp) {
         const date = new Date(timestamp);
