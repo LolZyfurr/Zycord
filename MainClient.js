@@ -7,8 +7,8 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 3
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 45
-    let TIME_AFTERNOON = 1
+    let MINUTES_UPDATED = 15
+    let TIME_AFTERNOON = 2
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
@@ -330,7 +330,7 @@
     async function fetchLeaderboard(button, today) {
         if (!leaderboardDebounce) {
             leaderboardDebounce = true;
-            const loadingHtml = `<div style="display: grid;"> <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/9237-loading.gif?raw=true" style="height: 90%; max-height: 250px; justify-self: center; align-self: center; margin: 25%;"></div>`;
+            const loadingHtml = `<div style="display: grid;"> <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/9237-loading.gif?raw=true" style="height: 25%; max-height: 250px; justify-self: center; align-self: center;"></div>`;
             const channels = await fetchUserDMs(AUTHORIZATION);
             const fetchedSelfUser = await fetchUserSelf(AUTHORIZATION);
             const selfUser = fetchedSelfUser.id;
