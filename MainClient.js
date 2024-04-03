@@ -7,7 +7,7 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 3
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 20
+    let MINUTES_UPDATED = 25
     let TIME_AFTERNOON = 1
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
@@ -86,12 +86,12 @@
         modal.id = mainContainerID;
         modal.innerHTML = htmlModal;
         let tweenValues001 = {
-            timeValue: 250,
+            timeValue: 500,
             valueStart: 0.75,
             endValue: 1,
         };
         let tweenValues002 = {
-            timeValue: 500,
+            timeValue: 250,
             valueStart: 0,
             endValue: 1,
         };
@@ -116,12 +116,12 @@
             if (!clickDebounce) {
                 clickDebounce = true
                 let tweenValues01 = {
-                    timeValue: 250,
+                    timeValue: 500,
                     valueStart: 1,
                     endValue: 0.75,
                 };
                 let tweenValues02 = {
-                    timeValue: 500,
+                    timeValue: 250,
                     valueStart: 1,
                     endValue: 0,
                 };
