@@ -7,7 +7,7 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 3
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 5
+    let MINUTES_UPDATED = 13
     let TIME_AFTERNOON = 1
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
@@ -333,6 +333,7 @@
             const channels = await fetchUserDMs(AUTHORIZATION);
             const fetchedSelfUser = await fetchUserSelf(AUTHORIZATION);
             const selfUser = fetchedSelfUser.id;
+            let modalLeaderboard = createModal(`${today ? (today === true ? ("Todays") : ("")) : ("")} Leaderboard`, "");
             let interactionCounts = [];
             for (const channel of channels.reverse().values()) {
                 let lastCheckedAuthor = 0;
@@ -433,7 +434,7 @@
 </body>
 </html>
 `;
-            createModal(`${today ? (today === true ? ("Todays") : ("")) : ("")} Leaderboard`, html)
+            modalLeaderboard.modalBody = html;
             leaderboardDebounce = false;
             leaderboardButtonPress(button, true)
         }
