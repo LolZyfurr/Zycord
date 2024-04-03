@@ -4,23 +4,19 @@
     let THEME_COLOR = SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR !== false ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR) : (null)) : (null);
     let BLUR_WEB = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD === true ? (true) : (false)) : (false)) : (false)) : (false);
     let BLUR_WEB_AMOUNT = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT) : (10)) : (10)) : (10);
-
     let MONTH_UPDATED = 4
-    let DAY_UPDATED = 2
+    let DAY_UPDATED = 3
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 55
+    let MINUTES_UPDATED = 45
     let TIME_AFTERNOON = 0
-    let TIME_UPDATED = 12
-
+    let TIME_UPDATED = 11
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
     let ALPHA_YEAR = YEAR_UPDATED.toString(36)
     let ALPHA_MINUTES = MINUTES_UPDATED.toString(36)
-    let ALPHA_TIME = (TIME_UPDATED+TIME_AFTERNOON).toString(36)
-
+    let ALPHA_TIME = (TIME_UPDATED + TIME_AFTERNOON).toString(36)
     let DATE_UPDATED = `${ALPHA_MONTH}${ALPHA_DAY}${ALPHA_YEAR}${ALPHA_MINUTES}${ALPHA_TIME}`
     let APP_VERSION = `BETA ${DATE_UPDATED}`
-
     let VALUE_LAST_STATUS = "";
     let VALUE_LIGHT_THEME = SETTINGS.APP_CONFIG.USE_LIGHT_THEME;
     let VALUE_LAST_THEME = VALUE_LIGHT_THEME;
@@ -40,11 +36,9 @@
     const invisibleChar = await unicodeToString('U+200B');
     document.addEventListener("keydown", (updateEventAvatar));
     document.addEventListener("click", (updateEventAvatar));
-
     if (!(SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.RADIAL_STATUS_CSS === true ? (true) : (false)) : (true))) {
         avatarShapeConfig = '50%';
     }
-
     const settingsMenu = document.createElement('div');
     settingsMenu.style.cssText = `
         position: fixed;
@@ -62,28 +56,86 @@
         outline: solid;
         outline-width: 2px;
     `;
-    const leaderboardDiv = document.createElement('div');
-    leaderboardDiv.style.cssText = `
-        justify-content: center;
-        position: fixed;
-        top: 12.5%;
-        left: 12.5%;
-        width: 75%;
-        height: 75%;
-        background-color: rgba(0, 0, 0, 0.25);
-        backdrop-filter: blur(10px);
-        color: #fff;
-        z-index: 9999;
-        display: flex;
-        border-radius: 10px;
-        visibility: hidden;
-        outline: solid;
-        outline-width: 2px;
-        overflow: auto;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    `;
+
+    function generateRandomCode() {
+        const characters = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+        let code = '';
+        for (let i = 0; i < 5; i++) {
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            code += characters[randomIndex];
+        }
+        return code;
+    }
+
+    function createModal(Title, Body) {
+        let clickDebounce = false;
+        let elementCode = generateRandomCode();
+        let mainContainerID = `${elementCode}-mainContainer`
+        let layerContainerID = `${elementCode}-layerContainer`;
+        let backdropID = `${elementCode}-backdrop`;
+        let dialogID = `${elementCode}-dialog`;
+        let modalBodyID = `${elementCode}-body`;
+        let modalRootID = `${elementCode}-modalRoot`;
+        let modalHeaderID = `${elementCode}-modalHeader`;
+        let modalContentID = `${elementCode}-modalContent`;
+        let modalFooterID = `${elementCode}-modalFooter`;
+        let modalButtonID = `${elementCode}-modalButton`;
+        const cssModal = `.layerContainer_a2fcaa{background:none !important;position:absolute;top:0;left:0;right:0;right:var(--devtools-sidebar-width,0);bottom:0;pointer-events:none;z-index:1002}.backdrop__1a911.withLayer__29ace{pointer-events:all}.backdrop__1a911{position:fixed;top:0;right:0;right:var(--devtools-sidebar-width,0);bottom:0;left:0;transform:translatez(0)}.layer_c14d31{position:absolute;top:0;bottom:0;left:0;right:0;align-items:center;display:flex;justify-content:center;flex-direction:column;min-height:0;padding-top:40px;padding-bottom:40px}.zycord-text-strong{font-weight:600}.zycord-text-20{font-size:20px;line-height:24px}.zycord-header-primary{color:var(--header-primary)}.zycord-button-filled.zycord-button-color-brand{color:var(--white-500);background-color:#3e82e5}.zycord-button-filled{-webkit-transition:background-color .17s ease,color .17s ease;transition:background-color .17s ease,color .17s ease}.zycord-button-grow,.zycord-button-icon{width:auto}.zycord-button-medium{width:96px;height:38px;min-width:96px;min-height:38px}.zycord-button{position:relative;display:flex;justify-content:center;align-items:center;box-sizing:border-box;background:0;border:0;border-radius:3px;font-size:14px;font-weight:500;line-height:16px;padding:2px 16px;user-select:none}a,div,span,strong,button,input,textarea,select,label{outline:0}body,textarea,input,button,select,::placeholder{font-family:var(--font-primary);text-rendering:optimizeLegibility}button{font-family:var(--font-primary);font-weight:500;border:0;cursor:pointer}user agent stylesheet button{appearance:auto;font-style:;font-variant-ligatures:;font-variant-caps:;font-variant-numeric:;font-variant-east-asian:;font-variant-alternates:;font-variant-position:;font-weight:;font-stretch:;font-size:;font-family:;font-optical-sizing:;font-kerning:;font-feature-settings:;font-variation-settings:;text-rendering:auto;color:buttontext;letter-spacing:normal;word-spacing:normal;line-height:normal;text-transform:none;text-indent:0;text-shadow:none;display:inline-block;text-align:center;align-items:flex-start;cursor:default;box-sizing:border-box;background-color:buttonface;margin:0;padding-block:1px;padding-inline:6px;border-width:2px;border-style:outset;border-color:buttonborder;border-image:initial}html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kzycord,q,s,samp,small,strike,strong,tt,var,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;font-weight:inherit;font-style:inherit;font-family:inherit;font-size:100%;vertical-align:baseline}user agent stylesheet h1{display:block;font-size:2em;margin-block-start:.67em;margin-block-end:.67em;margin-inline-start:0;margin-inline-end:0;font-weight:bold}.zycord-addon-modal{min-height:unset}.zycord-modal-medium{width:600px;max-height:800px;min-height:400px}.zycord-modal-root{display:flex;flex-direction:column;background-color:var(--modal-background);border-radius:4px;margin:0 auto;pointer-events:all;position:relative;max-height:100%}.zycord-addon-modal{min-height:0}.zycord-modal-header{border-radius:4px 4px 0 0;transition:box-shadow .1s ease-out;word-wrap:break-word}.zycord-modal-header,.zycord-modal-footer{position:relative;flex:0 0 auto;padding:16px;z-index:1;overflow-x:hidden}.zycord-flex-horizontal{flex-direction:row}.zycord-flex-no-wrap{flex-wrap:nowrap}.zycord-flex-justify-start{justify-content:flex-start}.zycord-flex-align-center{align-items:center}.zycord-flex{display:flex}.zycord-scroller-thin{scrollbar-width:thin;scrollbar-color:var(--scrollbar-thin-thumb) var(--scrollbar-thin-track)}.zycord-scroller-base{position:relative;box-sizing:border-box;min-height:0;flex:1 1 auto}.zycord-modal-content{position:relative;z-index:0;border-radius:5px 5px 0 0;padding-left:16px;overflow-x:hidden;font-size:16px;line-height:20px;padding-bottom:20px;overflow:hidden scroll;padding-right:8px}.zycord-modal-footer{border-radius:0 0 5px 5px;background-color:var(--modal-footer-background);overflow:hidden;box-shadow:inset 0 1px 0 hsl(var(--primary-630-hsl)/.6)}.zycord-modal-header,.zycord-modal-footer{position:relative;flex:0 0 auto;padding:16px;z-index:1;overflow-x:hidden}.zycord-flex-reverse{flex-direction:row-reverse}.zycord-flex-no-wrap{flex-wrap:nowrap}.zycord-flex-justify-start{justify-content:flex-start}.zycord-flex-align-stretch{align-items:stretch}.zycord-flex{display:flex}`;
+        const htmlModal = `<style> ${cssModal} </style> <div class="layerContainer_a2fcaa" id="${layerContainerID}"> <div class="backdrop__1a911 withLayer__29ace" id="${backdropID}" style="background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(0px);"></div> <div class="layer_c14d31"> <div role="dialog" tabindex="-1" aria-modal="true" id="${dialogID}"> <div class="zycord-modal-root zycord-modal-medium zycord-addon-modal" style="opacity: 1; transform: scale(1);" id="${modalRootID}"> <div class="zycord-flex zycord-flex-horizontal zycord-flex-justify-start zycord-flex-align-center zycord-flex-no-wrap zycord-modal-header" style="flex: 0 0 auto;" id="${modalHeaderID}"> <h1 class="zycord-header-primary zycord-text-20 zycord-text-strong">${Title}</h1> </div> <div class="zycord-modal-content zycord-scroller-base zycord-scroller-thin" id="${modalContentID}"> <div class="zycord-addon-settings-wrap"> <div id="${modalBodyID}"> ${Body} </div> </div> </div> <div class="zycord-flex zycord-flex-reverse zycord-flex-justify-start zycord-flex-align-stretch zycord-flex-no-wrap zycord-modal-footer" style="flex: 0 0 auto;" id="${modalFooterID}"> <button id="${modalButtonID}" class="zycord-button zycord-button-filled zycord-button-color-brand zycord-button-medium zycord-button-grow" type="submit"> <div class="zycord-button-content">Done</div> </button> </div> </div> </div> </div> </div>`;
+        var modal = document.createElement('div');
+        modal.id = mainContainerID;
+        modal.innerHTML = htmlModal;
+        let tweenValues001 = {
+            timeValue: 250,
+            valueStart: 0.75,
+            endValue: 1,
+        };
+        let tweenValues002 = {
+            timeValue: 500,
+            valueStart: 0,
+            endValue: 1,
+        };
+        tween(tweenValues001.valueStart, tweenValues001.endValue, tweenValues001.timeValue, returnedValue => (modalElements.modalRoot.style.transform = `scale(${returnedValue})`));
+        tween(tweenValues002.valueStart, tweenValues002.endValue, tweenValues002.timeValue, returnedValue => (modalElements.backdrop.style.opacity = returnedValue));
+        tween(tweenValues002.valueStart, tweenValues002.endValue, tweenValues002.timeValue, returnedValue => (modalElements.modalRoot.style.opacity = returnedValue));
+        document.getElementById('app-mount').appendChild(modal);
+        const modalElements = {
+            uniqueIdentifier: elementCode,
+            mainContainer: document.getElementById(mainContainerID),
+            layerContainer: document.getElementById(layerContainerID),
+            backdrop: document.getElementById(backdropID),
+            dialog: document.getElementById(dialogID),
+            modalBody: document.getElementById(modalBodyID),
+            modalRoot: document.getElementById(modalRootID),
+            modalHeader: document.getElementById(modalHeaderID),
+            modalContent: document.getElementById(modalContentID),
+            modalFooter: document.getElementById(modalFooterID),
+            modalButton: document.getElementById(modalButtonID),
+        }
+        const handleClick = async function() {
+            if (!clickDebounce) {
+                clickDebounce = true
+                let tweenValues01 = {
+                    timeValue: 250,
+                    valueStart: 1,
+                    endValue: 0.75,
+                };
+                let tweenValues02 = {
+                    timeValue: 500,
+                    valueStart: 1,
+                    endValue: 0,
+                };
+                tween(tweenValues01.valueStart, tweenValues01.endValue, tweenValues01.timeValue, returnedValue => (modalElements.modalRoot.style.transform = `scale(${returnedValue})`));
+                tween(tweenValues02.valueStart, tweenValues02.endValue, tweenValues02.timeValue, returnedValue => (modalElements.backdrop.style.opacity = returnedValue));
+                tween(tweenValues02.valueStart, tweenValues02.endValue, tweenValues02.timeValue, returnedValue => (modalElements.modalRoot.style.opacity = returnedValue));
+                await DELAY(1 * 1000);
+                modalElements.mainContainer.innerHTML = "";
+            }
+        };
+        modalElements.backdrop.addEventListener('click', handleClick);
+        modalElements.modalButton.addEventListener('click', handleClick);
+        return modalElements;
+    }
 
     function unicodeToString(n) {
         return String.fromCharCode(n);
@@ -132,22 +184,22 @@
 
     function uwuify(l) {
         const a = ["rawr x3", "OwO", "UwU", "o.O", "-.-", ">w<", "(⑅˘꒳˘)", "(ꈍᴗꈍ)", "(˘ω˘)", "(U ᵕ U❁)", "σωσ", "òωó", "(///ˬ///✿)", "(U ﹏ U)", "( ͡o ω ͡o )", "ʘwʘ", ":3", ":3", "XD", "nyaa~~", "mya", ">_<", "😳", "🥺", "😳😳😳", "rawr", "^^", "^^;;", "(ˆ ﻌ ˆ)♡", "^•ﻌ•^", "/(^•ω•^)", "(✿oωo)"],
-              o = [
-                  ["small", "smol"],
-                  ["cute", "kawaii~"],
-                  ["fluff", "floof"],
-                  ["love", "luv"],
-                  ["stupid", "baka"],
-                  ["what", "nani"],
-                  ["meow", "nya~"],
-                  ["hello", "hewwo"]
-              ];
+            o = [
+                ["small", "smol"],
+                ["cute", "kawaii~"],
+                ["fluff", "floof"],
+                ["love", "luv"],
+                ["stupid", "baka"],
+                ["what", "nani"],
+                ["meow", "nya~"],
+                ["hello", "hewwo"]
+            ];
         l = l.toLowerCase();
         for (const a of o) l = l.replaceAll(a[0], a[1]);
         return l = l.replaceAll(/([ \t\n])n/g, "$1ny").replaceAll(/[lr]/g, "w").replaceAll(/([ \t\n])([a-z])/g, (l, a, o) => Math.random() < .5 ? `${a}${o}-${o}` : `${a}${o}`).replaceAll(/([^.,!][.,!])([ \t\n])/g, (l, o, e) => {
             return `${o} ${r=a,r[Math.floor(Math.random()*r.length)]}${e}`;
             var r
-            })
+        })
     }
 
     function setStatus(t, e) {
@@ -191,6 +243,7 @@
             n && (console.log(n), THEME_COLOR = n, changeElementColor(THEME_COLOR))
         }) : changeElementColor(THEME_COLOR)
     }
+
     function ShadeWeb(tweenType, originalValue, goalValue, timeValue) {
         if (tweenType) {
             const valueOriginalShade = BLUR_WEB ? (BLUR_WEB_AMOUNT * originalValue) : originalValue;
@@ -275,14 +328,6 @@
         return "https://cdn.discordapp.com/avatars/" + a.id + "/" + a.avatar + ".png?size=4096"
     }
     async function fetchLeaderboard(button, today) {
-        if (leaderboardDiv.style.visibility === "visible") {
-            if (settingsMenu.style.visibility === "visible") {
-                settingsMenu.style.visibility = "hidden";
-            }
-            leaderboardDiv.style.visibility = "hidden";
-        } else {
-            leaderboardDiv.style.visibility = "visible";
-        }
         if (!leaderboardDebounce) {
             leaderboardDebounce = true;
             const channels = await fetchUserDMs(AUTHORIZATION);
@@ -399,9 +444,7 @@ body {
 </body>
 </html>
 `;
-            leaderboardDiv.innerHTML = html;
-            document.body.appendChild(leaderboardDiv);
-            leaderboardDiv.style.visibility = 'visible';
+            createModal(`${today ? (today === true ? ("Todays") : ("")) : ("")} Leaderboard`, html)
             leaderboardDebounce = false;
             leaderboardButtonPress(button, true)
         }
@@ -506,12 +549,11 @@ body {
         }
     }
     document.body.appendChild(settingsMenu);
+
     function isToday(timestamp) {
         const date = new Date(timestamp);
         const today = new Date();
-        return date.getDate() == today.getDate() &&
-            date.getMonth() == today.getMonth() &&
-            date.getFullYear() == today.getFullYear();
+        return date.getDate() == today.getDate() && date.getMonth() == today.getMonth() && date.getFullYear() == today.getFullYear();
     }
 
     function toggleSettingsMenu(button, startup) {
