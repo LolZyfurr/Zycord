@@ -96,7 +96,7 @@
             endValue: 1,
         };
         tween(tweenValues001.valueStart, tweenValues001.endValue, tweenValues001.timeValue, returnedValue => (modalElements.modalRoot.style.transform = `scale(${returnedValue})`));
-        tween(tweenValues002.valueStart, tweenValues002.endValue, tweenValues002.timeValue, returnedValue => (modalElements.backdrop.style.opacity = returnedValue));
+        tween(tweenValues002.valueStart, tweenValues002.endValue, tweenValues002.timeValue * 2, returnedValue => (modalElements.backdrop.style.opacity = returnedValue));
         tween(tweenValues002.valueStart, tweenValues002.endValue, tweenValues002.timeValue, returnedValue => (modalElements.modalRoot.style.opacity = returnedValue));
         document.getElementById('app-mount').appendChild(modal);
         const modalElements = {
@@ -126,7 +126,7 @@
                     endValue: 0,
                 };
                 tween(tweenValues01.valueStart, tweenValues01.endValue, tweenValues01.timeValue, returnedValue => (modalElements.modalRoot.style.transform = `scale(${returnedValue})`));
-                tween(tweenValues02.valueStart, tweenValues02.endValue, tweenValues02.timeValue, returnedValue => (modalElements.backdrop.style.opacity = returnedValue));
+                tween(tweenValues02.valueStart, tweenValues02.endValue, tweenValues02.timeValue * 2, returnedValue => (modalElements.backdrop.style.opacity = returnedValue));
                 tween(tweenValues02.valueStart, tweenValues02.endValue, tweenValues02.timeValue, returnedValue => (modalElements.modalRoot.style.opacity = returnedValue));
                 await DELAY(1 * 1000);
                 modalElements.mainContainer.innerHTML = "";
