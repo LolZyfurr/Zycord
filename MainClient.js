@@ -7,8 +7,8 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 3
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 58
-    let TIME_AFTERNOON = 0
+    let MINUTES_UPDATED = 5
+    let TIME_AFTERNOON = 1
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
@@ -398,13 +398,13 @@
     float: left;
     font-size: 64px;
     margin-right: 10px;
-    color: var(--header-primary)
+    color: var(--header-primary);
 }
 .list_document_style_03 {
     font-family: Arial, sans-serif;
     font-weight: bold;
     font-size: 32px;
-    color: var(--header-primary)
+    color: var(--header-primary);
     overflow: hidden;
     position: relative;
     text-overflow: ellipsis;
