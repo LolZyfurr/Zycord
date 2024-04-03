@@ -7,9 +7,9 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 3
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 45
+    let MINUTES_UPDATED = 58
     let TIME_AFTERNOON = 0
-    let TIME_UPDATED = 11
+    let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
     let ALPHA_YEAR = YEAR_UPDATED.toString(36)
@@ -376,18 +376,7 @@
 <head>
 <title>Discord | ${today ? (today === true ? ("Today's ") : ("")) : ("")}Leaderboard</title>
 <style>
-body {
-    background-color: rgb(90,90,100);
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-}
 .list_document_style_00 {
-    background-color: rgb(70, 70, 80);
     border-radius: 10px;
     margin: 10px;
     padding: 10px;
@@ -409,13 +398,13 @@ body {
     float: left;
     font-size: 64px;
     margin-right: 10px;
-    color: rgb(240,240,250);
+    color: var(--header-primary)
 }
 .list_document_style_03 {
     font-family: Arial, sans-serif;
     font-weight: bold;
     font-size: 32px;
-    color: rgb(240,240,250);
+    color: var(--header-primary)
     overflow: hidden;
     position: relative;
     text-overflow: ellipsis;
@@ -423,7 +412,7 @@ body {
 .list_document_style_04 {
     font-family: Arial, sans-serif;
     font-size: 32px;
-    color: rgb(165,165,175);
+    color: var(--header-secondary);
 }
 </style>
 </head>
