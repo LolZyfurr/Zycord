@@ -5,10 +5,10 @@
     let BLUR_WEB = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD === true ? (true) : (false)) : (false)) : (false)) : (false);
     let BLUR_WEB_AMOUNT = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT) : (10)) : (10)) : (10);
     let MONTH_UPDATED = 4
-    let DAY_UPDATED = 3
+    let DAY_UPDATED = 4
     let YEAR_UPDATED = 24
     let MINUTES_UPDATED = 15
-    let TIME_AFTERNOON = 2
+    let TIME_AFTERNOON = 1
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
@@ -374,66 +374,71 @@
             interactionCounts.sort((a, b) => b.interactions - a.interactions);
             interactionCounts = interactionCounts.slice(0, 5);
             let html = `
-<html>
-<head>
-<title>Discord | ${today ? (today === true ? ("Today's ") : ("")) : ("")}Leaderboard</title>
-<style>
-.list_document_style_00 {
-    border-radius: 10px;
-    margin: 10px;
-    padding: 10px;
-    width: 90%;
-    max-width: 600px;
-    display: -webkit-inline-box;
-    overflow: hidden;
-}
-.list_document_style_01 {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    margin-right: 10px;
-    float: left;
-}
-.list_document_style_02 {
-    font-family: Arial, sans-serif;
-    font-weight: bold;
-    float: left;
-    font-size: 64px;
-    margin-right: 10px;
-    color: var(--header-primary);
-}
-.list_document_style_03 {
-    font-family: Arial, sans-serif;
-    font-weight: bold;
-    font-size: 32px;
-    color: var(--header-primary);
-    overflow: hidden;
-    position: relative;
-    text-overflow: ellipsis;
-}
-.list_document_style_04 {
-    font-family: Arial, sans-serif;
-    font-size: 32px;
-    color: var(--header-secondary);
-}
-</style>
-</head>
-<body>
+<div>
+    <style>
+    .leaderboard-div-style-main-zycord {
+        display: flex;
+        width: 100%;
+        padding: 5px;
+    }
+    .leaderboard-div-style-position-zycord {
+        display: grid;
+        width: 50px;
+        align-content: center;
+        justify-content: center;
+    }
+    .leaderboard-div-style-avatarholder-zycord {
+        align-content: center;
+    }
+    .leaderboard-div-style-avatar-zycord {
+        width: 50px;
+        border-radius: 50%;
+    }
+    .leaderboard-div-style-textholder-zycord {
+        margin-left: 20px;
+        display: grid;
+        align-content: center;
+    }
+    .leaderboard-div-style-title-zycord {
+        font-weight: bold;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 22px;
+        color: var(--header-primary);
+    }
+    .leaderboard-div-style-subtitle-zycord {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 18px;
+        color: var(--header-secondary);
+    }
+    .leaderboard-div-style-number-zycord {
+        font-weight: bold;
+        color: var(--header-primary);
+        font-size: 40px;
+    }
+    </style>
+    <div>
 `;
             for (let i = 0; i < interactionCounts.length; i++) {
                 html += `
-<div class="list_document_style_00">
-<span class="list_document_style_02">${i+1}</span>
-<img class="list_document_style_01" src="${interactionCounts[i].profilePic}" alt="Profile Picture">
-<span class="list_document_style_03">${interactionCounts[i].name}</span>
-<br>
-<span class="list_document_style_04">${interactionCounts[i].interactions} interactions${today ? (today === true ? (" today") : ("")) : ("")}</span>
-</div>
+    <div class="leaderboard-div-style-main-zycord">
+        <div class="leaderboard-div-style-position-zycord">
+            <span class="leaderboard-div-style-number-zycord">${i+1}</span>
+        </div>
+        <div class="leaderboard-div-style-avatarholder-zycord">
+            <img src="${interactionCounts[i].profilePic}" alt="User Avatar" class="leaderboard-div-style-avatar-zycord">
+        </div>
+        <div class="leaderboard-div-style-textholder-zycord">
+            <span class="leaderboard-div-style-title-zycord">${interactionCounts[i].name}</span>
+            <span class="leaderboard-div-style-subtitle-zycord">${interactionCounts[i].interactions} interactions${today ? (today === true ? (" today") : ("")) : ("")}</span>
+        </div>
+    </div>
 `;
             }
             html += `
-</body>
-</html>
+    </div>
+</div>
 `;
             modalLeaderboard.modalBody.innerHTML = html;
             leaderboardDebounce = false;
