@@ -7,7 +7,7 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 4
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 30
+    let MINUTES_UPDATED = 50
     let TIME_AFTERNOON = 1
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
@@ -424,7 +424,7 @@
                 html += `
     <div class="leaderboard-div-style-main-zycord">
         <div class="leaderboard-div-style-position-zycord">
-            <span class="leaderboard-div-style-number-zycord">${i+1}</span>
+            <span class="leaderboard-div-style-number-zycord"${ (i+1 === 1) ? (` style="color: linear-gradient(45deg, #FFD700BB 0%, #F5F5DCBB 50%, #FFD700BB 100%) !important;"`) : ("") }>${i+1}</span>
         </div>
         <div class="leaderboard-div-style-avatarholder-zycord">
             <img src="${interactionCounts[i].profilePic}" alt="User Avatar" class="leaderboard-div-style-avatar-zycord">
