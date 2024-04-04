@@ -7,7 +7,7 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 4
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 15
+    let MINUTES_UPDATED = 30
     let TIME_AFTERNOON = 1
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
@@ -611,7 +611,7 @@
     background-color: rgb(0, 0, 0, 0.25);
     backdrop-filter: blur(10px);
     color: #fff;
-    z-index: 9999;
+    z-index: 1000;
     display: flex;
     justify-content: right;
     align-items: center;
