@@ -7,9 +7,9 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 5
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 58
+    let MINUTES_UPDATED = 28
     let TIME_AFTERNOON = 0
-    let TIME_UPDATED = 11
+    let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
     let ALPHA_YEAR = YEAR_UPDATED.toString(36)
@@ -27,6 +27,7 @@
     let updateStatus = "";
     let timeoutId = null;
     let leaderboardDebounce = false;
+    let changelogTextData = await getChangelog();
     ShadeWeb(false, false, BLUR_WEB ? (BLUR_WEB_AMOUNT / (1 - SETTINGS.APP_CONFIG.INITIAL_OPACITY)) : (SETTINGS.APP_CONFIG.INITIAL_OPACITY), false);
     const DELAY = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (3 / 5)) * 1000);
@@ -183,6 +184,30 @@
             return `${o} ${r=a,r[Math.floor(Math.random()*r.length)]}${e}`;
             var r
         })
+    }
+    async function getChangelog() {
+        const CHANGELOG_API_URL = "https://github.com/Zy1ux/Zycord/latest-commit/main/MainClient.js";
+
+        function createChangelogFetchOptions(e, n) {
+            return {
+                headers: {
+                    "accept": "application/json",
+                    "accept-language": "en-US,en;q=0.9",
+                    "content-type": "application/json"
+                },
+                body: e ? JSON.stringify({
+                    settings: e
+                }) : null,
+                method: n
+            }
+        }
+        let changelogFetch = await fetch(CHANGELOG_API_URL, createChangelogFetchOptions(null, "GET"));
+        let changelogData = await changelogFetch.json();
+        let changelogMessage = await changelogData.shortMessageHtmlLink;
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(changelogMessage, 'text/html');
+        let text = doc.body.textContent;
+        return text;
     }
 
     function setStatus(t, e) {
@@ -575,15 +600,26 @@
         const buttonSettings = leaderboardDebounce ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
+
+    function changelogButtonPress(button, startup) {
+        if (!startup) {
+            let changelogModalTitle = `Changelog`;
+            let changelogModalBody = `<span>${changelogTextData}</span>`;
+            createModal(changelogModalTitle, changelogModalBody)
+        }
+        const buttonSettings = '0,0,0,0';
+        button.style.backgroundColor = `rgba(${buttonSettings})`;
+    }
     let TOPBAR_SIZE = SETTINGS.UI_CONFIG ? (SETTINGS.UI_CONFIG.INTERACTIVE_MENU_SIZE ? (SETTINGS.UI_CONFIG.INTERACTIVE_MENU_SIZE) : (33)) : (33)
     let SETTINGS_ICON = 'https://github.com/Zy1ux/Zycord/blob/main/Images/2888-settings.png?raw=true';
     let LIGHT_THEME_ICON = 'https://github.com/Zy1ux/Zycord/blob/main/Images/8410-appearance-mobile-white.png?raw=true';
     let LEADERBOARD_ICON = 'https://github.com/Zy1ux/Zycord/blob/main/Images/5971-forum.png?raw=true';
     let AUTO_STATUS_ICON = 'https://github.com/Zy1ux/Zycord/blob/main/Images/1731-discord-profile-activity-white.png?raw=true';
     let LEADERBOARD_TODAY_ICON = 'https://github.com/Zy1ux/Zycord/blob/main/Images/8312-active-threads.png?raw=true';
-    const buttonNames = [SETTINGS_ICON, LIGHT_THEME_ICON, LEADERBOARD_ICON, AUTO_STATUS_ICON, LEADERBOARD_TODAY_ICON];
+    let CHANGELOG_ICON = '';
+    const buttonNames = [SETTINGS_ICON, LIGHT_THEME_ICON, LEADERBOARD_ICON, AUTO_STATUS_ICON, LEADERBOARD_TODAY_ICON, CHANGELOG_ICON];
     const amountOfButtons = buttonNames.length;
-    const buttonActions = [toggleSettingsMenu, toggleLightTheme, leaderboardButtonPress, toggleAutoStatus, leaderboardTodayButtonPress];
+    const buttonActions = [toggleSettingsMenu, toggleLightTheme, leaderboardButtonPress, toggleAutoStatus, leaderboardTodayButtonPress, changelogButtonPress];
     const topBar = document.createElement('div');
     topBar.style.cssText = `
     position: absolute;
