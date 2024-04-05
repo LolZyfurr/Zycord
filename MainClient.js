@@ -5,11 +5,11 @@
     let BLUR_WEB = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD === true ? (true) : (false)) : (false)) : (false)) : (false);
     let BLUR_WEB_AMOUNT = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT) : (10)) : (10)) : (10);
     let MONTH_UPDATED = 4
-    let DAY_UPDATED = 4
+    let DAY_UPDATED = 5
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 15
-    let TIME_AFTERNOON = 2
-    let TIME_UPDATED = 12
+    let MINUTES_UPDATED = 50
+    let TIME_AFTERNOON = 0
+    let TIME_UPDATED = 11
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
     let ALPHA_YEAR = YEAR_UPDATED.toString(36)
@@ -39,23 +39,6 @@
     if (!(SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.RADIAL_STATUS_CSS === true ? (true) : (false)) : (true))) {
         avatarShapeConfig = '50%';
     }
-    const settingsMenu = document.createElement('div');
-    settingsMenu.style.cssText = `
-        position: fixed;
-        top: 25%;
-        left: 25%;
-        width: 50%;
-        height: 50%;
-        background-color: rgb(0, 0, 0, 0.25);
-        backdrop-filter: blur(10px);
-        color: #fff;
-        z-index: 9999;
-        display: flex;
-        border-radius: 10px;
-        visibility: hidden;
-        outline: solid;
-        outline-width: 2px;
-    `;
 
     function generateRandomCode() {
         const characters = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
@@ -544,7 +527,6 @@
             await DELAY(SETTINGS.APP_CONFIG.STATUS_UPDATE_COOLDOWN), updateDebounce = !1, updateRecall && (updateRecall = !1, updateUserStatus(updateStatus))
         }
     }
-    document.body.appendChild(settingsMenu);
 
     function isToday(timestamp) {
         const date = new Date(timestamp);
@@ -554,9 +536,13 @@
 
     function toggleSettingsMenu(button, startup) {
         if (!startup) {
-            settingsMenu.style.visibility = settingsMenu.style.visibility === 'hidden' ? 'visible' : 'hidden';
+            let settingsModalTitle = `Settings (WIP)`;
+            let settingsModalText = `Coming Soon...`
+            let settingsModalStyle = `color: var(--header-secondary);`
+            let settingsModalBody = `<span>${settingsModalText}</span>`;
+            createModal(settingsModalTitle, settingsModalBody)
         }
-        const buttonSettings = settingsMenu.style.visibility === 'hidden' ? '0,0,0,0' : '128,128,128,1';
+        const buttonSettings = '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
 
