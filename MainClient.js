@@ -7,7 +7,7 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 5
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 50
+    let MINUTES_UPDATED = 58
     let TIME_AFTERNOON = 0
     let TIME_UPDATED = 11
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
@@ -537,9 +537,7 @@
     function toggleSettingsMenu(button, startup) {
         if (!startup) {
             let settingsModalTitle = `Settings (WIP)`;
-            let settingsModalText = `Coming Soon...`
-            let settingsModalStyle = `color: var(--header-secondary);`
-            let settingsModalBody = `<span>${settingsModalText}</span>`;
+            let settingsModalBody = `<div style="display: grid;"> <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/9237-loading.gif?raw=true" style="height: 25%; max-height: 250px; justify-self: center; align-self: center;"></div>`;
             createModal(settingsModalTitle, settingsModalBody)
         }
         const buttonSettings = '0,0,0,0';
