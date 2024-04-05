@@ -7,8 +7,8 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 5
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 33
-    let TIME_AFTERNOON = 0
+    let MINUTES_UPDATED = 59
+    let TIME_AFTERNOON = 1
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
@@ -27,7 +27,7 @@
     let updateStatus = "";
     let timeoutId = null;
     let leaderboardDebounce = false;
-    let changelogTextData = await getChangelog();
+    let changelogTextData = await listChangelogString(await formatChangelog(await getChangelog()));
     ShadeWeb(false, false, BLUR_WEB ? (BLUR_WEB_AMOUNT / (1 - SETTINGS.APP_CONFIG.INITIAL_OPACITY)) : (SETTINGS.APP_CONFIG.INITIAL_OPACITY), false);
     const DELAY = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (3 / 5)) * 1000);
@@ -185,34 +185,56 @@
             var r
         })
     }
+    
     async function getChangelog() {
+        const CHANGELOG_API_URL = "https://github.com/Zy1ux/Zycord/commits/main/MainClient.js";
+        const PROXY_URL = "https://cors-anywhere.herokuapp.com/";
         try {
-    const CHANGELOG_API_URL = "https://github.com/Zy1ux/Zycord/latest-commit/main/MainClient.js";
-    const PROXY_URL = "https://cors-anywhere.herokuapp.com/";
-    function createChangelogFetchOptions(e, n) {
-        return {
-            headers: {
-                "accept": "application/json",
-                "accept-language": "en-US,en;q=0.9",
-                "content-type": "application/json"
-            },
-            body: e ? JSON.stringify({
-                settings: e
-            }) : null,
-            method: n
+            const response = await fetch(`${PROXY_URL}${CHANGELOG_API_URL}`, {
+                method: "GET",
+                headers: {
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                    "Accept-Language": "en-US,en;q=0.9",
+                    "Content-Type": "application/json"
+                }
+            });
+            let text = await response.text();
+            let parser = new DOMParser();
+            let doc = parser.parseFromString(text, 'text/html');
+            let scriptTag = doc.querySelector('script[data-target="react-app.embeddedData"]');
+            const data = JSON.parse(scriptTag.innerText);
+            const payloadJson = JSON.stringify(data.payload);
+            return payloadJson;
+        } catch (error) {
+            console.error(error.toString());
         }
     }
-    let changelogFetch = await fetch(PROXY_URL + CHANGELOG_API_URL, createChangelogFetchOptions(null, "GET"));
-    let changelogData = await changelogFetch.json();
-    let changelogMessage = await changelogData.shortMessageHtmlLink;
-    let parser = new DOMParser();
-    let doc = parser.parseFromString(changelogMessage, 'text/html');
-    let text = doc.body.textContent;
-    return text;
-        } catch (error) {
-            return error.toString();
+
+    async function formatChangelog(changelogValue) {
+        const changelogHistory_list = [];
+        const commitGroups_value = changelogValue.commitGroups;
+        for (let i in commitGroups_value) {
+            const commitGroup_value = commitGroups_value[i];
+            const commits_value = commitGroup_value.commits;
+            for (let j in commits_value) {
+                const commit_value = commits_value[j];
+                const shortMessage_value = commit_value.shortMessage;
+                changelogHistory_list.push(shortMessage_value);
+            }
         }
-}
+        return changelogHistory_list;
+    }
+
+    async function listChangelogString(changelogList) {
+        let changelogStringList = "";
+        for (let i in changelogList) {
+            if (changelogStringList !== "") {
+                changelogStringList += "\n";
+            }
+            changelogStringList += `- ${changelogList[i].toString()}`
+        }
+        return changelogStringList;
+    }
 
     function setStatus(t, e) {
         fetch(STATUS_API_URL, createFetchOptions(t, e, "PATCH"))
