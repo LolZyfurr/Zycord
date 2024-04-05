@@ -7,8 +7,8 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 5
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 59
-    let TIME_AFTERNOON = 1
+    let MINUTES_UPDATED = 9
+    let TIME_AFTERNOON = 2
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
@@ -185,7 +185,6 @@
             var r
         })
     }
-    
     async function getChangelog() {
         const CHANGELOG_API_URL = "https://github.com/Zy1ux/Zycord/commits/main/MainClient.js";
         const PROXY_URL = "https://cors-anywhere.herokuapp.com/";
@@ -194,8 +193,7 @@
                 method: "GET",
                 headers: {
                     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-                    "Accept-Language": "en-US,en;q=0.9",
-                    "Content-Type": "application/json"
+                    "Accept-Language": "en-US,en;q=0.9"
                 }
             });
             let text = await response.text();
@@ -204,36 +202,60 @@
             let scriptTag = doc.querySelector('script[data-target="react-app.embeddedData"]');
             const data = JSON.parse(scriptTag.innerText);
             const payloadJson = JSON.stringify(data.payload);
-            return payloadJson;
+            const returnValues = {
+                jsonValue: payloadJson,
+                errorEncountered: false,
+            }
+            return returnValues;
         } catch (error) {
-            console.error(error.toString());
+            const returnValues = {
+                jsonValue: error.toString(),
+                errorEncountered: true,
+            }
+            return returnValues;
         }
     }
-
-    async function formatChangelog(changelogValue) {
-        const changelogHistory_list = [];
-        const commitGroups_value = changelogValue.commitGroups;
-        for (let i in commitGroups_value) {
-            const commitGroup_value = commitGroups_value[i];
-            const commits_value = commitGroup_value.commits;
-            for (let j in commits_value) {
-                const commit_value = commits_value[j];
-                const shortMessage_value = commit_value.shortMessage;
-                changelogHistory_list.push(shortMessage_value);
+    async function formatChangelog(changelogValues) {
+        if (changelogValues.errorEncountered === true) {
+            const returnValues = {
+                listValue: changelogValues.jsonValue,
+                errorEncountered: changelogValues.errorEncountered,
             }
+            return returnValues;
+        } else if (changelogValues.errorEncountered === false) {
+            const changelogValue = changelogValues.jsonValue;
+            const changelogHistory_list = [];
+            const commitGroups_value = changelogValue.commitGroups;
+            for (let i in commitGroups_value) {
+                const commitGroup_value = commitGroups_value[i];
+                const commits_value = commitGroup_value.commits;
+                for (let j in commits_value) {
+                    const commit_value = commits_value[j];
+                    const shortMessage_value = commit_value.shortMessage;
+                    changelogHistory_list.push(shortMessage_value);
+                }
+            }
+            const returnValues = {
+                listValue: changelogHistory_list,
+                errorEncountered: changelogValues.errorEncountered,
+            }
+            return returnValues;
         }
-        return changelogHistory_list;
     }
-
-    async function listChangelogString(changelogList) {
-        let changelogStringList = "";
-        for (let i in changelogList) {
-            if (changelogStringList !== "") {
-                changelogStringList += "\n";
+    async function listChangelogString(changelogLists) {
+        if (changelogLists.errorEncountered === true) {
+            return changelogLists.listValue;
+        } else if (changelogLists.errorEncountered === false) {
+            let changelogList = changelogLists.listValue;
+            let changelogStringList = "";
+            for (let i in changelogList) {
+                if (changelogStringList !== "") {
+                    changelogStringList += "\n";
+                }
+                changelogStringList += `- ${changelogList[i].toString()}`
             }
-            changelogStringList += `- ${changelogList[i].toString()}`
+            return changelogStringList;
         }
-        return changelogStringList;
     }
 
     function setStatus(t, e) {
