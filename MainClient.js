@@ -27,7 +27,7 @@
     let updateStatus = "";
     let timeoutId = null;
     let leaderboardDebounce = false;
-    let changelogTextData = await getChangelog();
+    let changelogTextData = await uwuify(await getChangelog());
     ShadeWeb(false, false, BLUR_WEB ? (BLUR_WEB_AMOUNT / (1 - SETTINGS.APP_CONFIG.INITIAL_OPACITY)) : (SETTINGS.APP_CONFIG.INITIAL_OPACITY), false);
     const DELAY = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (3 / 5)) * 1000);
@@ -185,30 +185,25 @@
             var r
         })
     }
+    
     async function getChangelog() {
+        const CHANGELOG_API_URL = "https://github.com/Zy1ux/Zycord/latest-commit/main/MainClient.js";
         try {
-            const CHANGELOG_API_URL = "https://github.com/Zy1ux/Zycord/latest-commit/main/MainClient.js";
-
-            function createChangelogFetchOptions(e, n) {
-                return {
-                    headers: {
-                        "accept": "application/json",
-                        "accept-language": "en-US,en;q=0.9",
-                        "content-type": "application/json"
-                    },
-                    body: e ? JSON.stringify({
-                        settings: e
-                    }) : null,
-                    method: n
-                }
+            const response = await fetch(CHANGELOG_API_URL, {
+                headers: {
+                    "accept": "application/json",
+                    "accept-language": "en-US,en;q=0.9",
+                    "content-type": "application/json"
+                },
+                method: "GET"
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-            let changelogFetch = await fetch(CHANGELOG_API_URL, createChangelogFetchOptions(null, "GET"));
-            let changelogData = await changelogFetch.json();
-            let changelogMessage = await changelogData.shortMessageHtmlLink;
-            let parser = new DOMParser();
-            let doc = parser.parseFromString(changelogMessage, 'text/html');
-            let text = doc.body.textContent;
-            return text;
+            const changelogData = await response.json();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(changelogData.shortMessageHtmlLink, 'text/html');
+            return doc.body.textContent;
         } catch (error) {
             return error.toString();
         }
