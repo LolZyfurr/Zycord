@@ -7,7 +7,7 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 5
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 50
+    let MINUTES_UPDATED = 57
     let TIME_AFTERNOON = 2
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
@@ -188,7 +188,6 @@
     async function getChangelog() {
         try {
             const CHANGELOG_API_URL = "https://github.com/Zy1ux/Zycord/latest-commit/main/MainClient.js";
-            const PROXY_URL = "https://cors-anywhere.herokuapp.com/";
 
             function createChangelogFetchOptions(e, n) {
                 return {
@@ -203,7 +202,7 @@
                     method: n
                 }
             }
-            let changelogFetch = await fetch(PROXY_URL + CHANGELOG_API_URL, createChangelogFetchOptions(null, "GET"));
+            let changelogFetch = await fetch(CHANGELOG_API_URL, createChangelogFetchOptions(null, "GET"));
             let changelogData = await changelogFetch.json();
             let changelogMessage = await changelogData.shortMessageHtmlLink;
             let parser = new DOMParser();
