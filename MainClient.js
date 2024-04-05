@@ -7,8 +7,8 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 5
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 33
-    let TIME_AFTERNOON = 0
+    let MINUTES_UPDATED = 45
+    let TIME_AFTERNOON = 2
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
@@ -187,32 +187,33 @@
     }
     async function getChangelog() {
         try {
-    const CHANGELOG_API_URL = "https://github.com/Zy1ux/Zycord/latest-commit/main/MainClient.js";
-    const PROXY_URL = "https://cors-anywhere.herokuapp.com/";
-    function createChangelogFetchOptions(e, n) {
-        return {
-            headers: {
-                "accept": "application/json",
-                "accept-language": "en-US,en;q=0.9",
-                "content-type": "application/json"
-            },
-            body: e ? JSON.stringify({
-                settings: e
-            }) : null,
-            method: n
-        }
-    }
-    let changelogFetch = await fetch(PROXY_URL + CHANGELOG_API_URL, createChangelogFetchOptions(null, "GET"));
-    let changelogData = await changelogFetch.json();
-    let changelogMessage = await changelogData.shortMessageHtmlLink;
-    let parser = new DOMParser();
-    let doc = parser.parseFromString(changelogMessage, 'text/html');
-    let text = doc.body.textContent;
-    return text;
+            const CHANGELOG_API_URL = "https://github.com/Zy1ux/Zycord/latest-commit/main/MainClient.js";
+            const PROXY_URL = "https://cors-anywhere.herokuapp.com/";
+
+            function createChangelogFetchOptions(e, n) {
+                return {
+                    headers: {
+                        "accept": "application/json",
+                        "accept-language": "en-US,en;q=0.9",
+                        "content-type": "application/json"
+                    },
+                    body: e ? JSON.stringify({
+                        settings: e
+                    }) : null,
+                    method: n
+                }
+            }
+            let changelogFetch = await fetch(PROXY_URL + CHANGELOG_API_URL, createChangelogFetchOptions(null, "GET"));
+            let changelogData = await changelogFetch.json();
+            let changelogMessage = await changelogData.shortMessageHtmlLink;
+            let parser = new DOMParser();
+            let doc = parser.parseFromString(changelogMessage, 'text/html');
+            let text = doc.body.textContent;
+            return text;
         } catch (error) {
             return error.toString();
         }
-}
+    }
 
     function setStatus(t, e) {
         fetch(STATUS_API_URL, createFetchOptions(t, e, "PATCH"))
@@ -608,7 +609,7 @@
     function changelogButtonPress(button, startup) {
         if (!startup) {
             let changelogModalTitle = `Changelog`;
-            let changelogModalBody = `<span>${changelogTextData}</span>`;
+            let changelogModalBody = `<span style="color: var(--header-primary);">${changelogTextData}</span>`;
             createModal(changelogModalTitle, changelogModalBody)
         }
         const buttonSettings = '0,0,0,0';
