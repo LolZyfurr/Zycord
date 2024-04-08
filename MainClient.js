@@ -5,11 +5,11 @@
     let BLUR_WEB = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD === true ? (true) : (false)) : (false)) : (false)) : (false);
     let BLUR_WEB_AMOUNT = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT) : (10)) : (10)) : (10);
     let MONTH_UPDATED = 4
-    let DAY_UPDATED = 5
+    let DAY_UPDATED = 8
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 5
-    let TIME_AFTERNOON = 3
-    let TIME_UPDATED = 12
+    let MINUTES_UPDATED = 40
+    let TIME_AFTERNOON = 0
+    let TIME_UPDATED = 11
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
     let ALPHA_YEAR = YEAR_UPDATED.toString(36)
@@ -127,6 +127,77 @@
 
     function changeAvatarImages(a) {
         SETTINGS.APP_CONFIG.USE_CUSTOM_AVATAR && document.querySelectorAll('img[src*="723659289377636423"]').forEach(c => c.src = a);
+    }
+
+    function createNewSidebar() {
+        const sidebarHtmlValue = `
+<div>
+    <style>
+        .zycord-sidebar-div-holder {
+            height: 100%;
+            width: 100%;
+            display: grid;
+            justify-content: right;
+            align-content: center;
+        }
+
+        .zycord-button, .zycord-main-button {
+            background-color: #000;
+            width: 35px;
+            height: 35px;
+            content: "";
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zycord-button:hover, .zycord-main-button:hover {
+            background-color: #666;
+        }
+
+        .zycord-buttons-holder {
+            background-color: #000;
+            margin-top: 5px;
+            width: 35px;
+            border-radius: 9999px;
+            visibility: collapse;
+        }
+
+        .zycord-button-icon {
+            width: 95%;
+            filter: brightness(1000);
+        }
+    </style>
+    <div class="zycord-sidebar-div-holder">
+        <button class="zycord-main-button">
+            <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/2888-settings.png?raw=true" class="zycord-button-icon">
+        </button>
+        <script>
+            window.onload = function() {
+                var mainButton = document.querySelector('.zycord-main-button');
+                var buttonsHolder = document.querySelector('.zycord-buttons-holder');
+                mainButton.style.visibility = 'visible';
+                mainButton.addEventListener('click', function() {
+                    if (buttonsHolder.style.visibility === 'visible') {
+                        buttonsHolder.style.visibility = 'collapse';
+                    } else {
+                        buttonsHolder.style.visibility = 'visible';
+                    }
+                });
+            };
+        </script>
+        <div class="zycord-buttons-holder">
+            <button class="zycord-button">
+                <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/2888-settings.png?raw=true" class="zycord-button-icon">
+            </button>
+            <button class="zycord-button">
+                <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/8410-appearance-mobile-white.png?raw=true" class="zycord-button-icon">
+            </button>
+        </div>
+    </div>
+</div>
+`;
     }
 
     function autoUpdateAvatar() {
