@@ -7,7 +7,7 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 8
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 15
+    let MINUTES_UPDATED = 25
     let TIME_AFTERNOON = 1
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
@@ -612,7 +612,6 @@
 
     function createNewSidebarMenu(sidebarSize, buttonHtml, uniqueIdentifier) {
         return `
-<div>
     <style>
         .zycord-sidebar-div-holder {
             height: 100%;
@@ -672,7 +671,6 @@
             ${buttonHtml}
         </div>
     </div>
-</div>
 `;
     }
 
@@ -688,7 +686,7 @@
 
     function setupSidebarMenu() {
         const elementCode = generateRandomCode();
-        const TOPBAR_SIZE = SETTINGS.UI_CONFIG?.INTERACTIVE_MENU_SIZE || 33;
+        const TOPBAR_SIZE = SETTINGS.UI_CONFIG?.INTERACTIVE_MENU_SIZE || 35;
         const ICONS = {
             "SETTINGS": 'https://github.com/Zy1ux/Zycord/blob/main/Images/2888-settings.png?raw=true',
             "LIGHT-THEME": 'https://github.com/Zy1ux/Zycord/blob/main/Images/8410-appearance-mobile-white.png?raw=true',
@@ -706,6 +704,7 @@
         });
         const sidebarMenu = createNewSidebarMenu(TOPBAR_SIZE, buttonsHtmlValue, elementCode);
         const sidebarMenuElement = document.createElement('div');
+        sidebarMenuElement.style.zIndex = "1000";
         sidebarMenuElement.innerHTML = sidebarMenu;
         document.body.appendChild(sidebarMenuElement);
         buttonNames.forEach((name, index) => {
