@@ -7,8 +7,8 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 8
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 3
-    let TIME_AFTERNOON = 3
+    let MINUTES_UPDATED = 9
+    let TIME_AFTERNOON = 4
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
@@ -705,8 +705,8 @@
                 buttonElement.addEventListener('click', () => buttonActions[index](buttonElement, false));
             }
         });
-        var mainButton = document.getElementById('zycord-main-button-eDaEC');
-        var buttonsHolder = document.getElementById('zycord-button-holder-eDaEC');
+        var mainButton = document.getElementById(`zycord-main-button-${elementCode}`);
+        var buttonsHolder = document.getElementById(`zycord-button-holder-${elementCode}`);
         mainButton.style.visibility = 'visible';
         mainButton.addEventListener('click', function() {
             if (buttonsHolder.style.visibility === 'visible') {
