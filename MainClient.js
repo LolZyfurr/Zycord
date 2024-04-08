@@ -7,7 +7,7 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 8
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 25
+    let MINUTES_UPDATED = 50
     let TIME_AFTERNOON = 1
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
@@ -612,65 +612,70 @@
 
     function createNewSidebarMenu(sidebarSize, buttonHtml, uniqueIdentifier) {
         return `
-    <style>
-        .zycord-sidebar-div-holder {
-            height: 100%;
-            width: 100%;
-            display: grid;
-            justify-content: right;
-            align-content: center;
+<style>
+    .sidebar-zycord-sidebar-div-holder {
+        height: 100%;
+        width: 100%;
+        display: grid;
+        justify-content: right;
+        align-content: center;
+    }
+
+    .sidebar-zycord-button,
+    .sidebar-zycord-main-button {
+        background-color: #000;
+        width: ${sidebarSize}px;
+        height: ${sidebarSize}px;
+        content: "";
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .sidebar-zycord-button:hover,
+    .zycord-main-button:hover {
+        background-color: #666;
+    }
+
+    .sidebar-zycord-buttons-holder {
+        background-color: #000;
+        margin-top: 5px;
+
+        width: $ {
+            sidebarSize
         }
 
-        .zycord-button, .zycord-main-button {
-            background-color: #000;
-            width: ${sidebarSize}px;
-            height: ${sidebarSize}px;
-            content: "";
-            border-radius: 9999px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        px;
+        border-radius: 9999px;
+        visibility: hidden;
+    }
 
-        .zycord-button:hover, .zycord-main-button:hover {
-            background-color: #666;
-        }
-
-        .zycord-buttons-holder {
-            background-color: #000;
-            margin-top: 5px;
-            width: ${sidebarSize}px;
-            border-radius: 9999px;
-            visibility: collapse;
-        }
-
-        .zycord-button-icon {
-            width: 95%;
-            filter: brightness(1000);
-        }
-    </style>
-    <div class="zycord-sidebar-div-holder" id="zycord-sidebar-div-holder-${uniqueIdentifier}">
-        <button class="zycord-main-button" id="zycord-main-button-${uniqueIdentifier}">
-            <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/2888-settings.png?raw=true" class="zycord-button-icon" id="zycord-button-icon-${uniqueIdentifier}">
-        </button>
-        <script>
-            window.onload = function() {
-                var mainButton = document.getElementById('zycord-main-button-${uniqueIdentifier}');
-                var buttonsHolder = document.getElementById('zycord-button-holder-${uniqueIdentifier}');
-                mainButton.style.visibility = 'visible';
-                mainButton.addEventListener('click', function() {
-                    if (buttonsHolder.style.visibility === 'visible') {
-                        buttonsHolder.style.visibility = 'collapse';
-                    } else {
-                        buttonsHolder.style.visibility = 'visible';
-                    }
-                });
-            };
-        </script>
-        <div class="zycord-buttons-holder" id="zycord-button-holder-${uniqueIdentifier}">
-            ${buttonHtml}
-        </div>
-    </div>
+    .sidebar-zycord-button-icon {
+        width: 95%;
+        filter: brightness(1000);
+    }
+</style>
+<div class="sidebar-zycord-sidebar-div-holder" id="zycord-sidebar-div-holder-${uniqueIdentifier}">
+    <button class="sidebar-zycord-main-button" id="zycord-main-button-${uniqueIdentifier}">
+        <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/2888-settings.png?raw=true" class="sidebar-zycord-button-icon" id="zycord-button-icon-${uniqueIdentifier}">
+    </button>
+    <script>
+        window.onload = function() {
+            var mainButton = document.getElementById('zycord-main-button-${uniqueIdentifier}');
+            var buttonsHolder = document.getElementById('zycord-button-holder-${uniqueIdentifier}');
+            mainButton.style.visibility = 'visible';
+            mainButton.addEventListener('click', function() {
+                if (buttonsHolder.style.visibility === 'visible') {
+                    buttonsHolder.style.visibility = 'hidden';
+                } else {
+                    buttonsHolder.style.visibility = 'visible';
+                }
+            });
+        };
+    </script>
+    <div class="sidebar-zycord-buttons-holder" id="zycord-button-holder-${uniqueIdentifier}"> ${buttonHtml} </div>
+</div>
 `;
     }
 
@@ -705,6 +710,9 @@
         const sidebarMenu = createNewSidebarMenu(TOPBAR_SIZE, buttonsHtmlValue, elementCode);
         const sidebarMenuElement = document.createElement('div');
         sidebarMenuElement.style.zIndex = "1000";
+        sidebarMenuElement.style.height = "100%";
+        sidebarMenuElement.style.width = "100%";
+        sidebarMenuElement.style.position = "fixed";
         sidebarMenuElement.innerHTML = sidebarMenu;
         document.body.appendChild(sidebarMenuElement);
         buttonNames.forEach((name, index) => {
