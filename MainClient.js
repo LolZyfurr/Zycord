@@ -7,8 +7,8 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 8
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 58
-    let TIME_AFTERNOON = 2
+    let MINUTES_UPDATED = 3
+    let TIME_AFTERNOON = 3
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
@@ -657,20 +657,6 @@
     <button class="sidebar-zycord-main-button" id="zycord-main-button-${uniqueIdentifier}">
         <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/2888-settings.png?raw=true" class="sidebar-zycord-button-icon" id="zycord-button-icon-${uniqueIdentifier}">
     </button>
-    <script>
-        window.onload = function() {
-            var mainButton = document.getElementById('zycord-main-button-${uniqueIdentifier}');
-            var buttonsHolder = document.getElementById('zycord-button-holder-${uniqueIdentifier}');
-            mainButton.style.visibility = 'visible';
-            mainButton.addEventListener('click', function() {
-                if (buttonsHolder.style.visibility === 'visible') {
-                    buttonsHolder.style.visibility = 'hidden';
-                } else {
-                    buttonsHolder.style.visibility = 'visible';
-                }
-            });
-        };
-    </script>
     <div class="sidebar-zycord-buttons-holder" id="zycord-button-holder-${uniqueIdentifier}"> ${buttonHtml} </div>
 </div>
 `;
@@ -717,6 +703,16 @@
             if (buttonActions[index]) {
                 buttonActions[index](buttonElement, true)
                 buttonElement.addEventListener('click', () => buttonActions[index](buttonElement, false));
+            }
+        });
+        var mainButton = document.getElementById('zycord-main-button-eDaEC');
+        var buttonsHolder = document.getElementById('zycord-button-holder-eDaEC');
+        mainButton.style.visibility = 'visible';
+        mainButton.addEventListener('click', function() {
+            if (buttonsHolder.style.visibility === 'visible') {
+                buttonsHolder.style.visibility = 'hidden';
+            } else {
+                buttonsHolder.style.visibility = 'visible';
             }
         });
     }
