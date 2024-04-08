@@ -7,9 +7,9 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 8
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 40
-    let TIME_AFTERNOON = 0
-    let TIME_UPDATED = 11
+    let MINUTES_UPDATED = 15
+    let TIME_AFTERNOON = 1
+    let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
     let ALPHA_YEAR = YEAR_UPDATED.toString(36)
@@ -127,77 +127,6 @@
 
     function changeAvatarImages(a) {
         SETTINGS.APP_CONFIG.USE_CUSTOM_AVATAR && document.querySelectorAll('img[src*="723659289377636423"]').forEach(c => c.src = a);
-    }
-
-    function createNewSidebar() {
-        const sidebarHtmlValue = `
-<div>
-    <style>
-        .zycord-sidebar-div-holder {
-            height: 100%;
-            width: 100%;
-            display: grid;
-            justify-content: right;
-            align-content: center;
-        }
-
-        .zycord-button, .zycord-main-button {
-            background-color: #000;
-            width: 35px;
-            height: 35px;
-            content: "";
-            border-radius: 9999px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .zycord-button:hover, .zycord-main-button:hover {
-            background-color: #666;
-        }
-
-        .zycord-buttons-holder {
-            background-color: #000;
-            margin-top: 5px;
-            width: 35px;
-            border-radius: 9999px;
-            visibility: collapse;
-        }
-
-        .zycord-button-icon {
-            width: 95%;
-            filter: brightness(1000);
-        }
-    </style>
-    <div class="zycord-sidebar-div-holder">
-        <button class="zycord-main-button">
-            <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/2888-settings.png?raw=true" class="zycord-button-icon">
-        </button>
-        <script>
-            window.onload = function() {
-                var mainButton = document.querySelector('.zycord-main-button');
-                var buttonsHolder = document.querySelector('.zycord-buttons-holder');
-                mainButton.style.visibility = 'visible';
-                mainButton.addEventListener('click', function() {
-                    if (buttonsHolder.style.visibility === 'visible') {
-                        buttonsHolder.style.visibility = 'collapse';
-                    } else {
-                        buttonsHolder.style.visibility = 'visible';
-                    }
-                });
-            };
-        </script>
-        <div class="zycord-buttons-holder">
-            <button class="zycord-button">
-                <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/2888-settings.png?raw=true" class="zycord-button-icon">
-            </button>
-            <button class="zycord-button">
-                <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/8410-appearance-mobile-white.png?raw=true" class="zycord-button-icon">
-            </button>
-        </div>
-    </div>
-</div>
-`;
     }
 
     function autoUpdateAvatar() {
@@ -680,65 +609,115 @@
         const buttonSettings = '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
-    let TOPBAR_SIZE = SETTINGS.UI_CONFIG ? (SETTINGS.UI_CONFIG.INTERACTIVE_MENU_SIZE ? (SETTINGS.UI_CONFIG.INTERACTIVE_MENU_SIZE) : (33)) : (33)
-    let SETTINGS_ICON = 'https://github.com/Zy1ux/Zycord/blob/main/Images/2888-settings.png?raw=true';
-    let LIGHT_THEME_ICON = 'https://github.com/Zy1ux/Zycord/blob/main/Images/8410-appearance-mobile-white.png?raw=true';
-    let LEADERBOARD_ICON = 'https://github.com/Zy1ux/Zycord/blob/main/Images/5971-forum.png?raw=true';
-    let AUTO_STATUS_ICON = 'https://github.com/Zy1ux/Zycord/blob/main/Images/1731-discord-profile-activity-white.png?raw=true';
-    let LEADERBOARD_TODAY_ICON = 'https://github.com/Zy1ux/Zycord/blob/main/Images/8312-active-threads.png?raw=true';
-    let CHANGELOG_ICON = '';
-    const buttonNames = [SETTINGS_ICON, LIGHT_THEME_ICON, LEADERBOARD_ICON, AUTO_STATUS_ICON, LEADERBOARD_TODAY_ICON, CHANGELOG_ICON];
-    const amountOfButtons = buttonNames.length;
-    const buttonActions = [toggleSettingsMenu, toggleLightTheme, leaderboardButtonPress, toggleAutoStatus, leaderboardTodayButtonPress, changelogButtonPress];
-    const topBar = document.createElement('div');
-    topBar.style.cssText = `
-    position: absolute;
-    top: 40%;
-    ${SETTINGS.UI_CONFIG ? ((SETTINGS.UI_CONFIG.INTERACTIVE_MENU_LOCATION).toUpperCase() === ("right").toUpperCase() ? ("right") : ("left")) : ("left")}: 0%;
-    width: ${TOPBAR_SIZE}px;
-    height: ${TOPBAR_SIZE * amountOfButtons}px;
-    flex-direction: column;
-    background-color: rgb(0, 0, 0, 0.25);
-    backdrop-filter: blur(10px);
-    color: #fff;
-    z-index: 1000;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-    border-top-${SETTINGS.UI_CONFIG ? ((SETTINGS.UI_CONFIG.INTERACTIVE_MENU_LOCATION).toUpperCase() === ("right").toUpperCase() ? ("left") : ("right")) : ("right")}-radius: ${TOPBAR_SIZE/2}px;
-    border-bottom-${SETTINGS.UI_CONFIG ? ((SETTINGS.UI_CONFIG.INTERACTIVE_MENU_LOCATION).toUpperCase() === ("right").toUpperCase() ? ("left") : ("right")) : ("right")}-radius: ${TOPBAR_SIZE/2}px;
-    outline: solid;
-    outline-width: 2px;
-`;
-    buttonNames.forEach((name, index) => {
-        const button = document.createElement('button');
-        button.style.cssText = `
-        font-size: 20px;
-        width: 100%;
-        height: ${100 / amountOfButtons}%;
-        background-color: rgba(0, 0, 0, 0);
-        border-radius: ${TOPBAR_SIZE/2}px;
-        padding: 0px;
-    `;
-        const buttonIcon = document.createElement('img');
-        const iconSize = 75;
-        buttonIcon.src = name;
-        buttonIcon.alt = '';
-        buttonIcon.style.cssText = `
-        position: relative;
-        top: ${(100-iconSize)/2}%;
-        width: ${iconSize}%;
-        height: ${iconSize}%;
-        filter: brightness(1000);
-    `;
-        button.appendChild(buttonIcon);
-        if (buttonActions[index]) {
-            buttonActions[index](button, true)
-            button.addEventListener('click', () => buttonActions[index](button, false));
+
+    function createNewSidebarMenu(sidebarSize, buttonHtml, uniqueIdentifier) {
+        return `
+<div>
+    <style>
+        .zycord-sidebar-div-holder {
+            height: 100%;
+            width: 100%;
+            display: grid;
+            justify-content: right;
+            align-content: center;
         }
-        topBar.appendChild(button);
-    });
-    document.body.appendChild(topBar);
+
+        .zycord-button, .zycord-main-button {
+            background-color: #000;
+            width: ${sidebarSize}px;
+            height: ${sidebarSize}px;
+            content: "";
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zycord-button:hover, .zycord-main-button:hover {
+            background-color: #666;
+        }
+
+        .zycord-buttons-holder {
+            background-color: #000;
+            margin-top: 5px;
+            width: ${sidebarSize}px;
+            border-radius: 9999px;
+            visibility: collapse;
+        }
+
+        .zycord-button-icon {
+            width: 95%;
+            filter: brightness(1000);
+        }
+    </style>
+    <div class="zycord-sidebar-div-holder" id="zycord-sidebar-div-holder-${uniqueIdentifier}">
+        <button class="zycord-main-button" id="zycord-main-button-${uniqueIdentifier}">
+            <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/2888-settings.png?raw=true" class="zycord-button-icon" id="zycord-button-icon-${uniqueIdentifier}">
+        </button>
+        <script>
+            window.onload = function() {
+                var mainButton = document.getElementById('zycord-main-button-${uniqueIdentifier}');
+                var buttonsHolder = document.getElementById('zycord-button-holder-${uniqueIdentifier}');
+                mainButton.style.visibility = 'visible';
+                mainButton.addEventListener('click', function() {
+                    if (buttonsHolder.style.visibility === 'visible') {
+                        buttonsHolder.style.visibility = 'collapse';
+                    } else {
+                        buttonsHolder.style.visibility = 'visible';
+                    }
+                });
+            };
+        </script>
+        <div class="zycord-buttons-holder" id="zycord-button-holder-${uniqueIdentifier}">
+            ${buttonHtml}
+        </div>
+    </div>
+</div>
+`;
+    }
+
+    function createNewSidebarButton(buttonImage, uniqueIdentifier, buttonName) {
+        const buttonCustomIdentifier = `zycord-button-${buttonName}-${uniqueIdentifier}`;
+        const buttonHtmlValue = `<button class="zycord-button" id="${buttonCustomIdentifier}"> <img src="${buttonImage}" class="zycord-button-icon" id="zycord-button-icon-${uniqueIdentifier}"> </button>`;
+        const returnValue = {
+            buttonHtmlValue: buttonHtmlValue,
+            buttonCustomIdentifier: buttonCustomIdentifier,
+        };
+        return returnValue;
+    }
+
+    function setupSidebarMenu() {
+        const elementCode = generateRandomCode();
+        const TOPBAR_SIZE = SETTINGS.UI_CONFIG?.INTERACTIVE_MENU_SIZE || 33;
+        const ICONS = {
+            "SETTINGS": 'https://github.com/Zy1ux/Zycord/blob/main/Images/2888-settings.png?raw=true',
+            "LIGHT-THEME": 'https://github.com/Zy1ux/Zycord/blob/main/Images/8410-appearance-mobile-white.png?raw=true',
+            "LEADERBOARD": 'https://github.com/Zy1ux/Zycord/blob/main/Images/5971-forum.png?raw=true',
+            "AUTO-STATUS": 'https://github.com/Zy1ux/Zycord/blob/main/Images/1731-discord-profile-activity-white.png?raw=true',
+            "LEADERBOARD-TODAY": 'https://github.com/Zy1ux/Zycord/blob/main/Images/8312-active-threads.png?raw=true',
+            "CHANGELOG": ''
+        };
+        const buttonNames = ["settings", "light-theme", "leaderboard", "auto-status", "leaderboard-today", "changelog"];
+        const buttonActions = [toggleSettingsMenu, toggleLightTheme, leaderboardButtonPress, toggleAutoStatus, leaderboardTodayButtonPress, changelogButtonPress];
+        let buttonsHtmlValue = "";
+        buttonNames.forEach((name, index) => {
+            const buttonSidebar = createNewSidebarButton(ICONS[name.toUpperCase()], elementCode, name);
+            buttonsHtmlValue += buttonSidebar.buttonHtmlValue;
+        });
+        const sidebarMenu = createNewSidebarMenu(TOPBAR_SIZE, buttonsHtmlValue, elementCode);
+        const sidebarMenuElement = document.createElement('div');
+        sidebarMenuElement.innerHTML = sidebarMenu;
+        document.body.appendChild(sidebarMenuElement);
+        buttonNames.forEach((name, index) => {
+            const buttonIdentifier = createNewSidebarButton(ICONS[name.toUpperCase()], elementCode, name);
+            const buttonElement = document.getElementById(buttonIdentifier.buttonCustomIdentifier);
+            if (buttonActions[index]) {
+                buttonActions[index](buttonElement, true)
+                buttonElement.addEventListener('click', () => buttonActions[index](buttonElement, false));
+            }
+        });
+    }
+    setupSidebarMenu()
     window.addEventListener("blur", (function() {
         ShadeWeb(true, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME);
         updateUserStatus(SETTINGS.APP_CONFIG.UNFOCUSED_STATUS), timeoutId = setTimeout((function() {
