@@ -7,7 +7,7 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 8
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 50
+    let MINUTES_UPDATED = 58
     let TIME_AFTERNOON = 2
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
@@ -619,6 +619,8 @@
         display: grid;
         justify-content: right;
         align-content: center;
+        position: fixed;
+        z-index: 1000;
     }
 
     .sidebar-zycord-button,
