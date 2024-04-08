@@ -7,7 +7,7 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 8
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 40
+    let MINUTES_UPDATED = 50
     let TIME_AFTERNOON = 2
     let TIME_UPDATED = 12
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
@@ -706,9 +706,7 @@
         const sidebarMenuElement = document.createElement('div');
         sidebarMenuElement.style.zIndex = "1000";
         sidebarMenuElement.style.position = "fixed";
-        sidebarMenuElement.style.width = "100%";
-        sidebarMenuElement.style.height = "100%";
-        sidebarMenuElement.style.right = "5px";
+        sidebarMenuElement.style.display = "contents";
         sidebarMenuElement.innerHTML = sidebarMenu;
         document.body.appendChild(sidebarMenuElement);
         buttonNames.forEach((name, index) => {
