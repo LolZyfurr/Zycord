@@ -7,7 +7,7 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 10
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 30
+    let MINUTES_UPDATED = 35
     let TIME_AFTERNOON = 0
     let TIME_UPDATED = 8
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
@@ -186,9 +186,9 @@
         })
     }
     async function getChangelog() {
-        const CHANGELOG_API_URL = "https://github.com/Zy1ux/Zycord/latest-commit/main/MainClient.js";
+        const CHANGELOG_API_URL = "https://github.com/Zy1ux/Zycord/latest-commit/main";
         try {
-            const response = await fetch("https://github.com/Zy1ux/Zycord/latest-commit/main/MainClient.js", {
+            const response = await fetch(CHANGELOG_API_URL, {
                 "headers": {
                     "accept": "application/json",
                     "accept-language": "en-US,en;q=0.9",
