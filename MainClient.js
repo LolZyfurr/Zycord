@@ -7,7 +7,7 @@
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 10
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 35
+    let MINUTES_UPDATED = 45
     let TIME_AFTERNOON = 0
     let TIME_UPDATED = 8
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
@@ -610,7 +610,7 @@
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
 
-    function createNewSidebarMenu(sidebarSize, buttonHtml, uniqueIdentifier) {
+    function createNewSidebarMenu(sidebarSize, buttonHtml, uniqueIdentifier, buttonIcon) {
         return `
 <style>
     .sidebar-zycord-sidebar-div-holder {
@@ -650,7 +650,7 @@
 </style>
 <div class="sidebar-zycord-sidebar-div-holder" id="zycord-sidebar-div-holder-${uniqueIdentifier}">
     <button class="sidebar-zycord-main-button" id="zycord-main-button-${uniqueIdentifier}">
-        <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/2888-settings.png?raw=true" class="sidebar-zycord-button-icon" id="zycord-button-icon-${uniqueIdentifier}">
+        <img src="${buttonIcon}" class="sidebar-zycord-button-icon" id="zycord-button-icon-${uniqueIdentifier}">
     </button>
     <div class="sidebar-zycord-buttons-holder" id="zycord-button-holder-${uniqueIdentifier}"> ${buttonHtml} </div>
 </div>
@@ -670,6 +670,7 @@
     function setupSidebarMenu() {
         const elementCode = generateRandomCode();
         const TOPBAR_SIZE = SETTINGS.UI_CONFIG?.INTERACTIVE_MENU_SIZE || 35;
+        const MAIN_ICON_URL = "https://github.com/Zy1ux/Zycord/blob/main/Images/8895-more-options.png?raw=true";
         const ICONS = {
             "SETTINGS": 'https://github.com/Zy1ux/Zycord/blob/main/Images/2888-settings.png?raw=true',
             "LIGHT-THEME": 'https://github.com/Zy1ux/Zycord/blob/main/Images/8410-appearance-mobile-white.png?raw=true',
@@ -685,7 +686,7 @@
             const buttonSidebar = createNewSidebarButton(ICONS[name.toUpperCase()], elementCode, name);
             buttonsHtmlValue += buttonSidebar.buttonHtmlValue;
         });
-        const sidebarMenu = createNewSidebarMenu(TOPBAR_SIZE, buttonsHtmlValue, elementCode);
+        const sidebarMenu = createNewSidebarMenu(TOPBAR_SIZE, buttonsHtmlValue, elementCode, MAIN_ICON_URL);
         const sidebarMenuElement = document.createElement('div');
         sidebarMenuElement.style.zIndex = "1000";
         sidebarMenuElement.style.position = "fixed";
