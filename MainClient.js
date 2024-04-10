@@ -4,10 +4,11 @@
     let THEME_COLOR = SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR !== false ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR) : (null)) : (null);
     let BLUR_WEB = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD === true ? (true) : (false)) : (false)) : (false)) : (false);
     let BLUR_WEB_AMOUNT = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT) : (10)) : (10)) : (10);
+    let changelogTextData = "- Fixed the changelog menu.\n- Changed the sidebar menu icon.";
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 10
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 45
+    let MINUTES_UPDATED = 50
     let TIME_AFTERNOON = 0
     let TIME_UPDATED = 8
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
@@ -27,7 +28,6 @@
     let updateStatus = "";
     let timeoutId = null;
     let leaderboardDebounce = false;
-    let changelogTextData = await uwuify(await getChangelog());
     ShadeWeb(false, false, BLUR_WEB ? (BLUR_WEB_AMOUNT / (1 - SETTINGS.APP_CONFIG.INITIAL_OPACITY)) : (SETTINGS.APP_CONFIG.INITIAL_OPACITY), false);
     const DELAY = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (3 / 5)) * 1000);
@@ -184,29 +184,6 @@
             return `${o} ${r=a,r[Math.floor(Math.random()*r.length)]}${e}`;
             var r
         })
-    }
-    async function getChangelog() {
-        const CHANGELOG_API_URL = "https://github.com/Zy1ux/Zycord/latest-commit/main";
-        try {
-            const response = await fetch(CHANGELOG_API_URL, {
-                "headers": {
-                    "accept": "application/json",
-                    "accept-language": "en-US,en;q=0.9",
-                    "content-type": "application/json",
-                },
-                "body": null,
-                "method": "GET"
-            });
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const changelogData = await response.json();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(changelogData.shortMessageHtmlLink, 'text/html');
-            return doc.body.textContent;
-        } catch (error) {
-            return error.toString();
-        }
     }
 
     function setStatus(t, e) {
