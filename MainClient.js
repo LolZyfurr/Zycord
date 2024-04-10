@@ -4,11 +4,11 @@
     let THEME_COLOR = SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR !== false ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR) : (null)) : (null);
     let BLUR_WEB = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD === true ? (true) : (false)) : (false)) : (false)) : (false);
     let BLUR_WEB_AMOUNT = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT) : (10)) : (10)) : (10);
-    let CHANGELOG_DATA = ["Changed the way the changelog list looks.", "Attempted to fix the line breaks in the changelog menu.", "Fixed the changelog menu.", "Changed the sidebar menu icon."];
+    let CHANGELOG_DATA = ["Reverted to an older version.", "Attempted to fix the line breaks in the changelog menu.", "Fixed the changelog menu.", "Changed the sidebar menu icon."];
     let MONTH_UPDATED = 4
     let DAY_UPDATED = 10
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 25
+    let MINUTES_UPDATED = 30
     let TIME_AFTERNOON = 0
     let TIME_UPDATED = 9
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
@@ -582,38 +582,9 @@
             let changelogModalTitle = `Changelog`;
             let changelogModalBodyText = ``;
             CHANGELOG_DATA.forEach((changelogText, index) => {
-                changelogModalBodyText += `<li><span><span>${changelogText}</span></span></li>`;
+                changelogModalBodyText += `<span style="color: var(--header-primary);">${`- ${changelogText}`}</span>`;
             });
-            let changelogModalBody = `
-<div>
-    <style>
-    .markup_a7e664 ul {
-        list-style-type: disc;
-    }
-    .markup_a7e664 ul, .markup_a7e664 ol {
-        margin: 4px 0 0 16px;
-        list-style-position: outside;
-    }
-    ol, ul {
-        list-style: none;
-    }
-    .markup_a7e664 li {
-        white-space: break-spaces;
-        margin-bottom: 4px;
-    }
-    ::marker {
-        unicode-bidi: isolate;
-        font-variant-numeric: tabular-nums;
-        text-transform: none;
-        text-indent: 0px !important;
-        text-align: start !important;
-        text-align-last: start !important;
-    }
-    </style>
-    <ul>
-        ${changelogModalBodyText}
-    </ul>
-</div>`;
+            let changelogModalBody = `<div style="display: grid;">${changelogModalBodyText}</div>`
             createModal(changelogModalTitle, changelogModalBody)
         }
         const buttonSettings = '0,0,0,0';
