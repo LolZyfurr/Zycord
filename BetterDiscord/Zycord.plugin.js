@@ -1,11 +1,13 @@
 /**
- * @name         Zycord
- * @version      0.0.1
- * @description  An experimental discord client modification.
- * @author       Zy1ux
- * @updateUrl    https://raw.githubusercontent.com/Zy1ux/Zycord/main/BetterDiscord/Zycord.plugin.js
- * @source       https://github.com/Zy1ux/Zycord/blob/main/BetterDiscord/Zycord.plugin.js
- */
+* @name Zycord
+* @author Zy1ux
+* @description An experimental discord client modification.
+* @version 0.0.2
+* @authorId 723659289377636423
+* @authorLink https://github.com/Zy1ux
+* @source https://github.com/Zy1ux/Zycord/main/BetterDiscord/Zycord.plugin.js
+* @updateUrl https://raw.githubusercontent.com/Zy1ux/Zycord/main/BetterDiscord/Zycord.plugin.js
+*/
 
 module.exports = meta => {
     let USER_STATUS = {
