@@ -3,7 +3,7 @@
  * @version      0.0.1
  * @description  An experimental discord client modification.
  * @author       Zy1ux
- * @source       https://raw.githubusercontent.com/Zy1ux/Zycord/main/BetterDiscord/Zycord.plugin.js
+ * @updateUrl    https://raw.githubusercontent.com/Zy1ux/Zycord/main/BetterDiscord/Zycord.plugin.js
  */
 
 module.exports = meta => {
