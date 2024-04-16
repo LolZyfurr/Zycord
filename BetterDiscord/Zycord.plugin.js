@@ -1,10 +1,11 @@
 /**
  * @name         Zycord
- * @version      0.0.0
+ * @version      0.0.1
  * @description  An experimental discord client modification.
  * @author       Zy1ux
- * @source https://github.com/Zy1ux/Zycord/
+ * @source       https://raw.githubusercontent.com/Zy1ux/Zycord/main/BetterDiscord/Zycord.plugin.js
  */
+
 module.exports = meta => {
     let USER_STATUS = {
         ONLINE: "WgwKCAoGb25saW5lGgA=",
