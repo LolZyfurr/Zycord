@@ -4,6 +4,7 @@
  * @description  An experimental discord client modification.
  * @author       Zy1ux
  * @updateUrl    https://raw.githubusercontent.com/Zy1ux/Zycord/main/BetterDiscord/Zycord.plugin.js
+ * @source       https://github.com/Zy1ux/Zycord/blob/main/BetterDiscord/Zycord.plugin.js
  */
 
 module.exports = meta => {
