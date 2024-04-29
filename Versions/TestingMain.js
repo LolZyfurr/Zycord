@@ -7,8 +7,8 @@
         return checkValueExists(FirstValueToCheck, ElseValue ? ElseValue : null) ? checkValueExists(SecondValueToCheck, ElseValue ? ElseValue : null) : ElseValue ? ElseValue : null;
     }
 
-    function getConfigData() {
-        const defaultValues = {
+    function getAppConfigData() {
+        const defaultAppValues = {
             auto_Update_Status: true,
             auto_Update_Theme: true,
             use_Custom_Avatar: true,
@@ -24,7 +24,7 @@
         };
         const configFile = checkValueExists(SETTINGS);
         const appConfig = checkValuesExist(configFile, configFile.APP_CONFIG);
-        const configKeys = Object.keys(defaultValues);
+        const configKeys = Object.keys(defaultAppValues);
         const configData = configKeys.reduce((acc, key) => {
             acc[key] = checkValuesExist(appConfig, appConfig[key.toUpperCase()], defaultValues[key]);
             return acc;
@@ -32,6 +32,8 @@
         configData.getUserToken = getToken();
         return configData;
     }
+    let appDataConfig = getAppConfigData();
+    console.log(appDataConfig);
     let AUTHORIZATION = getToken();
     let LAST_AUTH = AUTHORIZATION;
     let THEME_COLOR = SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR !== false ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR) : (null)) : (null);
@@ -39,11 +41,11 @@
     let BLUR_WEB_AMOUNT = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT) : (10)) : (10)) : (10);
     let CHANGELOG_DATA = ["Reverted to an older version.", "Attempted to fix the line breaks in the changelog menu.", "Fixed the changelog menu.", "Changed the sidebar menu icon."];
     let MONTH_UPDATED = 4
-    let DAY_UPDATED = 10
+    let DAY_UPDATED = 29
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 30
+    let MINUTES_UPDATED = 40
     let TIME_AFTERNOON = 0
-    let TIME_UPDATED = 9
+    let TIME_UPDATED = 11
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
     let ALPHA_YEAR = YEAR_UPDATED.toString(36)
