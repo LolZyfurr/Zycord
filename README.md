@@ -19,6 +19,12 @@ An experimental discord client modification.
 
 (async function () {
     "use strict";
+    let USER_ACTIVITY_STATUS = {
+        ONLINE: "Wg4KCAoGb25saW5lGgIIAQ==",
+        IDLE: "WgwKBgoEaWRsZRoCCAE=",
+        DO_NOT_DISTURB: "WgsKBQoDZG5kGgIIAQ==",
+        INVISIBLE: "WhEKCwoJaW52aXNpYmxlGgIIAQ==",
+    }
     const USER_STATUS= {
         ONLINE: "WgwKCAoGb25saW5lGgA=",
         IDLE: "WgoKBgoEaWRsZRoA",
