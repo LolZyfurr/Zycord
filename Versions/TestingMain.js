@@ -15,9 +15,9 @@
             initial_Opacity: 1,
             unfocused_Opacity: 0.5,
             focused_Opacity: 0,
-            window_Opacity_Tween_Time: 250,
+            window_Opacity_Transition_Time: 250,
             status_Update_Cooldown: 10,
-            opacity_Multiplier: 4,
+            window_Opacity_Multiplier: 4,
             startup_Time: 5,
             use_Light_Theme: false,
             away_Trigger_Time: 60,
@@ -41,11 +41,11 @@
     let BLUR_WEB_AMOUNT = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT) : (10)) : (10)) : (10);
     let CHANGELOG_DATA = ["Reverted to an older version.", "Attempted to fix the line breaks in the changelog menu.", "Fixed the changelog menu.", "Changed the sidebar menu icon."];
     let MONTH_UPDATED = 4
-    let DAY_UPDATED = 29
+    let DAY_UPDATED = 30
     let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 40
+    let MINUTES_UPDATED = 15
     let TIME_AFTERNOON = 0
-    let TIME_UPDATED = 11
+    let TIME_UPDATED = 8
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
     let ALPHA_YEAR = YEAR_UPDATED.toString(36)
