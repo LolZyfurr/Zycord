@@ -15,9 +15,9 @@
         YEAR: 24,
         MONTH: 5,
         DAY: 1,
-        HOUR: 9,
+        HOUR: 10,
         AFTERNOON: 0,
-        MINUTES: 58,
+        MINUTES: 5,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -27,48 +27,52 @@
         VERSION_ALPHA_MINUTES: UPDATED_DATA.MINUTES.toString(36),
         VERSION_LABEL: "BETA",
     };
-    let CHANGELOG_DATA = {
+    let CHANGELOG_DATA = [
         {
-            "DATA_MESSAGE": "Fixed an error with '.' being invalid. Updated the changelog.",
-            "DATA_TIME": "24-5-1-9-0-58"
+            DATA_MESSAGE: "Fixed an error with the new changelog.",
+            DATA_TIME: "24-5-1-10-0-5"
         },
         {
-            "DATA_MESSAGE": "Changed the changelog data.",
-            "DATA_TIME": "24-5-1-9-0-40"
+            DATA_MESSAGE: "Fixed an error with '.' being invalid. Updated the changelog.",
+            DATA_TIME: "24-5-1-9-0-58"
         },
         {
-            "DATA_MESSAGE": "Fixed error handling.",
-            "DATA_TIME": "24-5-1-9-0-40"
+            DATA_MESSAGE: "Changed the changelog data.",
+            DATA_TIME: "24-5-1-9-0-40"
         },
         {
-            "DATA_MESSAGE": "Added error handling.",
-            "DATA_TIME": "24-5-1-9-0-40"
+            DATA_MESSAGE: "Fixed error handling.",
+            DATA_TIME: "24-5-1-9-0-40"
         },
         {
-            "DATA_MESSAGE": "Updated some more variables for easier updates.",
-            "DATA_TIME": "24-5-1-9-0-40"
+            DATA_MESSAGE: "Added error handling.",
+            DATA_TIME: "24-5-1-9-0-40"
         },
         {
-            "DATA_MESSAGE": "Updated some variables for easier updates.",
-            "DATA_TIME": "24-5-1-9-0-40"
+            DATA_MESSAGE: "Updated some more variables for easier updates.",
+            DATA_TIME: "24-5-1-9-0-40"
         },
         {
-            "DATA_MESSAGE": "Reverted to an older version.",
-            "DATA_TIME": "24-5-1-9-0-40"
+            DATA_MESSAGE: "Updated some variables for easier updates.",
+            DATA_TIME: "24-5-1-9-0-40"
         },
         {
-            "DATA_MESSAGE": "Attempted to fix the line breaks in the changelog menu.",
-            "DATA_TIME": "24-5-1-9-0-40"
+            DATA_MESSAGE: "Reverted to an older version.",
+            DATA_TIME: "24-5-1-9-0-40"
         },
         {
-            "DATA_MESSAGE": "Fixed the changelog menu.",
-            "DATA_TIME": "24-5-1-9-0-40"
+            DATA_MESSAGE: "Attempted to fix the line breaks in the changelog menu.",
+            DATA_TIME: "24-5-1-9-0-40"
         },
         {
-            "DATA_MESSAGE": "Changed the sidebar menu icon.",
-            "DATA_TIME": "24-5-1-9-0-40"
+            DATA_MESSAGE: "Fixed the changelog menu.",
+            DATA_TIME: "24-5-1-9-0-40"
         },
-    };
+        {
+            DATA_MESSAGE: "Changed the sidebar menu icon.",
+            DATA_TIME: "24-5-1-9-0-40"
+        },
+    ];
     let DATE_UPDATED = `${VERSION_DATA.VERSION_ALPHA_MONTH}${VERSION_DATA.VERSION_ALPHA_DAY}${VERSION_DATA.VERSION_ALPHA_YEAR}${VERSION_DATA.VERSION_ALPHA_MINUTES}${VERSION_DATA.VERSION_ALPHA_HOUR}`;
     let APP_VERSION = `${VERSION_DATA.VERSION_LABEL} ${DATE_UPDATED}`;
     let VALUE_LAST_STATUS = "";
