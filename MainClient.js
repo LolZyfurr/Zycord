@@ -17,7 +17,7 @@
         DAY: 1,
         HOUR: 10,
         AFTERNOON: 0,
-        MINUTES: 30,
+        MINUTES: 40,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -28,6 +28,9 @@
         VERSION_LABEL: "BETA",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Attempted ixed the formated the version for the changelog again.",
+        DATA_TIME: "24.5.1.10.0.40"
+    }, {
         DATA_MESSAGE: "Fixed the formated the version for the changelog again.",
         DATA_TIME: "24.5.1.10.0.30"
     }, {
@@ -95,19 +98,19 @@
     function formatChangelogTimeData(V_timeValue) {
         let V_splitStr = V_timeValue.split(".");
         let V_UPDATED_DATA = {
-            V_YEAR: V_splitStr[0],
-            V_MONTH: V_splitStr[1],
-            V_DAY: V_splitStr[2],
-            V_HOUR: V_splitStr[3],
-            V_AFTERNOON: V_splitStr[4],
-            V_MINUTES: V_splitStr[5],
+            V_YEAR: parseInt(V_splitStr[0]),
+            V_MONTH: parseInt(V_splitStr[1]),
+            V_DAY: parseInt(V_splitStr[2]),
+            V_HOUR: parseInt(V_splitStr[3]),
+            V_AFTERNOON: parseInt(V_splitStr[4]),
+            V_MINUTES: parseInt(V_splitStr[5]),
         };
         let V_VERSION_DATA = {
             V_ALPHA_YEAR: V_UPDATED_DATA.V_YEAR.toString(36),
-            V_ALPHA_MONTH: String.fromCharCode(parseInt(V_UPDATED_DATA.V_MONTH) + 64),
-            V_ALPHA_DAY: parseInt(V_UPDATED_DATA.V_DAY).toString(36),
-            V_ALPHA_HOUR: (parseInt(V_UPDATED_DATA.V_HOUR) + parseInt(V_UPDATED_DATA.V_AFTERNOON)).toString(36),
-            V_ALPHA_MINUTES: parseInt(V_UPDATED_DATA.V_MINUTES).toString(36),
+            V_ALPHA_MONTH: String.fromCharCode(V_UPDATED_DATA.V_MONTH + 64),
+            V_ALPHA_DAY: V_UPDATED_DATA.V_DAY.toString(36),
+            V_ALPHA_HOUR: (V_UPDATED_DATA.V_HOUR + V_UPDATED_DATA.V_AFTERNOON).toString(36),
+            V_ALPHA_MINUTES: V_UPDATED_DATA.V_MINUTES.toString(36),
             V_LABEL: "BETA",
         };
         let V_newString = `${V_VERSION_DATA.V_ALPHA_MONTH}${V_VERSION_DATA.V_ALPHA_DAY}${V_VERSION_DATA.V_ALPHA_YEAR}${V_VERSION_DATA.V_ALPHA_MINUTES}${V_VERSION_DATA.V_ALPHA_HOUR}`;
