@@ -17,7 +17,7 @@
         DAY: 1,
         HOUR: 10,
         AFTERNOON: 0,
-        MINUTES: 40,
+        MINUTES: 55,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -28,7 +28,10 @@
         VERSION_LABEL: "BETA",
     };
     let CHANGELOG_DATA = [{
-        DATA_MESSAGE: "Attempted ixed the formated the version for the changelog again.",
+        DATA_MESSAGE: "Redesigned the changelog menu.",
+        DATA_TIME: "24.5.1.10.0.55"
+    }, {
+        DATA_MESSAGE: "Attempted to fix the formated the version for the changelog again.",
         DATA_TIME: "24.5.1.10.0.40"
     }, {
         DATA_MESSAGE: "Fixed the formated the version for the changelog again.",
@@ -660,7 +663,7 @@
             CHANGELOG_DATA.forEach((changelogData, index) => {
                 let changelogMessageData = changelogData.DATA_MESSAGE;
                 let changelogVersionData = formatChangelogTimeData(changelogData.DATA_TIME);
-                changelogModalBodyText += `<span style="color: var(--header-primary);">${`- ${changelogMessageData} - ${changelogVersionData}`}</span>`;
+                changelogModalBodyText += `<div><span style="color: var(--header-primary);">${changelogVersionData} </span><span style="color: var(--header-primary); position: fixed; left: 65px;">- ${changelogMessageData}</span></div>`;
             });
             let changelogModalBody = `<div style="display: grid;">${changelogModalBodyText}</div>`
             createModal(changelogModalTitle, changelogModalBody)
