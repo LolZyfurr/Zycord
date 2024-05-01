@@ -9,7 +9,7 @@
         USER_BLUR_AMOUNT: SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? SETTINGS.THEME_CONFIG.BLUR_AMOUNT : 10) : 10) : 10,
         USER_AUTO_STATUS: SETTINGS.APP_CONFIG.AUTO_UPDATE_STATUS,
         USER_AVATAR_SHAPE: SETTINGS.APP_CONFIG.AVATAR_SHAPE,
-        USER_LIGHT_THEME: SETTINGS.APP_CONFIG.USE_LIGHT_THEME
+        USER_LIGHT_THEME: SETTINGS.APP_CONFIG.USE_LIGHT_THEME,
     };
     let UPDATED_DATA = {
         YEAR: 24,
@@ -17,7 +17,7 @@
         DAY: 1,
         HOUR: 11,
         AFTERNOON: 0,
-        MINUTES: 5,
+        MINUTES: 30,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -28,6 +28,9 @@
         VERSION_LABEL: "BETA",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Added more variables for easier updates.",
+        DATA_TIME: "24.5.1.11.0.30"
+    }, {
         DATA_MESSAGE: "Removed some changelog values.",
         DATA_TIME: "24.5.1.11.0.5"
     }, {
@@ -61,20 +64,24 @@
         DATA_MESSAGE: "Changed the changelog data.",
         DATA_TIME: "24.5.1.9.0.40"
     }, ];
+    let SAVED_VALUES_DATA = {
+        SAVED_LEADERBOARD_DEBOUNCE: false,
+        SAVED_UPDATE_DEBOUNCE: false,
+        SAVED_UPDATE_RECALL: false,
+        SAVED_LAST_THEME_VALUE: CONFIG_DATA.USER_LIGHT_THEME,
+        SAVED_LAST_STATUS_VALUE: "",
+        SAVED_UPDATE_STATUS: "",
+    };
+    let DATA_API_URLS = {
+        DISCORD_STATUS_API_URL: "https://discord.com/api/v9/users/@me/settings-proto/1",
+        DISCORD_USER_API_URL: "https://discord.com/api/v9/users/@me",
+    }
     let DATE_UPDATED = `${VERSION_DATA.VERSION_ALPHA_MONTH}${VERSION_DATA.VERSION_ALPHA_DAY}${VERSION_DATA.VERSION_ALPHA_YEAR}${VERSION_DATA.VERSION_ALPHA_MINUTES}${VERSION_DATA.VERSION_ALPHA_HOUR}`;
     let APP_VERSION = `${VERSION_DATA.VERSION_LABEL} ${DATE_UPDATED}`;
-    let VALUE_LAST_STATUS = "";
-    let VALUE_LAST_THEME = CONFIG_DATA.USER_LIGHT_THEME;
-    let updateDebounce = false;
-    let updateRecall = false;
-    let updateStatus = "";
     let timeoutId = null;
-    let leaderboardDebounce = false;
     ShadeWeb(false, false, CONFIG_DATA.USER_USE_BLUR ? (CONFIG_DATA.USER_BLUR_AMOUNT / (1 - SETTINGS.APP_CONFIG.INITIAL_OPACITY)) : (SETTINGS.APP_CONFIG.INITIAL_OPACITY), false);
     const DELAY = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (3 / 5)) * 1000);
-    const STATUS_API_URL = "https://discord.com/api/v9/users/@me/settings-proto/1";
-    const USER_API_URL = "https://discord.com/api/v9/users/@me";
     const USER_AVATAR_URL = await fetchUserAvatarURL(CONFIG_DATA.USER_TOKEN, "1132521952238637117");
     const invisibleChar = await unicodeToString('U+200B');
     document.addEventListener("keydown", (updateEventAvatar));
@@ -251,7 +258,7 @@
     }
 
     function setStatus(t, e) {
-        fetch(STATUS_API_URL, createFetchOptions(t, e, "PATCH"))
+        fetch(DATA_API_URLS.DISCORD_STATUS_API_URL, createFetchOptions(t, e, "PATCH"))
     }
 
     function hexToRgb(e) {
@@ -286,7 +293,7 @@
     }
 
     function fetchThemeColor(e) {
-        null == CONFIG_DATA.USER_THEME_COLOR ? fetch(USER_API_URL, createFetchOptions(e, null, "GET")).then(e => e.json()).then(e => {
+        null == CONFIG_DATA.USER_THEME_COLOR ? fetch(DATA_API_URLS.DISCORD_USER_API_URL, createFetchOptions(e, null, "GET")).then(e => e.json()).then(e => {
             const n = e.banner_color;
             n && (console.log(n), CONFIG_DATA.USER_THEME_COLOR = n, changeElementColor(CONFIG_DATA.USER_THEME_COLOR))
         }) : changeElementColor(CONFIG_DATA.USER_THEME_COLOR)
@@ -376,8 +383,8 @@
         return "https://cdn.discordapp.com/avatars/" + a.id + "/" + a.avatar + ".png?size=4096"
     }
     async function fetchLeaderboard(button, today) {
-        if (!leaderboardDebounce) {
-            leaderboardDebounce = true;
+        if (!SAVED_VALUES_DATA.SAVED_LEADERBOARD_DEBOUNCE) {
+            SAVED_VALUES_DATA.SAVED_LEADERBOARD_DEBOUNCE = true;
             const loadingHtml = `<div style="display: grid;"> <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/9237-loading.gif?raw=true" style="height: 25%; max-height: 250px; justify-self: center; align-self: center;"></div>`;
             const channels = await fetchUserDMs(CONFIG_DATA.USER_TOKEN);
             const fetchedSelfUser = await fetchUserSelf(CONFIG_DATA.USER_TOKEN);
@@ -489,7 +496,7 @@
 </div>
 `;
             modalLeaderboard.modalBody.innerHTML = html;
-            leaderboardDebounce = false;
+            SAVED_VALUES_DATA.SAVED_LEADERBOARD_DEBOUNCE = false;
             leaderboardButtonPress(button, true)
         }
     }
@@ -546,7 +553,7 @@
             x = [y, m, c, P, g, b, h, d].join(",").split(",").map(Number),
             _ = x.reduce((t, r) => t + r, 0) / x.length >= 155;
         const k = async () => {
-            if (CONFIG_DATA.USER_LIGHT_THEME !== VALUE_LAST_THEME) {
+            if (CONFIG_DATA.USER_LIGHT_THEME !== SAVED_VALUES_DATA.SAVED_LAST_THEME_VALUE) {
                 r = hexToRgb(t);
                 e = CONFIG_DATA.USER_LIGHT_THEME ? 155 : 0;
                 o = (CONFIG_DATA.USER_LIGHT_THEME, SETTINGS.THEME_COLORS.PRIMARY);
@@ -569,7 +576,7 @@
                 u = !1;
                 x = [y, m, c, P, g, b, h, d].join(",").split(",").map(Number);
                 _ = x.reduce((t, r) => t + r, 0) / x.length >= 155;
-                VALUE_LAST_THEME = CONFIG_DATA.USER_LIGHT_THEME;
+                SAVED_VALUES_DATA.SAVED_LAST_THEME_VALUE = CONFIG_DATA.USER_LIGHT_THEME;
             }
             $ ? u = !0 : ($ = !0, WatermarkWeb(`ZYCORD ${APP_VERSION}`, m), E.style.setProperty("--mainaccentcolor", y, "important"), E.style.setProperty("--accentcolor", m, "important"), E.style.setProperty("--accentcolor2", m, "important"), E.style.setProperty("--linkcolor", m, "important"), E.style.setProperty("--mentioncolor", m, "important"), E.style.setProperty("--backgroundaccent", c, "important"), E.style.setProperty("--backgroundprimary", P, "important"), E.style.setProperty("--backgroundsecondary", g, "important"), E.style.setProperty("--backgroundsecondaryalt", b, "important"), E.style.setProperty("--backgroundtertiary", h, "important"), E.style.setProperty("--backgroundfloating", d, "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-medium-spacing", "3px", "important"), E.style.setProperty("--rs-large-spacing", "4px", "important"), E.style.setProperty("--rs-small-width", "2px", "important"), E.style.setProperty("--rs-medium-width", "3px", "important"), E.style.setProperty("--rs-large-width", "4px", "important"), E.style.setProperty("--rs-avatar-shape", CONFIG_DATA.USER_AVATAR_SHAPE, "important"), E.style.setProperty("--rs-online-color", "#43b581", "important"), E.style.setProperty("--rs-idle-color", "#faa61a", "important"), E.style.setProperty("--rs-dnd-color", "#f04747", "important"), E.style.setProperty("--rs-offline-color", "#636b75", "important"), E.style.setProperty("--rs-streaming-color", "#643da7", "important"), E.style.setProperty("--rs-invisible-color", "#747f8d", "important"), E.style.setProperty("--rs-phone-color", "var(--rs-online-color)", "important"), E.style.setProperty("--rs-phone-visible", "none", "important"), _ ? (E.style.setProperty("--textbrightest", "100,100,100", "important"), E.style.setProperty("--embed-title", "100,100,100", "important"), E.style.setProperty("--textbrighter", "90,90,90", "important"), E.style.setProperty("--textbright", "80,80,80", "important"), E.style.setProperty("--textdark", "70,70,70", "important"), E.style.setProperty("--textdarker", "60,60,60", "important"), E.style.setProperty("--textdarkest", "50,50,50", "important")) : (E.style.setProperty("--textbrightest", "250,250,250", "important"), E.style.setProperty("--textbrighter", "240,240,240", "important"), E.style.setProperty("--textbright", "230,230,230", "important"), E.style.setProperty("--textdark", "220,220,220", "important"), E.style.setProperty("--textdarker", "210,210,210", "important"), E.style.setProperty("--textdarkest", "200,200,200", "important")), ApplyTheme(), await DELAY(500), $ = !1, u && (u = !1, k()))
         };
@@ -583,13 +590,13 @@
         })
     }
     async function updateUserStatus(t) {
-        if (updateDebounce) updateRecall || (updateRecall = !0), updateStatus = t;
+        if (SAVED_VALUES_DATA.SAVED_UPDATE_DEBOUNCE) SAVED_VALUES_DATA.SAVED_UPDATE_RECALL || (SAVED_VALUES_DATA.SAVED_UPDATE_RECALL = !0), SAVED_VALUES_DATA.SAVED_UPDATE_STATUS = t;
         else {
-            if (updateDebounce = !0, CONFIG_DATA.USER_AUTO_STATUS) {
-                if (VALUE_LAST_STATUS === t) return void(updateDebounce = !1);
-                setStatus(CONFIG_DATA.USER_TOKEN, t), VALUE_LAST_STATUS = t
+            if (SAVED_VALUES_DATA.SAVED_UPDATE_DEBOUNCE = !0, CONFIG_DATA.USER_AUTO_STATUS) {
+                if (SAVED_VALUES_DATA.SAVED_LAST_STATUS_VALUE === t) return void(SAVED_VALUES_DATA.SAVED_UPDATE_DEBOUNCE = !1);
+                setStatus(CONFIG_DATA.USER_TOKEN, t), SAVED_VALUES_DATA.SAVED_LAST_STATUS_VALUE = t
             }
-            await DELAY(SETTINGS.APP_CONFIG.STATUS_UPDATE_COOLDOWN), updateDebounce = !1, updateRecall && (updateRecall = !1, updateUserStatus(updateStatus))
+            await DELAY(SETTINGS.APP_CONFIG.STATUS_UPDATE_COOLDOWN), SAVED_VALUES_DATA.SAVED_UPDATE_DEBOUNCE = !1, SAVED_VALUES_DATA.SAVED_UPDATE_RECALL && (SAVED_VALUES_DATA.SAVED_UPDATE_RECALL = !1, updateUserStatus(SAVED_VALUES_DATA.SAVED_UPDATE_STATUS))
         }
     }
 
@@ -629,7 +636,7 @@
         if (!startup) {
             fetchLeaderboard(button, false);
         }
-        const buttonSettings = leaderboardDebounce ? '128,128,128,1' : '0,0,0,0';
+        const buttonSettings = SAVED_VALUES_DATA.SAVED_LEADERBOARD_DEBOUNCE ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
 
@@ -637,7 +644,7 @@
         if (!startup) {
             fetchLeaderboard(button, true);
         }
-        const buttonSettings = leaderboardDebounce ? '128,128,128,1' : '0,0,0,0';
+        const buttonSettings = SAVED_VALUES_DATA.SAVED_LEADERBOARD_DEBOUNCE ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
 
