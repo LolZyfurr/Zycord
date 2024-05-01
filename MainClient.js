@@ -105,7 +105,7 @@
 
     function formatChangelogTimeData(timeValue) {
         let splitStr = timeValue.split(".");
-        let newString = `${String.fromCharCode(splitStr[1] + 64)}${splitStr[2].toString(36)}${splitStr[0].toString(36)}${splitStr[5].toString(36)}${(parseInt(splitStr[3]) + parseInt(splitStr[4])).toString(36)}`;
+        let newString = `${splitStr[0].toString(36)}${String.fromCharCode(splitStr[1] + 64)}${splitStr[2].toString(36)}${(splitStr[3] + splitStr[4]).toString(36)}${splitStr[5].toString(36)}`;
         return newString;
     }
     
