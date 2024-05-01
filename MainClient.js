@@ -28,6 +28,9 @@
         VERSION_LABEL: "BETA",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Removed some changelog values.",
+        DATA_TIME: "24.5.1.11.0.5"
+    }, {
         DATA_MESSAGE: "Adjusted the changelog menu font colors.",
         DATA_TIME: "24.5.1.11.0.5"
     }, {
@@ -57,30 +60,6 @@
     }, {
         DATA_MESSAGE: "Changed the changelog data.",
         DATA_TIME: "24.5.1.9.0.40"
-    }, {
-        DATA_MESSAGE: "Fixed error handling.",
-        DATA_TIME: "0.0.0.0.0.0"
-    }, {
-        DATA_MESSAGE: "Added error handling.",
-        DATA_TIME: "0.0.0.0.0.0"
-    }, {
-        DATA_MESSAGE: "Updated some more variables for easier updates.",
-        DATA_TIME: "0.0.0.0.0.0"
-    }, {
-        DATA_MESSAGE: "Updated some variables for easier updates.",
-        DATA_TIME: "0.0.0.0.0.0"
-    }, {
-        DATA_MESSAGE: "Reverted to an older version.",
-        DATA_TIME: "0.0.0.0.0.0"
-    }, {
-        DATA_MESSAGE: "Attempted to fix the line breaks in the changelog menu.",
-        DATA_TIME: "0.0.0.0.0.0"
-    }, {
-        DATA_MESSAGE: "Fixed the changelog menu.",
-        DATA_TIME: "0.0.0.0.0.0"
-    }, {
-        DATA_MESSAGE: "Changed the sidebar menu icon.",
-        DATA_TIME: "0.0.0.0.0.0"
     }, ];
     let DATE_UPDATED = `${VERSION_DATA.VERSION_ALPHA_MONTH}${VERSION_DATA.VERSION_ALPHA_DAY}${VERSION_DATA.VERSION_ALPHA_YEAR}${VERSION_DATA.VERSION_ALPHA_MINUTES}${VERSION_DATA.VERSION_ALPHA_HOUR}`;
     let APP_VERSION = `${VERSION_DATA.VERSION_LABEL} ${DATE_UPDATED}`;
