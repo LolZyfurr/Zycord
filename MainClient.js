@@ -5,7 +5,6 @@
             location.reload();
         }, 30000);
     };
-    
     let CONFIG_DATA = {
         USER_TOKEN: getToken(),
         USER_THEME_COLOR: SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR !== false ? SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR : null) : null,
@@ -31,7 +30,17 @@
         VERSION_ALPHA_MINUTES: UPDATED_DATA.MINUTES.toString(36),
         VERSION_LABEL: "BETA",
     };
-    let CHANGELOG_DATA = ["Fixed error handling.", "Added error handling.", "Updated some more variables for easier updates.", "Updated some variables for easier updates.", "Reverted to an older version.", "Attempted to fix the line breaks in the changelog menu.", "Fixed the changelog menu.", "Changed the sidebar menu icon."];
+    let CHANGELOG_DATA = [
+        "Changed the changelog data."
+        "Fixed error handling.", 
+        "Added error handling.", 
+        "Updated some more variables for easier updates.", 
+        "Updated some variables for easier updates.", 
+        "Reverted to an older version.", 
+        "Attempted to fix the line breaks in the changelog menu.", 
+        "Fixed the changelog menu.", 
+        "Changed the sidebar menu icon."
+    ];
     let DATE_UPDATED = `${VERSION_DATA.VERSION_ALPHA_MONTH}${VERSION_DATA.VERSION_ALPHA_DAY}${VERSION_DATA.VERSION_ALPHA_YEAR}${VERSION_DATA.VERSION_ALPHA_MINUTES}${VERSION_DATA.VERSION_ALPHA_HOUR}`;
     let APP_VERSION = `${VERSION_DATA.VERSION_LABEL} ${DATE_UPDATED}`;
     let VALUE_LAST_STATUS = "";
