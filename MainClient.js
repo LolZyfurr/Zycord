@@ -17,7 +17,7 @@
         DAY: 1,
         HOUR: 10,
         AFTERNOON: 0,
-        MINUTES: 20,
+        MINUTES: 30,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -27,60 +27,49 @@
         VERSION_ALPHA_MINUTES: UPDATED_DATA.MINUTES.toString(36),
         VERSION_LABEL: "BETA",
     };
-    let CHANGELOG_DATA = [
-        {
-            DATA_MESSAGE: "Fixed the formated the version for the changelog.",
-            DATA_TIME: "24.5.1.10.0.20"
-        },
-        {
-            DATA_MESSAGE: "Formated the version for the changelog.",
-            DATA_TIME: "24.5.1.10.0.15"
-        },
-        {
-            DATA_MESSAGE: "Fixed an error with the new changelog.",
-            DATA_TIME: "24.5.1.10.0.5"
-        },
-        {
-            DATA_MESSAGE: "Fixed an error with '.' being invalid. Updated the changelog.",
-            DATA_TIME: "24.5.1.9.0.58"
-        },
-        {
-            DATA_MESSAGE: "Changed the changelog data.",
-            DATA_TIME: "24.5.1.9.0.40"
-        },
-        {
-            DATA_MESSAGE: "Fixed error handling.",
-            DATA_TIME: "0.0.0.0.0.0"
-        },
-        {
-            DATA_MESSAGE: "Added error handling.",
-            DATA_TIME: "0.0.0.0.0.0"
-        },
-        {
-            DATA_MESSAGE: "Updated some more variables for easier updates.",
-            DATA_TIME: "0.0.0.0.0.0"
-        },
-        {
-            DATA_MESSAGE: "Updated some variables for easier updates.",
-            DATA_TIME: "0.0.0.0.0.0"
-        },
-        {
-            DATA_MESSAGE: "Reverted to an older version.",
-            DATA_TIME: "0.0.0.0.0.0"
-        },
-        {
-            DATA_MESSAGE: "Attempted to fix the line breaks in the changelog menu.",
-            DATA_TIME: "0.0.0.0.0.0"
-        },
-        {
-            DATA_MESSAGE: "Fixed the changelog menu.",
-            DATA_TIME: "0.0.0.0.0.0"
-        },
-        {
-            DATA_MESSAGE: "Changed the sidebar menu icon.",
-            DATA_TIME: "0.0.0.0.0.0"
-        },
-    ];
+    let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Fixed the formated the version for the changelog again.",
+        DATA_TIME: "24.5.1.10.0.30"
+    }, {
+        DATA_MESSAGE: "Fixed the formated the version for the changelog.",
+        DATA_TIME: "24.5.1.10.0.20"
+    }, {
+        DATA_MESSAGE: "Formated the version for the changelog.",
+        DATA_TIME: "24.5.1.10.0.15"
+    }, {
+        DATA_MESSAGE: "Fixed an error with the new changelog.",
+        DATA_TIME: "24.5.1.10.0.5"
+    }, {
+        DATA_MESSAGE: "Fixed an error with '.' being invalid. Updated the changelog.",
+        DATA_TIME: "24.5.1.9.0.58"
+    }, {
+        DATA_MESSAGE: "Changed the changelog data.",
+        DATA_TIME: "24.5.1.9.0.40"
+    }, {
+        DATA_MESSAGE: "Fixed error handling.",
+        DATA_TIME: "0.0.0.0.0.0"
+    }, {
+        DATA_MESSAGE: "Added error handling.",
+        DATA_TIME: "0.0.0.0.0.0"
+    }, {
+        DATA_MESSAGE: "Updated some more variables for easier updates.",
+        DATA_TIME: "0.0.0.0.0.0"
+    }, {
+        DATA_MESSAGE: "Updated some variables for easier updates.",
+        DATA_TIME: "0.0.0.0.0.0"
+    }, {
+        DATA_MESSAGE: "Reverted to an older version.",
+        DATA_TIME: "0.0.0.0.0.0"
+    }, {
+        DATA_MESSAGE: "Attempted to fix the line breaks in the changelog menu.",
+        DATA_TIME: "0.0.0.0.0.0"
+    }, {
+        DATA_MESSAGE: "Fixed the changelog menu.",
+        DATA_TIME: "0.0.0.0.0.0"
+    }, {
+        DATA_MESSAGE: "Changed the sidebar menu icon.",
+        DATA_TIME: "0.0.0.0.0.0"
+    }, ];
     let DATE_UPDATED = `${VERSION_DATA.VERSION_ALPHA_MONTH}${VERSION_DATA.VERSION_ALPHA_DAY}${VERSION_DATA.VERSION_ALPHA_YEAR}${VERSION_DATA.VERSION_ALPHA_MINUTES}${VERSION_DATA.VERSION_ALPHA_HOUR}`;
     let APP_VERSION = `${VERSION_DATA.VERSION_LABEL} ${DATE_UPDATED}`;
     let VALUE_LAST_STATUS = "";
@@ -103,12 +92,28 @@
         CONFIG_DATA.USER_AVATAR_SHAPE = '50%';
     }
 
-    function formatChangelogTimeData(timeValue) {
-        let splitStr = timeValue.split(".");
-        let newString = `${splitStr[0].toString(36)}${String.fromCharCode(splitStr[1] + 64)}${splitStr[2].toString(36)}${(splitStr[3] + splitStr[4]).toString(36)}${splitStr[5].toString(36)}`;
-        return newString;
+    function formatChangelogTimeData(V_timeValue) {
+        let V_splitStr = V_timeValue.split(".");
+        let V_UPDATED_DATA = {
+            V_YEAR: V_splitStr[0],
+            V_MONTH: V_splitStr[1],
+            V_DAY: V_splitStr[2],
+            V_HOUR: V_splitStr[3],
+            V_AFTERNOON: V_splitStr[4],
+            V_MINUTES: V_splitStr[5],
+        };
+        let V_VERSION_DATA = {
+            V_ALPHA_YEAR: V_UPDATED_DATA.V_YEAR.toString(36),
+            V_ALPHA_MONTH: String.fromCharCode(parseInt(V_UPDATED_DATA.V_MONTH) + 64),
+            V_ALPHA_DAY: parseInt(V_UPDATED_DATA.V_DAY).toString(36),
+            V_ALPHA_HOUR: (parseInt(V_UPDATED_DATA.V_HOUR) + parseInt(V_UPDATED_DATA.V_AFTERNOON)).toString(36),
+            V_ALPHA_MINUTES: parseInt(V_UPDATED_DATA.V_MINUTES).toString(36),
+            V_LABEL: "BETA",
+        };
+        let V_newString = `${V_VERSION_DATA.V_ALPHA_MONTH}${V_VERSION_DATA.V_ALPHA_DAY}${V_VERSION_DATA.V_ALPHA_YEAR}${V_VERSION_DATA.V_ALPHA_MINUTES}${V_VERSION_DATA.V_ALPHA_HOUR}`;
+        return V_newString;
     }
-    
+
     function generateRandomCode() {
         const characters = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
         let code = '';
