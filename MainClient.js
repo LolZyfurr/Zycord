@@ -7,21 +7,26 @@
         USER_AUTO_STATUS: SETTINGS.APP_CONFIG.AUTO_UPDATE_STATUS,
         USER_AVATAR_SHAPE: SETTINGS.APP_CONFIG.AVATAR_SHAPE,
         USER_LIGHT_THEME: SETTINGS.APP_CONFIG.USE_LIGHT_THEME
-    }
-    let CHANGELOG_DATA = ["Updated some variables for easier updates.", "Reverted to an older version.", "Attempted to fix the line breaks in the changelog menu.", "Fixed the changelog menu.", "Changed the sidebar menu icon."];
-    let MONTH_UPDATED = 5
-    let DAY_UPDATED = 1
-    let YEAR_UPDATED = 24
-    let MINUTES_UPDATED = 30
-    let TIME_AFTERNOON = 0
-    let TIME_UPDATED = 8
-    let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
-    let ALPHA_DAY = DAY_UPDATED.toString(36)
-    let ALPHA_YEAR = YEAR_UPDATED.toString(36)
-    let ALPHA_MINUTES = MINUTES_UPDATED.toString(36)
-    let ALPHA_TIME = (TIME_UPDATED + TIME_AFTERNOON).toString(36)
-    let DATE_UPDATED = `${ALPHA_MONTH}${ALPHA_DAY}${ALPHA_YEAR}${ALPHA_MINUTES}${ALPHA_TIME}`
-    let APP_VERSION = `BETA ${DATE_UPDATED}`
+    };
+    let UPDATED_DATA = {
+        YEAR: 24,
+        MONTH: 5,
+        DAY: 1,
+        HOUR: 8,
+        AFTERNOON: 0,
+        MINUTES: 45,
+    };
+    let VERSION_DATA = {
+        VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
+        VERSION_ALPHA_MONTH: String.fromCharCode(UPDATED_DATA.MONTH + 64),
+        VERSION_ALPHA_DAY: UPDATED_DATA.DAY.toString(36),
+        VERSION_ALPHA_HOUR: (UPDATED_DATA.HOUR + UPDATED_DATA.AFTERNOON).toString(36),
+        VERSION_ALPHA_MINUTES: UPDATED_DATA.MINUTES.toString(36),
+        VERSION_LABEL: "BETA",
+    };
+    let CHANGELOG_DATA = ["Updated some more variables for easier updates.", "Updated some variables for easier updates.", "Reverted to an older version.", "Attempted to fix the line breaks in the changelog menu.", "Fixed the changelog menu.", "Changed the sidebar menu icon."];
+    let DATE_UPDATED = `${VERSION_DATA.VERSION_ALPHA_MONTH}${VERSION_DATA.VERSION_ALPHA_DAY}${VERSION_DATA.VERSION_ALPHA_YEAR}${VERSION_DATA.VERSION_ALPHA_MINUTES}${VERSION_DATA.VERSION_ALPHA_HOUR}`;
+    let APP_VERSION = `${VERSION_DATA.VERSION_LABEL} ${DATE_UPDATED}`;
     let VALUE_LAST_STATUS = "";
     let VALUE_LAST_THEME = CONFIG_DATA.USER_LIGHT_THEME;
     let updateDebounce = false;
