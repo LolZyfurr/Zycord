@@ -17,7 +17,7 @@
         DAY: 1,
         HOUR: 10,
         AFTERNOON: 0,
-        MINUTES: 15,
+        MINUTES: 20,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -28,6 +28,10 @@
         VERSION_LABEL: "BETA",
     };
     let CHANGELOG_DATA = [
+        {
+            DATA_MESSAGE: "Fixed the formated the version for the changelog.",
+            DATA_TIME: "24.5.1.10.0.20"
+        },
         {
             DATA_MESSAGE: "Formated the version for the changelog.",
             DATA_TIME: "24.5.1.10.0.15"
@@ -101,7 +105,8 @@
 
     function formatChangelogTimeData(timeValue) {
         let splitStr = timeValue.split(".");
-        let newString = `${splitStr[0].toString(36)}${String.fromCharCode(splitStr[1] + 64)}${splitStr[2].toString(36)}${(splitStr[3] + splitStr[4]).toString(36)}${splitStr[5].toString(36)}`;
+        let newString = `${String.fromCharCode(splitStr[1] + 64)}${splitStr[2].toString(36)}${splitStr[0].toString(36)}${splitStr[5].toString(36)}${(parseInt(splitStr[3]) + parseInt(splitStr[4])).toString(36)}`;
+        return newString;
     }
     
     function generateRandomCode() {
