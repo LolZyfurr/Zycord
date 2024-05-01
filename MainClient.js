@@ -1,16 +1,20 @@
 (async function() {
-    let AUTHORIZATION = getToken();
-    let LAST_AUTH = AUTHORIZATION;
-    let THEME_COLOR = SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR !== false ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR) : (null)) : (null);
-    let BLUR_WEB = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD === true ? (true) : (false)) : (false)) : (false)) : (false);
-    let BLUR_WEB_AMOUNT = SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT) : (10)) : (10)) : (10);
-    let CHANGELOG_DATA = ["Reverted to an older version.", "Attempted to fix the line breaks in the changelog menu.", "Fixed the changelog menu.", "Changed the sidebar menu icon."];
-    let MONTH_UPDATED = 4
-    let DAY_UPDATED = 10
+    let CONFIG_DATA = {
+        USER_TOKEN: getToken(),
+        USER_THEME_COLOR: SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR !== false ? SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR : null) : null,
+        USER_USE_BLUR: SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD === true ? true : false) : false) : false,
+        USER_BLUR_AMOUNT: SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? SETTINGS.THEME_CONFIG.BLUR_AMOUNT : 10) : 10) : 10,
+        USER_AUTO_STATUS: SETTINGS.APP_CONFIG.AUTO_UPDATE_STATUS,
+        USER_AVATAR_SHAPE: SETTINGS.APP_CONFIG.AVATAR_SHAPE,
+        USER_LIGHT_THEME: SETTINGS.APP_CONFIG.USE_LIGHT_THEME
+    }
+    let CHANGELOG_DATA = ["Updated some variables for easier updates.", "Reverted to an older version.", "Attempted to fix the line breaks in the changelog menu.", "Fixed the changelog menu.", "Changed the sidebar menu icon."];
+    let MONTH_UPDATED = 5
+    let DAY_UPDATED = 1
     let YEAR_UPDATED = 24
     let MINUTES_UPDATED = 30
     let TIME_AFTERNOON = 0
-    let TIME_UPDATED = 9
+    let TIME_UPDATED = 8
     let ALPHA_MONTH = String.fromCharCode(MONTH_UPDATED + 64)
     let ALPHA_DAY = DAY_UPDATED.toString(36)
     let ALPHA_YEAR = YEAR_UPDATED.toString(36)
@@ -19,26 +23,23 @@
     let DATE_UPDATED = `${ALPHA_MONTH}${ALPHA_DAY}${ALPHA_YEAR}${ALPHA_MINUTES}${ALPHA_TIME}`
     let APP_VERSION = `BETA ${DATE_UPDATED}`
     let VALUE_LAST_STATUS = "";
-    let VALUE_LIGHT_THEME = SETTINGS.APP_CONFIG.USE_LIGHT_THEME;
-    let VALUE_LAST_THEME = VALUE_LIGHT_THEME;
-    let VALUE_AUTO_UPDATE_STATUS = SETTINGS.APP_CONFIG.AUTO_UPDATE_STATUS;
-    let avatarShapeConfig = SETTINGS.APP_CONFIG.AVATAR_SHAPE;
+    let VALUE_LAST_THEME = CONFIG_DATA.USER_LIGHT_THEME;
     let updateDebounce = false;
     let updateRecall = false;
     let updateStatus = "";
     let timeoutId = null;
     let leaderboardDebounce = false;
-    ShadeWeb(false, false, BLUR_WEB ? (BLUR_WEB_AMOUNT / (1 - SETTINGS.APP_CONFIG.INITIAL_OPACITY)) : (SETTINGS.APP_CONFIG.INITIAL_OPACITY), false);
+    ShadeWeb(false, false, CONFIG_DATA.USER_USE_BLUR ? (CONFIG_DATA.USER_BLUR_AMOUNT / (1 - SETTINGS.APP_CONFIG.INITIAL_OPACITY)) : (SETTINGS.APP_CONFIG.INITIAL_OPACITY), false);
     const DELAY = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (3 / 5)) * 1000);
     const STATUS_API_URL = "https://discord.com/api/v9/users/@me/settings-proto/1";
     const USER_API_URL = "https://discord.com/api/v9/users/@me";
-    const USER_AVATAR_URL = await fetchUserAvatarURL(AUTHORIZATION, "1132521952238637117");
+    const USER_AVATAR_URL = await fetchUserAvatarURL(CONFIG_DATA.USER_TOKEN, "1132521952238637117");
     const invisibleChar = await unicodeToString('U+200B');
     document.addEventListener("keydown", (updateEventAvatar));
     document.addEventListener("click", (updateEventAvatar));
     if (!(SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.RADIAL_STATUS_CSS === true ? (true) : (false)) : (true))) {
-        avatarShapeConfig = '50%';
+        CONFIG_DATA.USER_AVATAR_SHAPE = '50%';
     }
 
     function generateRandomCode() {
@@ -156,7 +157,7 @@
             headers: {
                 accept: "*/*",
                 "accept-language": "en-US,en;q=0.9",
-                authorization: t,
+                CONFIG_DATA.USER_TOKEN: t,
                 "content-type": "application/json"
             },
             body: e ? JSON.stringify({
@@ -222,16 +223,16 @@
     }
 
     function fetchThemeColor(e) {
-        null == THEME_COLOR ? fetch(USER_API_URL, createFetchOptions(e, null, "GET")).then(e => e.json()).then(e => {
+        null == CONFIG_DATA.USER_THEME_COLOR ? fetch(USER_API_URL, createFetchOptions(e, null, "GET")).then(e => e.json()).then(e => {
             const n = e.banner_color;
-            n && (console.log(n), THEME_COLOR = n, changeElementColor(THEME_COLOR))
-        }) : changeElementColor(THEME_COLOR)
+            n && (console.log(n), CONFIG_DATA.USER_THEME_COLOR = n, changeElementColor(CONFIG_DATA.USER_THEME_COLOR))
+        }) : changeElementColor(CONFIG_DATA.USER_THEME_COLOR)
     }
 
     function ShadeWeb(tweenType, originalValue, goalValue, timeValue) {
         if (tweenType) {
-            const valueOriginalShade = BLUR_WEB ? (BLUR_WEB_AMOUNT * originalValue) : originalValue;
-            const valueGoalShade = BLUR_WEB ? (BLUR_WEB_AMOUNT * goalValue) : goalValue;
+            const valueOriginalShade = CONFIG_DATA.USER_USE_BLUR ? (CONFIG_DATA.USER_BLUR_AMOUNT * originalValue) : originalValue;
+            const valueGoalShade = CONFIG_DATA.USER_USE_BLUR ? (CONFIG_DATA.USER_BLUR_AMOUNT * goalValue) : goalValue;
             tween(valueOriginalShade, valueGoalShade, timeValue, T => ShadeWeb(false, false, T, false));
         } else {
             WatermarkWeb(`ZYCORD ${APP_VERSION}`, "#FFFFFF");
@@ -248,7 +249,7 @@
                     height: 100%;
                     z-index: 999998;
                     pointer-events: none;
-                    ${BLUR_WEB ? `backdrop-filter: blur(${goalValue}px);` : `background-color: rgba(0,0,0,${goalValue});`}
+                    ${CONFIG_DATA.USER_USE_BLUR ? `backdrop-filter: blur(${goalValue}px);` : `background-color: rgba(0,0,0,${goalValue});`}
                     background-image: url('');
                     background-size: cover;
                 }
@@ -315,8 +316,8 @@
         if (!leaderboardDebounce) {
             leaderboardDebounce = true;
             const loadingHtml = `<div style="display: grid;"> <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/9237-loading.gif?raw=true" style="height: 25%; max-height: 250px; justify-self: center; align-self: center;"></div>`;
-            const channels = await fetchUserDMs(AUTHORIZATION);
-            const fetchedSelfUser = await fetchUserSelf(AUTHORIZATION);
+            const channels = await fetchUserDMs(CONFIG_DATA.USER_TOKEN);
+            const fetchedSelfUser = await fetchUserSelf(CONFIG_DATA.USER_TOKEN);
             const selfUser = fetchedSelfUser.id;
             let modalLeaderboard = createModal(`${today ? (today === true ? ("Todays") : ("")) : ("")} Leaderboard`, loadingHtml);
             let interactionCounts = [];
@@ -325,7 +326,7 @@
                 let interactions = 0;
                 let dmChannelName = channel.id;
                 let messageAuthor = null;
-                let messages = await fetchMessages(AUTHORIZATION, channel.id, today ? (today === true ? (500) : (50000)) : (50000));
+                let messages = await fetchMessages(CONFIG_DATA.USER_TOKEN, channel.id, today ? (today === true ? (500) : (50000)) : (50000));
                 for (const message of messages.reverse().values()) {
                     const msgAuthor = message.author.id;
                     if (msgAuthor !== selfUser) {
@@ -342,7 +343,7 @@
                 }
                 if (interactions !== 0) {
                     const interactionBlacklist = SETTINGS.APP_CONFIG ? (SETTINGS.APP_CONFIG.LEADERBOARD_BLACKLIST ? (SETTINGS.APP_CONFIG.LEADERBOARD_BLACKLIST) : (['0'])) : (['0']);
-                    const dmChannelAuthor = await fetchUser(AUTHORIZATION, dmChannelName);
+                    const dmChannelAuthor = await fetchUser(CONFIG_DATA.USER_TOKEN, dmChannelName);
                     dmChannelName = dmChannelAuthor.global_name;
                     const dmChannelUserID = dmChannelAuthor.id;
                     const profilePicUrl = await fetchUserAvatar(messageAuthor);
@@ -460,14 +461,14 @@
     }
     async function changeElementColor(t) {
         let r = hexToRgb(t),
-            e = VALUE_LIGHT_THEME ? 155 : 0,
-            o = (VALUE_LIGHT_THEME, SETTINGS.THEME_COLORS.PRIMARY),
-            s = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.SENARY : SETTINGS.THEME_COLORS.SECONDARY,
-            l = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.QUINARY : SETTINGS.THEME_COLORS.TERTIARY,
-            p = (VALUE_LIGHT_THEME, SETTINGS.THEME_COLORS.QUATERNARY),
-            a = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.TERTIARY : SETTINGS.THEME_COLORS.QUINARY,
-            i = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.SECONDARY : SETTINGS.THEME_COLORS.SENARY,
-            n = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.PRIMARY : SETTINGS.THEME_COLORS.SEPTENARY,
+            e = CONFIG_DATA.USER_LIGHT_THEME ? 155 : 0,
+            o = (CONFIG_DATA.USER_LIGHT_THEME, SETTINGS.THEME_COLORS.PRIMARY),
+            s = CONFIG_DATA.USER_LIGHT_THEME ? SETTINGS.THEME_COLORS.SENARY : SETTINGS.THEME_COLORS.SECONDARY,
+            l = CONFIG_DATA.USER_LIGHT_THEME ? SETTINGS.THEME_COLORS.QUINARY : SETTINGS.THEME_COLORS.TERTIARY,
+            p = (CONFIG_DATA.USER_LIGHT_THEME, SETTINGS.THEME_COLORS.QUATERNARY),
+            a = CONFIG_DATA.USER_LIGHT_THEME ? SETTINGS.THEME_COLORS.TERTIARY : SETTINGS.THEME_COLORS.QUINARY,
+            i = CONFIG_DATA.USER_LIGHT_THEME ? SETTINGS.THEME_COLORS.SECONDARY : SETTINGS.THEME_COLORS.SENARY,
+            n = CONFIG_DATA.USER_LIGHT_THEME ? SETTINGS.THEME_COLORS.PRIMARY : SETTINGS.THEME_COLORS.SEPTENARY,
             y = `${r.r},${r.g},${r.b}`,
             m = `${r.r*o},${r.g*o},${r.b*o}`,
             c = `${r.r*s+e},${r.g*s+e},${r.b*s+e}`,
@@ -482,16 +483,16 @@
             x = [y, m, c, P, g, b, h, d].join(",").split(",").map(Number),
             _ = x.reduce((t, r) => t + r, 0) / x.length >= 155;
         const k = async () => {
-            if (VALUE_LIGHT_THEME !== VALUE_LAST_THEME) {
+            if (CONFIG_DATA.USER_LIGHT_THEME !== VALUE_LAST_THEME) {
                 r = hexToRgb(t);
-                e = VALUE_LIGHT_THEME ? 155 : 0;
-                o = (VALUE_LIGHT_THEME, SETTINGS.THEME_COLORS.PRIMARY);
-                s = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.SENARY : SETTINGS.THEME_COLORS.SECONDARY;
-                l = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.QUINARY : SETTINGS.THEME_COLORS.TERTIARY;
-                p = (VALUE_LIGHT_THEME, SETTINGS.THEME_COLORS.QUATERNARY);
-                a = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.TERTIARY : SETTINGS.THEME_COLORS.QUINARY;
-                i = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.SECONDARY : SETTINGS.THEME_COLORS.SENARY;
-                n = VALUE_LIGHT_THEME ? SETTINGS.THEME_COLORS.PRIMARY : SETTINGS.THEME_COLORS.SEPTENARY;
+                e = CONFIG_DATA.USER_LIGHT_THEME ? 155 : 0;
+                o = (CONFIG_DATA.USER_LIGHT_THEME, SETTINGS.THEME_COLORS.PRIMARY);
+                s = CONFIG_DATA.USER_LIGHT_THEME ? SETTINGS.THEME_COLORS.SENARY : SETTINGS.THEME_COLORS.SECONDARY;
+                l = CONFIG_DATA.USER_LIGHT_THEME ? SETTINGS.THEME_COLORS.QUINARY : SETTINGS.THEME_COLORS.TERTIARY;
+                p = (CONFIG_DATA.USER_LIGHT_THEME, SETTINGS.THEME_COLORS.QUATERNARY);
+                a = CONFIG_DATA.USER_LIGHT_THEME ? SETTINGS.THEME_COLORS.TERTIARY : SETTINGS.THEME_COLORS.QUINARY;
+                i = CONFIG_DATA.USER_LIGHT_THEME ? SETTINGS.THEME_COLORS.SECONDARY : SETTINGS.THEME_COLORS.SENARY;
+                n = CONFIG_DATA.USER_LIGHT_THEME ? SETTINGS.THEME_COLORS.PRIMARY : SETTINGS.THEME_COLORS.SEPTENARY;
                 y = `${r.r},${r.g},${r.b}`;
                 m = `${r.r*o},${r.g*o},${r.b*o}`;
                 c = `${r.r*s+e},${r.g*s+e},${r.b*s+e}`;
@@ -505,9 +506,9 @@
                 u = !1;
                 x = [y, m, c, P, g, b, h, d].join(",").split(",").map(Number);
                 _ = x.reduce((t, r) => t + r, 0) / x.length >= 155;
-                VALUE_LAST_THEME = VALUE_LIGHT_THEME;
+                VALUE_LAST_THEME = CONFIG_DATA.USER_LIGHT_THEME;
             }
-            $ ? u = !0 : ($ = !0, WatermarkWeb(`ZYCORD ${APP_VERSION}`, m), E.style.setProperty("--mainaccentcolor", y, "important"), E.style.setProperty("--accentcolor", m, "important"), E.style.setProperty("--accentcolor2", m, "important"), E.style.setProperty("--linkcolor", m, "important"), E.style.setProperty("--mentioncolor", m, "important"), E.style.setProperty("--backgroundaccent", c, "important"), E.style.setProperty("--backgroundprimary", P, "important"), E.style.setProperty("--backgroundsecondary", g, "important"), E.style.setProperty("--backgroundsecondaryalt", b, "important"), E.style.setProperty("--backgroundtertiary", h, "important"), E.style.setProperty("--backgroundfloating", d, "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-medium-spacing", "3px", "important"), E.style.setProperty("--rs-large-spacing", "4px", "important"), E.style.setProperty("--rs-small-width", "2px", "important"), E.style.setProperty("--rs-medium-width", "3px", "important"), E.style.setProperty("--rs-large-width", "4px", "important"), E.style.setProperty("--rs-avatar-shape", avatarShapeConfig, "important"), E.style.setProperty("--rs-online-color", "#43b581", "important"), E.style.setProperty("--rs-idle-color", "#faa61a", "important"), E.style.setProperty("--rs-dnd-color", "#f04747", "important"), E.style.setProperty("--rs-offline-color", "#636b75", "important"), E.style.setProperty("--rs-streaming-color", "#643da7", "important"), E.style.setProperty("--rs-invisible-color", "#747f8d", "important"), E.style.setProperty("--rs-phone-color", "var(--rs-online-color)", "important"), E.style.setProperty("--rs-phone-visible", "none", "important"), _ ? (E.style.setProperty("--textbrightest", "100,100,100", "important"), E.style.setProperty("--embed-title", "100,100,100", "important"), E.style.setProperty("--textbrighter", "90,90,90", "important"), E.style.setProperty("--textbright", "80,80,80", "important"), E.style.setProperty("--textdark", "70,70,70", "important"), E.style.setProperty("--textdarker", "60,60,60", "important"), E.style.setProperty("--textdarkest", "50,50,50", "important")) : (E.style.setProperty("--textbrightest", "250,250,250", "important"), E.style.setProperty("--textbrighter", "240,240,240", "important"), E.style.setProperty("--textbright", "230,230,230", "important"), E.style.setProperty("--textdark", "220,220,220", "important"), E.style.setProperty("--textdarker", "210,210,210", "important"), E.style.setProperty("--textdarkest", "200,200,200", "important")), ApplyTheme(), await DELAY(500), $ = !1, u && (u = !1, k()))
+            $ ? u = !0 : ($ = !0, WatermarkWeb(`ZYCORD ${APP_VERSION}`, m), E.style.setProperty("--mainaccentcolor", y, "important"), E.style.setProperty("--accentcolor", m, "important"), E.style.setProperty("--accentcolor2", m, "important"), E.style.setProperty("--linkcolor", m, "important"), E.style.setProperty("--mentioncolor", m, "important"), E.style.setProperty("--backgroundaccent", c, "important"), E.style.setProperty("--backgroundprimary", P, "important"), E.style.setProperty("--backgroundsecondary", g, "important"), E.style.setProperty("--backgroundsecondaryalt", b, "important"), E.style.setProperty("--backgroundtertiary", h, "important"), E.style.setProperty("--backgroundfloating", d, "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-medium-spacing", "3px", "important"), E.style.setProperty("--rs-large-spacing", "4px", "important"), E.style.setProperty("--rs-small-width", "2px", "important"), E.style.setProperty("--rs-medium-width", "3px", "important"), E.style.setProperty("--rs-large-width", "4px", "important"), E.style.setProperty("--rs-avatar-shape", CONFIG_DATA.USER_AVATAR_SHAPE, "important"), E.style.setProperty("--rs-online-color", "#43b581", "important"), E.style.setProperty("--rs-idle-color", "#faa61a", "important"), E.style.setProperty("--rs-dnd-color", "#f04747", "important"), E.style.setProperty("--rs-offline-color", "#636b75", "important"), E.style.setProperty("--rs-streaming-color", "#643da7", "important"), E.style.setProperty("--rs-invisible-color", "#747f8d", "important"), E.style.setProperty("--rs-phone-color", "var(--rs-online-color)", "important"), E.style.setProperty("--rs-phone-visible", "none", "important"), _ ? (E.style.setProperty("--textbrightest", "100,100,100", "important"), E.style.setProperty("--embed-title", "100,100,100", "important"), E.style.setProperty("--textbrighter", "90,90,90", "important"), E.style.setProperty("--textbright", "80,80,80", "important"), E.style.setProperty("--textdark", "70,70,70", "important"), E.style.setProperty("--textdarker", "60,60,60", "important"), E.style.setProperty("--textdarkest", "50,50,50", "important")) : (E.style.setProperty("--textbrightest", "250,250,250", "important"), E.style.setProperty("--textbrighter", "240,240,240", "important"), E.style.setProperty("--textbright", "230,230,230", "important"), E.style.setProperty("--textdark", "220,220,220", "important"), E.style.setProperty("--textdarker", "210,210,210", "important"), E.style.setProperty("--textdarkest", "200,200,200", "important")), ApplyTheme(), await DELAY(500), $ = !1, u && (u = !1, k()))
         };
         k(), new MutationObserver((function(t) {
             t.forEach((function(t) {
@@ -521,9 +522,9 @@
     async function updateUserStatus(t) {
         if (updateDebounce) updateRecall || (updateRecall = !0), updateStatus = t;
         else {
-            if (updateDebounce = !0, VALUE_AUTO_UPDATE_STATUS) {
+            if (updateDebounce = !0, CONFIG_DATA.USER_AUTO_STATUS) {
                 if (VALUE_LAST_STATUS === t) return void(updateDebounce = !1);
-                setStatus(AUTHORIZATION, t), VALUE_LAST_STATUS = t
+                setStatus(CONFIG_DATA.USER_TOKEN, t), VALUE_LAST_STATUS = t
             }
             await DELAY(SETTINGS.APP_CONFIG.STATUS_UPDATE_COOLDOWN), updateDebounce = !1, updateRecall && (updateRecall = !1, updateUserStatus(updateStatus))
         }
@@ -547,17 +548,17 @@
 
     function toggleAutoStatus(button, startup) {
         if (!startup) {
-            VALUE_AUTO_UPDATE_STATUS = !VALUE_AUTO_UPDATE_STATUS;
+            CONFIG_DATA.USER_AUTO_STATUS = !CONFIG_DATA.USER_AUTO_STATUS;
         }
-        const buttonSettings = VALUE_AUTO_UPDATE_STATUS ? '128,128,128,1' : '0,0,0,0';
+        const buttonSettings = CONFIG_DATA.USER_AUTO_STATUS ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
 
     function toggleLightTheme(button, startup) {
         if (!startup) {
-            VALUE_LIGHT_THEME = !VALUE_LIGHT_THEME;
+            CONFIG_DATA.USER_LIGHT_THEME = !CONFIG_DATA.USER_LIGHT_THEME;
         }
-        const buttonSettings = VALUE_LIGHT_THEME ? '128,128,128,1' : '0,0,0,0';
+        const buttonSettings = CONFIG_DATA.USER_LIGHT_THEME ? '128,128,128,1' : '0,0,0,0';
         button.style.backgroundColor = `rgba(${buttonSettings})`;
     }
 
@@ -705,7 +706,7 @@
         ShadeWeb(true, SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME);
         updateUserStatus(SETTINGS.APP_CONFIG.FOCUSED_STATUS);
     }));
-    SETTINGS.APP_CONFIG.AUTO_UPDATE_THEME && fetchThemeColor(AUTHORIZATION);
+    SETTINGS.APP_CONFIG.AUTO_UPDATE_THEME && fetchThemeColor(CONFIG_DATA.USER_TOKEN);
     autoUpdateAvatar();
     await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (2 / 5)) * 1000);
     ShadeWeb(true, SETTINGS.APP_CONFIG.INITIAL_OPACITY, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME * SETTINGS.APP_CONFIG.WINDOW_OPACITY_MULTIPLIER);
