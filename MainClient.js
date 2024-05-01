@@ -1,9 +1,6 @@
 (async function() {
     window.onerror = function(message, source, lineno, colno, error) {
         console.log(error);
-        setTimeout(() => {
-            location.reload();
-        }, 30000);
     };
     let CONFIG_DATA = {
         USER_TOKEN: getToken(),
@@ -20,7 +17,7 @@
         DAY: 1,
         HOUR: 9,
         AFTERNOON: 0,
-        MINUTES: 40,
+        MINUTES: 58,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -30,17 +27,48 @@
         VERSION_ALPHA_MINUTES: UPDATED_DATA.MINUTES.toString(36),
         VERSION_LABEL: "BETA",
     };
-    let CHANGELOG_DATA = [
-        "Changed the changelog data."
-        "Fixed error handling.", 
-        "Added error handling.", 
-        "Updated some more variables for easier updates.", 
-        "Updated some variables for easier updates.", 
-        "Reverted to an older version.", 
-        "Attempted to fix the line breaks in the changelog menu.", 
-        "Fixed the changelog menu.", 
-        "Changed the sidebar menu icon."
-    ];
+    let CHANGELOG_DATA = {
+        {
+            "DATA_MESSAGE": "Fixed an error with '.' being invalid. Updated the changelog.",
+            "DATA_TIME": "24-5-1-9-0-58"
+        },
+        {
+            "DATA_MESSAGE": "Changed the changelog data.",
+            "DATA_TIME": "24-5-1-9-0-40"
+        },
+        {
+            "DATA_MESSAGE": "Fixed error handling.",
+            "DATA_TIME": "24-5-1-9-0-40"
+        },
+        {
+            "DATA_MESSAGE": "Added error handling.",
+            "DATA_TIME": "24-5-1-9-0-40"
+        },
+        {
+            "DATA_MESSAGE": "Updated some more variables for easier updates.",
+            "DATA_TIME": "24-5-1-9-0-40"
+        },
+        {
+            "DATA_MESSAGE": "Updated some variables for easier updates.",
+            "DATA_TIME": "24-5-1-9-0-40"
+        },
+        {
+            "DATA_MESSAGE": "Reverted to an older version.",
+            "DATA_TIME": "24-5-1-9-0-40"
+        },
+        {
+            "DATA_MESSAGE": "Attempted to fix the line breaks in the changelog menu.",
+            "DATA_TIME": "24-5-1-9-0-40"
+        },
+        {
+            "DATA_MESSAGE": "Fixed the changelog menu.",
+            "DATA_TIME": "24-5-1-9-0-40"
+        },
+        {
+            "DATA_MESSAGE": "Changed the sidebar menu icon.",
+            "DATA_TIME": "24-5-1-9-0-40"
+        },
+    };
     let DATE_UPDATED = `${VERSION_DATA.VERSION_ALPHA_MONTH}${VERSION_DATA.VERSION_ALPHA_DAY}${VERSION_DATA.VERSION_ALPHA_YEAR}${VERSION_DATA.VERSION_ALPHA_MINUTES}${VERSION_DATA.VERSION_ALPHA_HOUR}`;
     let APP_VERSION = `${VERSION_DATA.VERSION_LABEL} ${DATE_UPDATED}`;
     let VALUE_LAST_STATUS = "";
@@ -176,9 +204,9 @@
     function createFetchOptions(t, e, n) {
         return {
             headers: {
-                accept: "*/*",
+                "accept": "*/*",
                 "accept-language": "en-US,en;q=0.9",
-                CONFIG_DATA.USER_TOKEN: t,
+                "authorization": t,
                 "content-type": "application/json"
             },
             body: e ? JSON.stringify({
@@ -603,8 +631,10 @@
         if (!startup) {
             let changelogModalTitle = `Changelog`;
             let changelogModalBodyText = ``;
-            CHANGELOG_DATA.forEach((changelogText, index) => {
-                changelogModalBodyText += `<span style="color: var(--header-primary);">${`- ${changelogText}`}</span>`;
+            CHANGELOG_DATA.forEach((changelogData, index) => {
+                let changelogMessageData = changelogData.DATA_MESSAGE;
+                let changelogVersionData = changelogData.DATA_TIME;
+                changelogModalBodyText += `<span style="color: var(--header-primary);">${`- ${changelogMessageData} - ${changelogVersionData}`}</span>`;
             });
             let changelogModalBody = `<div style="display: grid;">${changelogModalBodyText}</div>`
             createModal(changelogModalTitle, changelogModalBody)
