@@ -14,10 +14,10 @@
     let UPDATED_DATA = {
         YEAR: 24,
         MONTH: 5,
-        DAY: 1,
-        HOUR: 11,
+        DAY: 2,
+        HOUR: 10,
         AFTERNOON: 0,
-        MINUTES: 30,
+        MINUTES: 0,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -28,6 +28,9 @@
         VERSION_LABEL: "BETA",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Added a delete messages function for future updates.",
+        DATA_TIME: "24.5.2.10.0.0"
+    }, {
         DATA_MESSAGE: "Added more variables for easier updates.",
         DATA_TIME: "24.5.1.11.0.30"
     }, {
@@ -356,6 +359,10 @@
             h.push(...s), a = s[s.length - 1].id
         }
         return h
+    }
+    async function deleteUserMessage(channelId, messageId) {
+        let deletedMessage = createFetchOptions(CONFIG_DATA.USER_TOKEN, null, "DELETE");
+        return (await fetch(`https://discord.com/api/v9/channels/${channelId}/messages/${messageId}`, deletedMessage)).json()
     }
     async function fetchUserDMs(e) {
         let t = createFetchOptions(e, null, "GET");
