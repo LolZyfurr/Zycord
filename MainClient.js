@@ -14,10 +14,10 @@
     let UPDATED_DATA = {
         YEAR: 24,
         MONTH: 5,
-        DAY: 2,
-        HOUR: 10,
+        DAY: 3,
+        HOUR: 9,
         AFTERNOON: 0,
-        MINUTES: 0,
+        MINUTES: 25,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -28,6 +28,9 @@
         VERSION_LABEL: "BETA",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Fixed the shade web value.",
+        DATA_TIME: "24.5.3.9.0.25"
+    }, {
         DATA_MESSAGE: "Added a delete messages function for future updates.",
         DATA_TIME: "24.5.2.10.0.0"
     }, {
@@ -304,9 +307,11 @@
 
     function ShadeWeb(tweenType, originalValue, goalValue, timeValue) {
         if (tweenType) {
-            const valueOriginalShade = CONFIG_DATA.USER_USE_BLUR ? (CONFIG_DATA.USER_BLUR_AMOUNT * originalValue) : originalValue;
-            const valueGoalShade = CONFIG_DATA.USER_USE_BLUR ? (CONFIG_DATA.USER_BLUR_AMOUNT * goalValue) : goalValue;
-            tween(valueOriginalShade, valueGoalShade, timeValue, T => ShadeWeb(false, false, T, false));
+            const valueGoalMultiplied = goalValue * 100
+            const valueOriginalMultiplied = originalValue * 100
+            const valueOriginalShade = CONFIG_DATA.USER_USE_BLUR ? (CONFIG_DATA.USER_BLUR_AMOUNT * valueOriginalMultiplied) : valueOriginalMultiplied;
+            const valueGoalShade = CONFIG_DATA.USER_USE_BLUR ? (CONFIG_DATA.USER_BLUR_AMOUNT * valueGoalMultiplied) : valueGoalMultiplied;
+            tween(valueOriginalShade, valueGoalShade, timeValue, T => ShadeWeb(false, false, (T/100), false));
         } else {
             WatermarkWeb(`ZYCORD ${APP_VERSION}`, "#FFFFFF");
             const styleElement = document.getElementById("shadeWebStyle") || document.createElement("style");
