@@ -14,10 +14,10 @@
     let UPDATED_DATA = {
         YEAR: 24,
         MONTH: 5,
-        DAY: 3,
-        HOUR: 9,
+        DAY: 6,
+        HOUR: 10,
         AFTERNOON: 0,
-        MINUTES: 25,
+        MINUTES: 50,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -28,6 +28,9 @@
         VERSION_LABEL: "BETA",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Added more things for easier updates.",
+        DATA_TIME: "24.5.6.10.0.50"
+    }, {
         DATA_MESSAGE: "Fixed the shade web value.",
         DATA_TIME: "24.5.3.9.0.25"
     }, {
@@ -95,6 +98,57 @@
     if (!(SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.RADIAL_STATUS_CSS === true ? (true) : (false)) : (true))) {
         CONFIG_DATA.USER_AVATAR_SHAPE = '50%';
     }
+    // NEW STUFF BELOW //
+    async function zycord_updateStatus(newStatus) {
+        let statusFetchOptions = createFetchOptions(CONFIG_DATA.USER_TOKEN, newStatus, "PATCH");
+        let discordStatusApiUrl = "https://discord.com/api/v9/users/@me/settings-proto/1";
+        fetch(discordStatusApiUrl, statusFetchOptions);
+    }
+    Object.prototype.zycord_deleteUserMessage = async function() {
+        let messageIdentification = this.id;
+        let messageChannel = this.channel;
+        let channelIdentification = messageChannel.id;
+        let deletedMessage = createFetchOptions(CONFIG_DATA.USER_TOKEN, null, "DELETE");
+        return (await fetch(`https://discord.com/api/v9/channels/${channelIdentification}/messages/${messageIdentification}`, deletedMessage)).json();
+    }
+    Object.prototype.zycord_fetchUserAvatar = async function(avatarFileType, avatarFileSize) {
+        let userIdentification = this.id
+        let userAvatar = this.avatar
+        return `https://cdn.discordapp.com/avatars/${userIdentification}/${userAvatar}.${avatarFileType}?size=${avatarFileSize}`
+    }
+    Object.prototype.zycord_fetchChannelMessages = async function(limit, before) {
+        let channelId = this.id;
+        try {
+            let url = `https://discord.com/api/v9/channels/${channelId}/messages?`;
+            before && (url += "before=" + before + "&");
+            url += "limit=" + limit;
+            let response = await fetch(url, createFetchOptions(CONFIG_DATA.USER_TOKEN, null, "GET")),
+                json = await response.json();
+            return "You are being rate limited." === json.message ? new Promise(resolve => {
+                setTimeout(async () => {
+                    resolve(await this.zycord_fetchChannelMessages(limit, before))
+                }, 1000 * json.retry_after)
+            }) : json;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    Object.prototype.zycord_fetchMassChannelMessages = async function(totalAmount) {
+        let before, messages = [];
+        while (messages.length < totalAmount) {
+            let fetchedMessages;
+            if (before) {
+                fetchedMessages = await this.zycord_fetchChannelMessages(Math.min(100, totalAmount - messages.length), before);
+            } else {
+                fetchedMessages = await this.zycord_fetchChannelMessages(Math.min(100, totalAmount - messages.length));
+            }
+            if (fetchedMessages.length == 0) break;
+            messages.push(...fetchedMessages);
+            before = fetchedMessages[fetchedMessages.length - 1].id;
+        }
+        return messages;
+    }
+    // NEW STUFF ABOVE //
 
     function formatChangelogTimeData(V_timeValue) {
         let V_splitStr = V_timeValue.split(".");
@@ -263,10 +317,6 @@
         })
     }
 
-    function setStatus(t, e) {
-        fetch(DATA_API_URLS.DISCORD_STATUS_API_URL, createFetchOptions(t, e, "PATCH"))
-    }
-
     function hexToRgb(e) {
         let n = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(e);
         return n ? {
@@ -311,7 +361,7 @@
             const valueOriginalMultiplied = originalValue * 100
             const valueOriginalShade = CONFIG_DATA.USER_USE_BLUR ? (CONFIG_DATA.USER_BLUR_AMOUNT * valueOriginalMultiplied) : valueOriginalMultiplied;
             const valueGoalShade = CONFIG_DATA.USER_USE_BLUR ? (CONFIG_DATA.USER_BLUR_AMOUNT * valueGoalMultiplied) : valueGoalMultiplied;
-            tween(valueOriginalShade, valueGoalShade, timeValue, T => ShadeWeb(false, false, (T/100), false));
+            tween(valueOriginalShade, valueGoalShade, timeValue, T => ShadeWeb(false, false, (T / 100), false));
         } else {
             WatermarkWeb(`ZYCORD ${APP_VERSION}`, "#FFFFFF");
             const styleElement = document.getElementById("shadeWebStyle") || document.createElement("style");
@@ -337,38 +387,6 @@
             }
         }
     }
-    async function fetchChannelMessages(t, s, a, i) {
-        let n = s,
-            r = t,
-            c = a,
-            o = i;
-        try {
-            let t = "https://discord.com/api/v9/channels/" + n + "/messages?";
-            o && (t += "before=" + o + "&"), t += "limit=" + c;
-            let s = await fetch(t, createFetchOptions(r, null, "GET")),
-                a = await s.json();
-            return "You are being rate limited." === a.message ? new Promise(t => {
-                setTimeout(async () => {
-                    t(await fetchUserRelationships(e))
-                }, 1e3 * a.retry_after)
-            }) : a
-        } catch (e) {
-            console.error(e)
-        }
-    }
-    async function fetchMessages(e, t, n) {
-        let a, h = [];
-        for (; h.length < n;) {
-            let s;
-            if (s = a ? await fetchChannelMessages(e, t, Math.min(100, n - h.length), a) : await fetchChannelMessages(e, t, Math.min(100, n - h.length)), 0 == s.length) break;
-            h.push(...s), a = s[s.length - 1].id
-        }
-        return h
-    }
-    async function deleteUserMessage(channelId, messageId) {
-        let deletedMessage = createFetchOptions(CONFIG_DATA.USER_TOKEN, null, "DELETE");
-        return (await fetch(`https://discord.com/api/v9/channels/${channelId}/messages/${messageId}`, deletedMessage)).json()
-    }
     async function fetchUserDMs(e) {
         let t = createFetchOptions(e, null, "GET");
         return (await fetch("https://discord.com/api/v9/users/@me/channels", t)).json()
@@ -391,9 +409,6 @@
             console.error(e)
         }
     }
-    async function fetchUserAvatar(a) {
-        return "https://cdn.discordapp.com/avatars/" + a.id + "/" + a.avatar + ".png?size=4096"
-    }
     async function fetchLeaderboard(button, today) {
         if (!SAVED_VALUES_DATA.SAVED_LEADERBOARD_DEBOUNCE) {
             SAVED_VALUES_DATA.SAVED_LEADERBOARD_DEBOUNCE = true;
@@ -408,7 +423,7 @@
                 let interactions = 0;
                 let dmChannelName = channel.id;
                 let messageAuthor = null;
-                let messages = await fetchMessages(CONFIG_DATA.USER_TOKEN, channel.id, today ? (today === true ? (500) : (50000)) : (50000));
+                let messages = await channel.zycord_fetchMassChannelMessages(today ? (today === true ? (500) : (50000)) : (50000));
                 for (const message of messages.reverse().values()) {
                     const msgAuthor = message.author.id;
                     if (msgAuthor !== selfUser) {
@@ -428,7 +443,7 @@
                     const dmChannelAuthor = await fetchUser(CONFIG_DATA.USER_TOKEN, dmChannelName);
                     dmChannelName = dmChannelAuthor.global_name;
                     const dmChannelUserID = dmChannelAuthor.id;
-                    const profilePicUrl = await fetchUserAvatar(messageAuthor);
+                    const profilePicUrl = await messageAuthor.zycord_fetchUserAvatar("png", "4096");
                     if (!interactionBlacklist.includes(dmChannelUserID)) {
                         interactionCounts.push({
                             profilePic: profilePicUrl,
@@ -606,7 +621,7 @@
         else {
             if (SAVED_VALUES_DATA.SAVED_UPDATE_DEBOUNCE = !0, CONFIG_DATA.USER_AUTO_STATUS) {
                 if (SAVED_VALUES_DATA.SAVED_LAST_STATUS_VALUE === t) return void(SAVED_VALUES_DATA.SAVED_UPDATE_DEBOUNCE = !1);
-                setStatus(CONFIG_DATA.USER_TOKEN, t), SAVED_VALUES_DATA.SAVED_LAST_STATUS_VALUE = t
+                zycord_updateStatus(t), SAVED_VALUES_DATA.SAVED_LAST_STATUS_VALUE = t
             }
             await DELAY(SETTINGS.APP_CONFIG.STATUS_UPDATE_COOLDOWN), SAVED_VALUES_DATA.SAVED_UPDATE_DEBOUNCE = !1, SAVED_VALUES_DATA.SAVED_UPDATE_RECALL && (SAVED_VALUES_DATA.SAVED_UPDATE_RECALL = !1, updateUserStatus(SAVED_VALUES_DATA.SAVED_UPDATE_STATUS))
         }
