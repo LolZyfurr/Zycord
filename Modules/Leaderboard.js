@@ -3,6 +3,7 @@
         SAVED_VALUES_DATA.SAVED_LEADERBOARD_DEBOUNCE = true;
         const loadingHtml = `<div style="display: grid;"> <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/9237-loading.gif?raw=true" style="height: 25%; max-height: 250px; justify-self: center; align-self: center;"></div>`;
         const channels = await fetchUserDMs(CONFIG_DATA.USER_TOKEN);
+        console.log(channels)
         const fetchedSelfUser = await fetchUserSelf(CONFIG_DATA.USER_TOKEN);
         const selfUser = fetchedSelfUser.id;
         let modalLeaderboard = createModal(`${today ? (today === true ? ("Todays") : ("")) : ("")} Leaderboard`, loadingHtml);
