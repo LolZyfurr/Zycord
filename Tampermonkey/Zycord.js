@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zycord
 // @namespace    http://tampermonkey.net/
-// @version      0.0.0
+// @version      0.0.1
 // @description  An experimental discord client modification.
 // @author       Zy1ux
 // @match        *://*.discord.com/*
@@ -71,6 +71,7 @@
     function getValue(key) {
         return GM_getValue(key);
     }
+
     let url = 'https://raw.githubusercontent.com/Zy1ux/Zycord/main/MainClient.js';
     fetch(url).then(response => response.text()).then(data => {
         try {
