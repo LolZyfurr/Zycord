@@ -2,7 +2,7 @@
  * @name Zycord
  * @author Zy1ux
  * @description An experimental discord client modification.
- * @version 0.0.6
+ * @version 0.0.7
  * @authorId 723659289377636423
  * @authorLink https://github.com/Zy1ux
  * @source https://github.com/Zy1ux/Zycord/blob/main/BetterDiscord/Zycord.plugin.js
@@ -15,7 +15,7 @@ module.exports = meta => {
         DO_NOT_DISTURB: "WgsKBQoDZG5kGgIIAQ==",
         INVISIBLE: "WhEKCwoJaW52aXNpYmxlGgIIAQ==",
     }
-    const USER_STATUS= {
+    const USER_STATUS = {
         ONLINE: "WgwKCAoGb25saW5lGgA=",
         IDLE: "WgoKBgoEaWRsZRoA",
         DO_NOT_DISTURB: "WgkKBQoDZG5kGgA=",
@@ -61,6 +61,14 @@ module.exports = meta => {
             SENARY: 0.3,
             SEPTENARY: 0.25,
         },
+    }
+
+    function saveValue(key, value) {
+        BdApi.Data.save(meta.name, key, value);
+    }
+
+    function getValue(key) {
+        return BdApi.Data.load(meta.name, key);
     }
 
     function refreshSettingsData() {
