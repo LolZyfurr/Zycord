@@ -28,6 +28,9 @@
         VERSION_LABEL: "BETA",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Attempted to fix some things.",
+        DATA_TIME: "24.5.6.10.0.50"
+    }, {
         DATA_MESSAGE: "Added more things for easier updates.",
         DATA_TIME: "24.5.6.10.0.50"
     }, {
@@ -118,6 +121,14 @@
     }
     Object.prototype.zycord_fetchChannelMessages = async function(limit, before) {
         let channelId = this.id;
+        if (!channelId) {
+            console.error("Error: Channel ID is undefined.");
+            return;
+        }
+        if (!limit || limit < 1 || limit > 100) {
+            console.error("Error: Limit must be an integer between 1 and 100.");
+            return;
+        }
         try {
             let url = `https://discord.com/api/v9/channels/${channelId}/messages?`;
             before && (url += "before=" + before + "&");
@@ -149,7 +160,6 @@
         return messages;
     }
     // NEW STUFF ABOVE //
-
     function formatChangelogTimeData(V_timeValue) {
         let V_splitStr = V_timeValue.split(".");
         let V_UPDATED_DATA = {
