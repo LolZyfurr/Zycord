@@ -14,10 +14,10 @@
     let UPDATED_DATA = {
         YEAR: 24,
         MONTH: 5,
-        DAY: 3,
+        DAY: 6,
         HOUR: 9,
         AFTERNOON: 0,
-        MINUTES: 25,
+        MINUTES: 15,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -28,6 +28,9 @@
         VERSION_LABEL: "BETA",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Changed some things for testing.",
+        DATA_TIME: "24.5.6.9.0.15"
+    }, {
         DATA_MESSAGE: "Fixed the shade web value.",
         DATA_TIME: "24.5.3.9.0.25"
     }, {
@@ -365,6 +368,26 @@
         }
         return h
     }
+    //
+    async deleteMessage() {
+        try {
+            let messageChannel = this.channel
+            let channelIdentification = messageChannel.id
+            let messageIdentification = this.id
+            let deletedMessage = createFetchOptions(CONFIG_DATA.USER_TOKEN, null, "DELETE");
+            let response = await fetch(`https://discord.com/api/v9/channels/${channelIdentification}/messages/${messageIdentification}`, deletedMessage);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        } catch (error) {
+            console.error(`There was an error deleting the message: ${error.message}`);
+        }
+    }
+    async userAvatarUrl(avatarType, avatarSize) {
+        return `https://cdn.discordapp.com/avatars/${this.id}/${this.avatar}.${avatarType}?size=${avatarSize}`
+    }
+    //
     async function deleteUserMessage(channelId, messageId) {
         let deletedMessage = createFetchOptions(CONFIG_DATA.USER_TOKEN, null, "DELETE");
         return (await fetch(`https://discord.com/api/v9/channels/${channelId}/messages/${messageId}`, deletedMessage)).json()
@@ -428,7 +451,7 @@
                     const dmChannelAuthor = await fetchUser(CONFIG_DATA.USER_TOKEN, dmChannelName);
                     dmChannelName = dmChannelAuthor.global_name;
                     const dmChannelUserID = dmChannelAuthor.id;
-                    const profilePicUrl = await fetchUserAvatar(messageAuthor);
+                    const profilePicUrl = await messageAuthor.userAvatarUrl("png", "4096");
                     if (!interactionBlacklist.includes(dmChannelUserID)) {
                         interactionCounts.push({
                             profilePic: profilePicUrl,
