@@ -2,33 +2,13 @@
  * @name Zycord
  * @author Zy1ux
  * @description An experimental discord client modification.
- * @version 0.0.5
+ * @version 0.0.6
  * @authorId 723659289377636423
  * @authorLink https://github.com/Zy1ux
  * @source https://github.com/Zy1ux/Zycord/blob/main/BetterDiscord/Zycord.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Zy1ux/Zycord/main/BetterDiscord/Zycord.plugin.js
  */
 module.exports = meta => {
-    const https = require('https');
-    const fs = require('fs');
-    const currentVersion = '0.0.4';
-    https.get('https://raw.githubusercontent.com/Zy1ux/Zycord/main/BetterDiscord/Zycord.plugin.js', (res) => {
-        let data = '';
-        res.on('data', (chunk) => {
-            data += chunk;
-        });
-        res.on('end', () => {
-            const match = data.match(/@version (\d+\.\d+\.\d+)/);
-            const fetchedVersion = match ? match[1] : null;
-            if (fetchedVersion && fetchedVersion !== currentVersion) {
-                fs.writeFile(__filename, data, (err) => {
-                    if (err) throw err;
-                });
-            }
-        });
-    }).on('error', (err) => {
-        console.error(`Error: ${err.message}`);
-    });
     let USER_ACTIVITY_STATUS = {
         ONLINE: "Wg4KCAoGb25saW5lGgIIAQ==",
         IDLE: "WgwKBgoEaWRsZRoCCAE=",
