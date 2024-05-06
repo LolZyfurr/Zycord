@@ -10,7 +10,13 @@
 // ==/UserScript==
 (async function() {
     "use strict";
-    const USER_STATUS = {
+    let USER_ACTIVITY_STATUS = {
+        ONLINE: "Wg4KCAoGb25saW5lGgIIAQ==",
+        IDLE: "WgwKBgoEaWRsZRoCCAE=",
+        DO_NOT_DISTURB: "WgsKBQoDZG5kGgIIAQ==",
+        INVISIBLE: "WhEKCwoJaW52aXNpYmxlGgIIAQ==",
+    }
+    const USER_STATUS= {
         ONLINE: "WgwKCAoGb25saW5lGgA=",
         IDLE: "WgoKBgoEaWRsZRoA",
         DO_NOT_DISTURB: "WgkKBQoDZG5kGgA=",
