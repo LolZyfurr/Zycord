@@ -17,7 +17,7 @@
         DAY: 7,
         HOUR: 11,
         AFTERNOON: 0,
-        MINUTES: 5,
+        MINUTES: 40,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -28,6 +28,9 @@
         VERSION_LABEL: "WIP",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Fixed the 'strict' error.",
+        DATA_TIME: "24.5.7.11.0.40"
+    }, {
         DATA_MESSAGE: "Attempted to fix the 'strict' error.",
         DATA_TIME: "24.5.7.11.0.5"
     }, {
@@ -106,7 +109,7 @@
     }
 
     // ZYCORD FUNCTIONS //
-    function zycordCreateFetchOptions(zycordBodyData, zycordFetchMethod) {
+    async function zycordCreateFetchOptions(zycordBodyData, zycordFetchMethod) {
         let zycordConfigDataToken = CONFIG_DATA.USER_TOKEN;
         let zycordConfigAcceptType = "*/*";
         let zycordConfigAcceptLanguage = "en-US,en;q=0.9";
@@ -143,7 +146,7 @@
             console.error(zycordErrorMessage)
         }
     }
-    function zycordGenerateRandomIdentifier(identifierLength) {
+    async function zycordGenerateRandomIdentifier(identifierLength) {
         const zycordIdentifierPossibleCharacters = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
         let zycordCustomIdentifierCode = '';
         for (let i = 0; i < identifierLength; i++) {
@@ -152,7 +155,7 @@
         }
         return zycordCustomIdentifierCode;
     }
-    function zycordGetUserThemeColor() 
+    async function zycordGetUserThemeColor() 
         let zycordCustomUserThemeColorCheck = (CONFIG_DATA.USER_THEME_COLOR == null);
         let zycordFetchUserSelfProfile = await clientGetSelfUserZycord();
         if (zycordCustomUserThemeColorCheck) {
