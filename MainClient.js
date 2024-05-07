@@ -28,6 +28,9 @@
         VERSION_LABEL: "WIP",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Attempted to fix the 'strict' error.",
+        DATA_TIME: "24.5.7.11.0.5"
+    }, {
         DATA_MESSAGE: "Added even more functions.",
         DATA_TIME: "24.5.7.11.0.5"
     }, {
@@ -103,60 +106,60 @@
     }
 
     // ZYCORD FUNCTIONS //
-    function zycordCreateFetchOptions(bodyData, fetchMethod) {
-        let configDataToken = CONFIG_DATA.USER_TOKEN;
-        let configAcceptType = "*/*";
-        let configAcceptLanguage = "en-US,en;q=0.9";
-        let configContentType = "application/json";
+    function zycordCreateFetchOptions(zycordBodyData, zycordFetchMethod) {
+        let zycordConfigDataToken = CONFIG_DATA.USER_TOKEN;
+        let zycordConfigAcceptType = "*/*";
+        let zycordConfigAcceptLanguage = "en-US,en;q=0.9";
+        let zycordConfigContentType = "application/json";
         return {
             headers: {
-                "accept": configAcceptType,
-                "accept-language": configAcceptLanguage,
-                "authorization": configDataToken,
-                "content-type": configContentType
+                "accept": zycordConfigAcceptType,
+                "accept-language": zycordConfigAcceptLanguage,
+                "authorization": zycordConfigDataToken,
+                "content-type": zycordConfigContentType
             },
-            body: bodyData ? JSON.stringify({
-                settings: bodyData
+            body: zycordBodyData ? JSON.stringify({
+                settings: zycordBodyData
             }) : null,
-            method: fetchMethod
+            method: zycordFetchMethod
         }
     }
     async function zycordFetchUserProfile(userToFetch) {
-        let discordApiVersion = "v9"
-        let discordApiUrl = `https://discord.com/api/${discordApiVersion}`;
-        let discordUsersUrl = `${discordApiUrl}/users/`;
-        let userDataToFetch = selectedUserIdentification;
-        let configDataToken = CONFIG_DATA.USER_TOKEN;
-        let userFetchOptions = zycordCreateFetchOptions(null, "GET");
+        let zycordApiVersion = "v9"
+        let zycordApiUrl = `https://discord.com/api/${zycordApiVersion}`;
+        let zycordUsersUrl = `${zycordApiUrl}/users/`;
+        let zycordUserDataToFetch = zycordSelectedUserIdentification;
+        let zycordConfigDataToken = CONFIG_DATA.USER_TOKEN;
+        let zycordUserFetchOptions = zycordCreateFetchOptions(null, "GET");
         try {
-            let userFetchData = await fetch(discordUsersUrl + userDataToFetch, userFetchOptions);
-            let fetchDataJson = await userFetchData.json();
-            return "You are being rate limited." === fetchDataJson.message ? new Promise(retryFunction => {
+            let zycordUserFetchData = await fetch(zycordUsersUrl + zycordUserDataToFetch, zycordUserFetchOptions);
+            let zycordFetchDataJson = await zycordUserFetchData.json();
+            return "You are being rate limited." === zycordFetchDataJson.message ? new Promise(zycordRetryFunction => {
                 setTimeout(async () => {
-                    retryFunction(await zycordFetchUserProfile(userToFetch))
-                }, 1e3 * fetchDataJson.retry_after)
-            }) : fetchDataJson
-        } catch (errorMessage) {
-            console.error(errorMessage)
+                    zycordRetryFunction(await zycordFetchUserProfile(userToFetch))
+                }, 1e3 * zycordFetchDataJson.retry_after)
+            }) : zycordFetchDataJson
+        } catch (zycordErrorMessage) {
+            console.error(zycordErrorMessage)
         }
     }
     function zycordGenerateRandomIdentifier(identifierLength) {
-        const identifierPossibleCharacters = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-        let customIdentifierCode = '';
+        const zycordIdentifierPossibleCharacters = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+        let zycordCustomIdentifierCode = '';
         for (let i = 0; i < identifierLength; i++) {
-            const randomCodeIndex = Math.floor(Math.random() * identifierPossibleCharacters.length);
-            customIdentifierCode += identifierPossibleCharacters[randomCodeIndex];
+            const zycordRandomCodeIndex = Math.floor(Math.random() * zycordIdentifierPossibleCharacters.length);
+            zycordCustomIdentifierCode += zycordIdentifierPossibleCharacters[zycordRandomCodeIndex];
         }
-        return customIdentifierCode;
+        return zycordCustomIdentifierCode;
     }
     function zycordGetUserThemeColor() 
-        let customUserThemeColorCheck = (CONFIG_DATA.USER_THEME_COLOR == null);
-        let fetchUserSelfProfile = await clientGetSelfUser();
-        if (customUserThemeColorCheck) {
-            let userBannerColor = fetchUserSelfProfile.banner_color;
-            let userBannerExists = userBannerColor ? (true) : (false);
-            if (userBannerExists) {
-                CONFIG_DATA.USER_THEME_COLOR = userBannerColor;
+        let zycordCustomUserThemeColorCheck = (CONFIG_DATA.USER_THEME_COLOR == null);
+        let zycordFetchUserSelfProfile = await clientGetSelfUserZycord();
+        if (zycordCustomUserThemeColorCheck) {
+            let zycordUserBannerColor = zycordFetchUserSelfProfile.banner_color;
+            let zycordUserBannerExists = zycordUserBannerColor ? (true) : (false);
+            if (zycordUserBannerExists) {
+                CONFIG_DATA.USER_THEME_COLOR = zycordUserBannerColor;
                 changeElementColor(CONFIG_DATA.USER_THEME_COLOR);
             }
         } else {
@@ -166,50 +169,50 @@
     // END OF ZYCORD FUNCTIONS //
     
     // CLIENT FUNCTIONS //
-    async function clientChannelTyping(selectedChannel) {
-        let discordApiVersion = "v9"
-        let discordApiUrl = `https://discord.com/api/${discordApiVersion}`;
-        let channelsUrl = `${discordApiUrl}/channels`;
-        let channelsAction = "typing";
-        let actionApiUrl = `${channelsUrl}/${selectedChannel}/${channelsAction}`;
+    async function clientChannelTypingZycord(zycordSelectedChannel) {
+        let zycordApiVersion = "v9"
+        let zycordApiUrl = `https://discord.com/api/${zycordApiVersion}`;
+        let zycordChannelsUrl = `${zycordApiUrl}/channels`;
+        let zycordChannelsAction = "typing";
+        let zycordActionApiUrl = `${zycordChannelsUrl}/${zycordSelectedChannel}/${zycordChannelsAction}`;
         let actionFetchOptions = zycordCreateFetchOptions(null, "POST");
-        fetch(actionApiUrl, actionFetchOptions);
+        fetch(zycordActionApiUrl, actionFetchOptions);
     }
-    async function clientChannelSend(selectedChannel, messageContent) {
-        let discordApiVersion = "v9"
-        let discordApiUrl = `https://discord.com/api/${discordApiVersion}`;
-        let channelsUrl = `${discordApiUrl}/channels`;
-        let channelsAction = "messages";
-        let messageApiUrl = `${channelsUrl}/${selectedChannel}/${channelsAction}`;
-        let messageActions = {"content": messageContent};
-        let messageBody = JSON.stringify(messageActions);
-        let messageFetchOptions = zycordCreateFetchOptions(messageBody, "POST");
-        fetch(messageApiUrl, messageFetchOptions);
+    async function clientChannelSendZycord(zycordSelectedChannel, zycordMessageContent) {
+        let zycordApiVersion = "v9"
+        let zycordApiUrl = `https://discord.com/api/${zycordApiVersion}`;
+        let zycordChannelsUrl = `${zycordApiUrl}/channels`;
+        let zycordChannelsAction = "messages";
+        let zycordMessageApiUrl = `${zycordChannelsUrl}/${zycordSelectedChannel}/${zycordChannelsAction}`;
+        let zycordMessageActions = {"content": zycordMessageContent};
+        let zycordMessageBody = JSON.stringify(zycordMessageActions);
+        let zycordMessageFetchOptions = zycordCreateFetchOptions(zycordMessageBody, "POST");
+        fetch(zycordMessageApiUrl, zycordMessageFetchOptions);
     }
-    async function clientGetUserProfile(selectedUserIdentification) {
-        let userToFetchData = selectedUserIdentification;
-        let dataToReturn = await zycordFetchUserProfile(userToFetchData);
-        return dataToReturn;
+    async function clientGetUserProfileZycord(zycordSelectedUserIdentification) {
+        let zycordUserToFetchData = zycordSelectedUserIdentification;
+        let zycordDataToReturn = await zycordFetchUserProfile(zycordUserToFetchData);
+        return zycordDataToReturn;
     }
-    async function clientGetSelfUser() {
-        let userToFetchData = "@me";
-        let dataToReturn = await zycordFetchUserProfile(userToFetchData);
-        return dataToReturn;
+    async function clientGetSelfUserZycord() {
+        let zycordUserToFetchData = "@me";
+        let zycordDataToReturn = await zycordFetchUserProfile(zycordUserToFetchData);
+        return zycordDataToReturn;
     }
-    async function clientGetUserAvatar(selectedUser, fileType, imageSize) {
-        let userAvatar = selectedUser.avatar;
-        let userIdentification = selectedUser.id;
-        let avatarUrl = "https://cdn.discordapp.com/avatars";
-        let avatarSize = (imageSize) ? (`?size=${imageSize}`) : ("");
-        let userAvatarUrl = `${avatarUrl}/${userIdentification}/${userAvatar}.${fileType}${avatarSize}`;
-        return userAvatarUrl;
+    async function clientGetUserAvatarZycord(zycordSelectedUser, zycordFileType, zycordImageSize) {
+        let zycordUserAvatar = zycordSelectedUser.avatar;
+        let zycordUserIdentification = zycordSelectedUser.id;
+        let zycordAvatarUrl = "https://cdn.discordapp.com/avatars";
+        let zycordAvatarSize = (zycordImageSize) ? (`?size=${zycordImageSize}`) : ("");
+        let zycordUserAvatarUrl = `${zycordAvatarUrl}/${zycordUserIdentification}/${zycordUserAvatar}.${zycordFileType}${zycordAvatarSize}`;
+        return zycordUserAvatarUrl;
     }
-    function clientUpdateStatus(newStatus) {
-        let discordApiVersion = "v9"
-        let discordApiUrl = `https://discord.com/api/${discordApiVersion}`;
-        let statusFetchOptions = zycordCreateFetchOptions(newStatus, "PATCH");
-        let statusFetchUrl = `${discordApiUrl}/users/@me/settings-proto/1`;
-        fetch(statusFetchUrl, statusFetchOptions);
+    function clientUpdateStatusZycord(zycordNewStatus) {
+        let zycordApiVersion = "v9"
+        let zycordApiUrl = `https://discord.com/api/${zycordApiVersion}`;
+        let zycordStatusFetchOptions = zycordCreateFetchOptions(zycordNewStatus, "PATCH");
+        let zycordStatusFetchUrl = `${zycordApiUrl}/users/@me/settings-proto/1`;
+        fetch(zycordStatusFetchUrl, zycordStatusFetchOptions);
     }
     // END OF CLIENT FUNCTIONS //
 
