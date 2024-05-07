@@ -14,10 +14,10 @@
     let UPDATED_DATA = {
         YEAR: 24,
         MONTH: 5,
-        DAY: 3,
-        HOUR: 9,
+        DAY: 7,
+        HOUR: 11,
         AFTERNOON: 0,
-        MINUTES: 25,
+        MINUTES: 5,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -25,9 +25,12 @@
         VERSION_ALPHA_DAY: UPDATED_DATA.DAY.toString(36),
         VERSION_ALPHA_HOUR: (UPDATED_DATA.HOUR + UPDATED_DATA.AFTERNOON).toString(36),
         VERSION_ALPHA_MINUTES: UPDATED_DATA.MINUTES.toString(36),
-        VERSION_LABEL: "BETA",
+        VERSION_LABEL: "WIP",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Added even more functions.",
+        DATA_TIME: "24.5.7.11.0.5"
+    }, {
         DATA_MESSAGE: "Added more functions.",
         DATA_TIME: "24.5.3.9.0.25"
     }, {
@@ -80,14 +83,14 @@
         SAVED_LAST_THEME_VALUE: CONFIG_DATA.USER_LIGHT_THEME,
         SAVED_LAST_STATUS_VALUE: "",
         SAVED_UPDATE_STATUS: "",
+        SAVED_APP_VERSION: `${VERSION_DATA.VERSION_LABEL} ${VERSION_DATA.VERSION_ALPHA_MONTH}${VERSION_DATA.VERSION_ALPHA_DAY}${VERSION_DATA.VERSION_ALPHA_YEAR}${VERSION_DATA.VERSION_ALPHA_MINUTES}${VERSION_DATA.VERSION_ALPHA_HOUR}`,
+        SAVED_TIMEOUT_ID: null,
     };
     let DATA_API_URLS = {
         DISCORD_STATUS_API_URL: "https://discord.com/api/v9/users/@me/settings-proto/1",
         DISCORD_USER_API_URL: "https://discord.com/api/v9/users/@me",
     }
-    let DATE_UPDATED = `${VERSION_DATA.VERSION_ALPHA_MONTH}${VERSION_DATA.VERSION_ALPHA_DAY}${VERSION_DATA.VERSION_ALPHA_YEAR}${VERSION_DATA.VERSION_ALPHA_MINUTES}${VERSION_DATA.VERSION_ALPHA_HOUR}`;
-    let APP_VERSION = `${VERSION_DATA.VERSION_LABEL} ${DATE_UPDATED}`;
-    let timeoutId = null;
+    
     ShadeWeb(false, false, CONFIG_DATA.USER_USE_BLUR ? (CONFIG_DATA.USER_BLUR_AMOUNT / (1 - SETTINGS.APP_CONFIG.INITIAL_OPACITY)) : (SETTINGS.APP_CONFIG.INITIAL_OPACITY), false);
     const DELAY = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (3 / 5)) * 1000);
@@ -119,7 +122,9 @@
         }
     }
     async function zycordFetchUserProfile(userToFetch) {
-        let discordUsersUrl = "https://discord.com/api/v9/users/";
+        let discordApiVersion = "v9"
+        let discordApiUrl = `https://discord.com/api/${discordApiVersion}`;
+        let discordUsersUrl = `${discordApiUrl}/users/`;
         let userDataToFetch = selectedUserIdentification;
         let configDataToken = CONFIG_DATA.USER_TOKEN;
         let userFetchOptions = zycordCreateFetchOptions(null, "GET");
@@ -135,23 +140,51 @@
             console.error(errorMessage)
         }
     }
+    function zycordGenerateRandomIdentifier(identifierLength) {
+        const identifierPossibleCharacters = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+        let customIdentifierCode = '';
+        for (let i = 0; i < identifierLength; i++) {
+            const randomCodeIndex = Math.floor(Math.random() * identifierPossibleCharacters.length);
+            customIdentifierCode += identifierPossibleCharacters[randomCodeIndex];
+        }
+        return customIdentifierCode;
+    }
+    function zycordGetUserThemeColor() 
+        let customUserThemeColorCheck = (CONFIG_DATA.USER_THEME_COLOR == null);
+        let fetchUserSelfProfile = await clientGetSelfUser();
+        if (customUserThemeColorCheck) {
+            let userBannerColor = fetchUserSelfProfile.banner_color;
+            let userBannerExists = userBannerColor ? (true) : (false);
+            if (userBannerExists) {
+                CONFIG_DATA.USER_THEME_COLOR = userBannerColor;
+                changeElementColor(CONFIG_DATA.USER_THEME_COLOR);
+            }
+        } else {
+            changeElementColor(CONFIG_DATA.USER_THEME_COLOR);
+        }
+    }
     // END OF ZYCORD FUNCTIONS //
     
     // CLIENT FUNCTIONS //
     async function clientChannelTyping(selectedChannel) {
-        let channelsUrl = "https://discord.com/api/v9/channels";
+        let discordApiVersion = "v9"
+        let discordApiUrl = `https://discord.com/api/${discordApiVersion}`;
+        let channelsUrl = `${discordApiUrl}/channels`;
         let channelsAction = "typing";
         let actionApiUrl = `${channelsUrl}/${selectedChannel}/${channelsAction}`;
         let actionFetchOptions = zycordCreateFetchOptions(null, "POST");
         fetch(actionApiUrl, actionFetchOptions);
     }
     async function clientChannelSend(selectedChannel, messageContent) {
-        let channelsUrl = "https://discord.com/api/v9/channels";
+        let discordApiVersion = "v9"
+        let discordApiUrl = `https://discord.com/api/${discordApiVersion}`;
+        let channelsUrl = `${discordApiUrl}/channels`;
         let channelsAction = "messages";
-        let actionApiUrl = `${channelsUrl}/${selectedChannel}/${channelsAction}`;
-        let actionBody = `{\"mobile_network_type\":\"unknown\",\"content\":\"${messageContent}\",\"nonce\":\"1237443390472192000\",\"tts\":false,\"flags\":0}`;
-        let actionFetchOptions = zycordCreateFetchOptions(null, "POST");
-        fetch(actionApiUrl, actionFetchOptions);
+        let messageApiUrl = `${channelsUrl}/${selectedChannel}/${channelsAction}`;
+        let messageActions = {"content": messageContent};
+        let messageBody = JSON.stringify(messageActions);
+        let messageFetchOptions = zycordCreateFetchOptions(messageBody, "POST");
+        fetch(messageApiUrl, messageFetchOptions);
     }
     async function clientGetUserProfile(selectedUserIdentification) {
         let userToFetchData = selectedUserIdentification;
@@ -172,8 +205,10 @@
         return userAvatarUrl;
     }
     function clientUpdateStatus(newStatus) {
+        let discordApiVersion = "v9"
+        let discordApiUrl = `https://discord.com/api/${discordApiVersion}`;
         let statusFetchOptions = zycordCreateFetchOptions(newStatus, "PATCH");
-        let statusFetchUrl = "https://discord.com/api/v9/users/@me/settings-proto/1";
+        let statusFetchUrl = `${discordApiUrl}/users/@me/settings-proto/1`;
         fetch(statusFetchUrl, statusFetchOptions);
     }
     // END OF CLIENT FUNCTIONS //
@@ -259,12 +294,12 @@
             if (!clickDebounce) {
                 clickDebounce = true
                 let tweenValues01 = {
-                    timeValue: 500,
+                    timeValue: 250,
                     valueStart: 1,
                     endValue: 0.75,
                 };
                 let tweenValues02 = {
-                    timeValue: 250,
+                    timeValue: 125,
                     valueStart: 1,
                     endValue: 0,
                 };
@@ -395,7 +430,7 @@
             const valueGoalShade = CONFIG_DATA.USER_USE_BLUR ? (CONFIG_DATA.USER_BLUR_AMOUNT * valueGoalMultiplied) : valueGoalMultiplied;
             tween(valueOriginalShade, valueGoalShade, timeValue, T => ShadeWeb(false, false, (T/100), false));
         } else {
-            WatermarkWeb(`ZYCORD ${APP_VERSION}`, "#FFFFFF");
+            WatermarkWeb(`ZYCORD ${SAVED_VALUES_DATA.SAVED_APP_VERSION}`, "#FFFFFF");
             const styleElement = document.getElementById("shadeWebStyle") || document.createElement("style");
             styleElement.type = "text/css";
             styleElement.id = "shadeWebStyle";
@@ -596,7 +631,7 @@
     }
 
     function ApplyTheme() {
-        WatermarkWeb(`ZYCORD ${APP_VERSION}`, "#FFFFFF");
+        WatermarkWeb(`ZYCORD ${SAVED_VALUES_DATA.SAVED_APP_VERSION}`, "#FFFFFF");
         if (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.DISCORD_RECOLOR_CSS === true ? (true) : (false)) : (true)) {
             loadCSS("https://mwittrien.github.io/BetterDiscordAddons/Themes/DiscordRecolor/DiscordRecolor.css");
         }
@@ -672,7 +707,7 @@
                 _ = x.reduce((t, r) => t + r, 0) / x.length >= 155;
                 SAVED_VALUES_DATA.SAVED_LAST_THEME_VALUE = CONFIG_DATA.USER_LIGHT_THEME;
             }
-            $ ? u = !0 : ($ = !0, WatermarkWeb(`ZYCORD ${APP_VERSION}`, m), E.style.setProperty("--mainaccentcolor", y, "important"), E.style.setProperty("--accentcolor", m, "important"), E.style.setProperty("--accentcolor2", m, "important"), E.style.setProperty("--linkcolor", m, "important"), E.style.setProperty("--mentioncolor", m, "important"), E.style.setProperty("--backgroundaccent", c, "important"), E.style.setProperty("--backgroundprimary", P, "important"), E.style.setProperty("--backgroundsecondary", g, "important"), E.style.setProperty("--backgroundsecondaryalt", b, "important"), E.style.setProperty("--backgroundtertiary", h, "important"), E.style.setProperty("--backgroundfloating", d, "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-medium-spacing", "3px", "important"), E.style.setProperty("--rs-large-spacing", "4px", "important"), E.style.setProperty("--rs-small-width", "2px", "important"), E.style.setProperty("--rs-medium-width", "3px", "important"), E.style.setProperty("--rs-large-width", "4px", "important"), E.style.setProperty("--rs-avatar-shape", CONFIG_DATA.USER_AVATAR_SHAPE, "important"), E.style.setProperty("--rs-online-color", "#43b581", "important"), E.style.setProperty("--rs-idle-color", "#faa61a", "important"), E.style.setProperty("--rs-dnd-color", "#f04747", "important"), E.style.setProperty("--rs-offline-color", "#636b75", "important"), E.style.setProperty("--rs-streaming-color", "#643da7", "important"), E.style.setProperty("--rs-invisible-color", "#747f8d", "important"), E.style.setProperty("--rs-phone-color", "var(--rs-online-color)", "important"), E.style.setProperty("--rs-phone-visible", "none", "important"), _ ? (E.style.setProperty("--textbrightest", "100,100,100", "important"), E.style.setProperty("--embed-title", "100,100,100", "important"), E.style.setProperty("--textbrighter", "90,90,90", "important"), E.style.setProperty("--textbright", "80,80,80", "important"), E.style.setProperty("--textdark", "70,70,70", "important"), E.style.setProperty("--textdarker", "60,60,60", "important"), E.style.setProperty("--textdarkest", "50,50,50", "important")) : (E.style.setProperty("--textbrightest", "250,250,250", "important"), E.style.setProperty("--textbrighter", "240,240,240", "important"), E.style.setProperty("--textbright", "230,230,230", "important"), E.style.setProperty("--textdark", "220,220,220", "important"), E.style.setProperty("--textdarker", "210,210,210", "important"), E.style.setProperty("--textdarkest", "200,200,200", "important")), ApplyTheme(), await DELAY(500), $ = !1, u && (u = !1, k()))
+            $ ? u = !0 : ($ = !0, WatermarkWeb(`ZYCORD ${SAVED_VALUES_DATA.SAVED_APP_VERSION}`, m), E.style.setProperty("--mainaccentcolor", y, "important"), E.style.setProperty("--accentcolor", m, "important"), E.style.setProperty("--accentcolor2", m, "important"), E.style.setProperty("--linkcolor", m, "important"), E.style.setProperty("--mentioncolor", m, "important"), E.style.setProperty("--backgroundaccent", c, "important"), E.style.setProperty("--backgroundprimary", P, "important"), E.style.setProperty("--backgroundsecondary", g, "important"), E.style.setProperty("--backgroundsecondaryalt", b, "important"), E.style.setProperty("--backgroundtertiary", h, "important"), E.style.setProperty("--backgroundfloating", d, "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-medium-spacing", "3px", "important"), E.style.setProperty("--rs-large-spacing", "4px", "important"), E.style.setProperty("--rs-small-width", "2px", "important"), E.style.setProperty("--rs-medium-width", "3px", "important"), E.style.setProperty("--rs-large-width", "4px", "important"), E.style.setProperty("--rs-avatar-shape", CONFIG_DATA.USER_AVATAR_SHAPE, "important"), E.style.setProperty("--rs-online-color", "#43b581", "important"), E.style.setProperty("--rs-idle-color", "#faa61a", "important"), E.style.setProperty("--rs-dnd-color", "#f04747", "important"), E.style.setProperty("--rs-offline-color", "#636b75", "important"), E.style.setProperty("--rs-streaming-color", "#643da7", "important"), E.style.setProperty("--rs-invisible-color", "#747f8d", "important"), E.style.setProperty("--rs-phone-color", "var(--rs-online-color)", "important"), E.style.setProperty("--rs-phone-visible", "none", "important"), _ ? (E.style.setProperty("--textbrightest", "100,100,100", "important"), E.style.setProperty("--embed-title", "100,100,100", "important"), E.style.setProperty("--textbrighter", "90,90,90", "important"), E.style.setProperty("--textbright", "80,80,80", "important"), E.style.setProperty("--textdark", "70,70,70", "important"), E.style.setProperty("--textdarker", "60,60,60", "important"), E.style.setProperty("--textdarkest", "50,50,50", "important")) : (E.style.setProperty("--textbrightest", "250,250,250", "important"), E.style.setProperty("--textbrighter", "240,240,240", "important"), E.style.setProperty("--textbright", "230,230,230", "important"), E.style.setProperty("--textdark", "220,220,220", "important"), E.style.setProperty("--textdarker", "210,210,210", "important"), E.style.setProperty("--textdarkest", "200,200,200", "important")), ApplyTheme(), await DELAY(500), $ = !1, u && (u = !1, k()))
         };
         k(), new MutationObserver((function(t) {
             t.forEach((function(t) {
@@ -863,12 +898,12 @@
     setupSidebarMenu()
     window.addEventListener("blur", (function() {
         ShadeWeb(true, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME);
-        updateUserStatus(SETTINGS.APP_CONFIG.UNFOCUSED_STATUS), timeoutId = setTimeout((function() {
+        updateUserStatus(SETTINGS.APP_CONFIG.UNFOCUSED_STATUS), SAVED_VALUES_DATA.SAVED_TIMEOUT_ID = setTimeout((function() {
             updateUserStatus(SETTINGS.APP_CONFIG.AWAY_STATUS);
         }), 1e3 * SETTINGS.APP_CONFIG.AWAY_TRIGGER_TIME);
     }));
     window.addEventListener("focus", (function() {
-        null !== timeoutId && (clearTimeout(timeoutId), timeoutId = null);
+        null !== SAVED_VALUES_DATA.SAVED_TIMEOUT_ID && (clearTimeout(SAVED_VALUES_DATA.SAVED_TIMEOUT_ID), SAVED_VALUES_DATA.SAVED_TIMEOUT_ID = null);
         ShadeWeb(true, SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME);
         updateUserStatus(SETTINGS.APP_CONFIG.FOCUSED_STATUS);
     }));
