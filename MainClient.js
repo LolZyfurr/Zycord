@@ -28,6 +28,9 @@
         VERSION_LABEL: "BETA",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Added more functions.",
+        DATA_TIME: "24.5.3.9.0.25"
+    }, {
         DATA_MESSAGE: "Fixed the shade web value.",
         DATA_TIME: "24.5.3.9.0.25"
     }, {
@@ -95,6 +98,85 @@
     if (!(SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.RADIAL_STATUS_CSS === true ? (true) : (false)) : (true))) {
         CONFIG_DATA.USER_AVATAR_SHAPE = '50%';
     }
+
+    // ZYCORD FUNCTIONS //
+    function zycordCreateFetchOptions(bodyData, fetchMethod) {
+        let configDataToken = CONFIG_DATA.USER_TOKEN;
+        let configAcceptType = "*/*";
+        let configAcceptLanguage = "en-US,en;q=0.9";
+        let configContentType = "application/json";
+        return {
+            headers: {
+                "accept": configAcceptType,
+                "accept-language": configAcceptLanguage,
+                "authorization": configDataToken,
+                "content-type": configContentType
+            },
+            body: bodyData ? JSON.stringify({
+                settings: bodyData
+            }) : null,
+            method: fetchMethod
+        }
+    }
+    async function zycordFetchUserProfile(userToFetch) {
+        let discordUsersUrl = "https://discord.com/api/v9/users/";
+        let userDataToFetch = selectedUserIdentification;
+        let configDataToken = CONFIG_DATA.USER_TOKEN;
+        let userFetchOptions = zycordCreateFetchOptions(null, "GET");
+        try {
+            let userFetchData = await fetch(discordUsersUrl + userDataToFetch, userFetchOptions);
+            let fetchDataJson = await userFetchData.json();
+            return "You are being rate limited." === fetchDataJson.message ? new Promise(retryFunction => {
+                setTimeout(async () => {
+                    retryFunction(await zycordFetchUserProfile(userToFetch))
+                }, 1e3 * fetchDataJson.retry_after)
+            }) : fetchDataJson
+        } catch (errorMessage) {
+            console.error(errorMessage)
+        }
+    }
+    // END OF ZYCORD FUNCTIONS //
+    
+    // CLIENT FUNCTIONS //
+    async function clientChannelTyping(selectedChannel) {
+        let channelsUrl = "https://discord.com/api/v9/channels";
+        let channelsAction = "typing";
+        let actionApiUrl = `${channelsUrl}/${selectedChannel}/${channelsAction}`;
+        let actionFetchOptions = zycordCreateFetchOptions(null, "POST");
+        fetch(actionApiUrl, actionFetchOptions);
+    }
+    async function clientChannelSend(selectedChannel, messageContent) {
+        let channelsUrl = "https://discord.com/api/v9/channels";
+        let channelsAction = "messages";
+        let actionApiUrl = `${channelsUrl}/${selectedChannel}/${channelsAction}`;
+        let actionBody = `{\"mobile_network_type\":\"unknown\",\"content\":\"${messageContent}\",\"nonce\":\"1237443390472192000\",\"tts\":false,\"flags\":0}`;
+        let actionFetchOptions = zycordCreateFetchOptions(null, "POST");
+        fetch(actionApiUrl, actionFetchOptions);
+    }
+    async function clientGetUserProfile(selectedUserIdentification) {
+        let userToFetchData = selectedUserIdentification;
+        let dataToReturn = await zycordFetchUserProfile(userToFetchData);
+        return dataToReturn;
+    }
+    async function clientGetSelfUser() {
+        let userToFetchData = "@me";
+        let dataToReturn = await zycordFetchUserProfile(userToFetchData);
+        return dataToReturn;
+    }
+    async function clientGetUserAvatar(selectedUser, fileType, imageSize) {
+        let userAvatar = selectedUser.avatar;
+        let userIdentification = selectedUser.id;
+        let avatarUrl = "https://cdn.discordapp.com/avatars";
+        let avatarSize = (imageSize) ? (`?size=${imageSize}`) : ("");
+        let userAvatarUrl = `${avatarUrl}/${userIdentification}/${userAvatar}.${fileType}${avatarSize}`;
+        return userAvatarUrl;
+    }
+    function clientUpdateStatus(newStatus) {
+        let statusFetchOptions = zycordCreateFetchOptions(newStatus, "PATCH");
+        let statusFetchUrl = "https://discord.com/api/v9/users/@me/settings-proto/1";
+        fetch(statusFetchUrl, statusFetchOptions);
+    }
+    // END OF CLIENT FUNCTIONS //
 
     function formatChangelogTimeData(V_timeValue) {
         let V_splitStr = V_timeValue.split(".");
