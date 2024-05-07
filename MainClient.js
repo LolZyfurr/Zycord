@@ -123,6 +123,7 @@
         let zycordConfigAcceptType = "*/*";
         let zycordConfigAcceptLanguage = "en-US,en;q=0.9";
         let zycordConfigContentType = "application/json";
+        console.log(zycordConfigDataToken);
         return {
             headers: {
                 "accept": zycordConfigAcceptType,
