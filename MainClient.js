@@ -118,7 +118,7 @@
     }
 
     // ZYCORD FUNCTIONS //
-    async function zycordCreateFetchOptions(zycordBodyData, zycordFetchMethod) {
+    function zycordCreateFetchOptions(zycordBodyData, zycordFetchMethod) {
         let zycordConfigDataToken = CONFIG_DATA.USER_TOKEN;
         let zycordConfigAcceptType = "*/*";
         let zycordConfigAcceptLanguage = "en-US,en;q=0.9";
@@ -156,7 +156,7 @@
             console.error(zycordErrorMessage)
         }
     }
-    async function zycordGenerateRandomIdentifier(identifierLength) {
+    function zycordGenerateRandomIdentifier(identifierLength) {
         const zycordIdentifierPossibleCharacters = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
         let zycordCustomIdentifierCode = '';
         for (let i = 0; i < identifierLength; i++) {
