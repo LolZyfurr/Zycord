@@ -1,6 +1,6 @@
 (async function() {
     let CONFIG_DATA = {
-        USER_TOKEN: getToken(),
+        USER_TOKEN: zycordGetUserToken(),
         USER_THEME_COLOR: SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR !== false ? SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR : null) : null,
         USER_USE_BLUR: SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD === true ? true : false) : false) : false,
         USER_BLUR_AMOUNT: SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? SETTINGS.THEME_CONFIG.BLUR_AMOUNT : 10) : 10) : 10,
@@ -13,8 +13,8 @@
         MONTH: 5,
         DAY: 7,
         HOUR: 12,
-        AFTERNOON: 0,
-        MINUTES: 50,
+        AFTERNOON: 1,
+        MINUTES: 40,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -25,6 +25,9 @@
         VERSION_LABEL: "WIP",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Updated code for easier and future updates.",
+        DATA_TIME: "24.5.7.12.1.40"
+    }, {
         DATA_MESSAGE: "Fixed some errors.",
         DATA_TIME: "24.5.7.12.0.50"
     }, {
@@ -131,7 +134,7 @@
         }
     }
     async function zycordFetchUserProfile(userToFetch) {
-        let zycordApiVersion = "v9"
+        let zycordApiVersion = "v9";
         let zycordApiUrl = `https://discord.com/api/${zycordApiVersion}`;
         let zycordUsersUrl = `${zycordApiUrl}/users/`;
         let zycordUserDataToFetch = zycordSelectedUserIdentification;
@@ -172,11 +175,29 @@
             changeElementColor(CONFIG_DATA.USER_THEME_COLOR);
         }
     }
+    function zycordGetUserToken() {
+        let moduleList;
+        return (window.webpackChunkdiscord_app.push([
+            [''], {},
+            (module) => {
+                moduleList = [];
+                for (let moduleName in module.c) moduleList.push(module.c[moduleName])
+            }
+        ]), moduleList).find(module => module?.exports?.default?.getToken !== void 0).exports.default.getToken();
+    }
     // END OF ZYCORD FUNCTIONS //
     
     // CLIENT FUNCTIONS //
+    async function clientDeleteMessageZycord(zycordChannelId, zycordMessageId) {
+        let zycordApiVersion = "v9";
+        let zycordApiUrl = `https://discord.com/api/${zycordApiVersion}`;
+        let zycordChannelsUrl = `${zycordApiUrl}/channels`;
+        let zycordChannelAction = `${zycordChannelsUrl}/${zycordChannelId}/messages/${zycordMessageId}`;
+        let zycordMessageOptions = zycordCreateFetchOptions(null, "DELETE");
+        fetch(zycordChannelAction, zycordMessageOptions);
+    }
     async function clientChannelTypingZycord(zycordSelectedChannel) {
-        let zycordApiVersion = "v9"
+        let zycordApiVersion = "v9";
         let zycordApiUrl = `https://discord.com/api/${zycordApiVersion}`;
         let zycordChannelsUrl = `${zycordApiUrl}/channels`;
         let zycordChannelsAction = "typing";
@@ -185,7 +206,7 @@
         fetch(zycordActionApiUrl, actionFetchOptions);
     }
     async function clientChannelSendZycord(zycordSelectedChannel, zycordMessageContent) {
-        let zycordApiVersion = "v9"
+        let zycordApiVersion = "v9";
         let zycordApiUrl = `https://discord.com/api/${zycordApiVersion}`;
         let zycordChannelsUrl = `${zycordApiUrl}/channels`;
         let zycordChannelsAction = "messages";
@@ -214,7 +235,7 @@
         return zycordUserAvatarUrl;
     }
     function clientUpdateStatusZycord(zycordNewStatus) {
-        let zycordApiVersion = "v9"
+        let zycordApiVersion = "v9";
         let zycordApiUrl = `https://discord.com/api/${zycordApiVersion}`;
         let zycordStatusFetchOptions = zycordCreateFetchOptions(zycordNewStatus, "PATCH");
         let zycordStatusFetchUrl = `${zycordApiUrl}/users/@me/settings-proto/1`;
@@ -238,25 +259,14 @@
             V_ALPHA_DAY: V_UPDATED_DATA.V_DAY.toString(36),
             V_ALPHA_HOUR: (V_UPDATED_DATA.V_HOUR + V_UPDATED_DATA.V_AFTERNOON).toString(36),
             V_ALPHA_MINUTES: V_UPDATED_DATA.V_MINUTES.toString(36),
-            V_LABEL: "BETA",
         };
         let V_newString = `${V_VERSION_DATA.V_ALPHA_MONTH}${V_VERSION_DATA.V_ALPHA_DAY}${V_VERSION_DATA.V_ALPHA_YEAR}${V_VERSION_DATA.V_ALPHA_MINUTES}${V_VERSION_DATA.V_ALPHA_HOUR}`;
         return V_newString;
     }
 
-    function generateRandomCode() {
-        const characters = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-        let code = '';
-        for (let i = 0; i < 5; i++) {
-            const randomIndex = Math.floor(Math.random() * characters.length);
-            code += characters[randomIndex];
-        }
-        return code;
-    }
-
     function createModal(Title, Body) {
         let clickDebounce = false;
-        let elementCode = generateRandomCode();
+        let elementCode = zycordGenerateRandomIdentifier(5);
         let mainContainerID = `${elementCode}-mainContainer`
         let layerContainerID = `${elementCode}-layerContainer`;
         let backdropID = `${elementCode}-backdrop`;
@@ -273,12 +283,12 @@
         modal.id = mainContainerID;
         modal.innerHTML = htmlModal;
         let tweenValues001 = {
-            timeValue: 500,
+            timeValue: 250,
             valueStart: 0.75,
             endValue: 1,
         };
         let tweenValues002 = {
-            timeValue: 250,
+            timeValue: 125,
             valueStart: 0,
             endValue: 1,
         };
@@ -343,32 +353,6 @@
         });
     }
 
-    function getToken() {
-        let m;
-        return (window.webpackChunkdiscord_app.push([
-            [''], {},
-            e => {
-                m = [];
-                for (let c in e.c) m.push(e.c[c])
-            }
-        ]), m).find(m => m?.exports?.default?.getToken !== void 0).exports.default.getToken();
-    }
-
-    function createFetchOptions(t, e, n) {
-        return {
-            headers: {
-                "accept": "*/*",
-                "accept-language": "en-US,en;q=0.9",
-                "authorization": t,
-                "content-type": "application/json"
-            },
-            body: e ? JSON.stringify({
-                settings: e
-            }) : null,
-            method: n
-        }
-    }
-
     function uwuify(l) {
         const a = ["rawr x3", "OwO", "UwU", "o.O", "-.-", ">w<", "(⑅˘꒳˘)", "(ꈍᴗꈍ)", "(˘ω˘)", "(U ᵕ U❁)", "σωσ", "òωó", "(///ˬ///✿)", "(U ﹏ U)", "( ͡o ω ͡o )", "ʘwʘ", ":3", ":3", "XD", "nyaa~~", "mya", ">_<", "😳", "🥺", "😳😳😳", "rawr", "^^", "^^;;", "(ˆ ﻌ ˆ)♡", "^•ﻌ•^", "/(^•ω•^)", "(✿oωo)"],
             o = [
@@ -387,10 +371,6 @@
             return `${o} ${r=a,r[Math.floor(Math.random()*r.length)]}${e}`;
             var r
         })
-    }
-
-    function setStatus(t, e) {
-        fetch(DATA_API_URLS.DISCORD_STATUS_API_URL, createFetchOptions(t, e, "PATCH"))
     }
 
     function hexToRgb(e) {
@@ -422,13 +402,6 @@
     function WatermarkWeb(n, e) {
         var t = document.createElement("style");
         t.type = "text/css", t.innerHTML = `\nbody::after {\n color: ${e};\n content: "${n}";\n  position: fixed;\n  bottom: 10px;\n  right: 10px;\n  font-size: 25px;\n  font-weight: 900;\n  opacity: 1;\n}\n  z-index: 999999;\n`, document.getElementsByTagName("head")[0].appendChild(t)
-    }
-
-    function fetchThemeColor(e) {
-        null == CONFIG_DATA.USER_THEME_COLOR ? fetch(DATA_API_URLS.DISCORD_USER_API_URL, createFetchOptions(e, null, "GET")).then(e => e.json()).then(e => {
-            const n = e.banner_color;
-            n && (console.log(n), CONFIG_DATA.USER_THEME_COLOR = n, changeElementColor(CONFIG_DATA.USER_THEME_COLOR))
-        }) : changeElementColor(CONFIG_DATA.USER_THEME_COLOR)
     }
 
     function ShadeWeb(tweenType, originalValue, goalValue, timeValue) {
@@ -471,7 +444,7 @@
         try {
             let t = "https://discord.com/api/v9/channels/" + n + "/messages?";
             o && (t += "before=" + o + "&"), t += "limit=" + c;
-            let s = await fetch(t, createFetchOptions(r, null, "GET")),
+            let s = await fetch(t, zycordCreateFetchOptions(null, "GET")),
                 a = await s.json();
             return "You are being rate limited." === a.message ? new Promise(t => {
                 setTimeout(async () => {
@@ -491,41 +464,16 @@
         }
         return h
     }
-    async function deleteUserMessage(channelId, messageId) {
-        let deletedMessage = createFetchOptions(CONFIG_DATA.USER_TOKEN, null, "DELETE");
-        return (await fetch(`https://discord.com/api/v9/channels/${channelId}/messages/${messageId}`, deletedMessage)).json()
-    }
     async function fetchUserDMs(e) {
-        let t = createFetchOptions(e, null, "GET");
+        let t = zycordCreateFetchOptions(null, "GET");
         return (await fetch("https://discord.com/api/v9/users/@me/channels", t)).json()
-    }
-    async function fetchUserSelf(e) {
-        let t = createFetchOptions(e, null, "GET");
-        return (await fetch("https://discord.com/api/v9/users/@me", t)).json()
-    }
-    async function fetchUser(e, t) {
-        let r = createFetchOptions(e, null, "GET");
-        try {
-            let a = await fetch("https://discord.com/api/v9/users/" + t, r),
-                s = await a.json();
-            return "You are being rate limited." === s.message ? new Promise(r => {
-                setTimeout(async () => {
-                    r(await fetchUser(e, t))
-                }, 1e3 * s.retry_after)
-            }) : s
-        } catch (e) {
-            console.error(e)
-        }
-    }
-    async function fetchUserAvatar(a) {
-        return "https://cdn.discordapp.com/avatars/" + a.id + "/" + a.avatar + ".png?size=4096"
     }
     async function fetchLeaderboard(button, today) {
         if (!SAVED_VALUES_DATA.SAVED_LEADERBOARD_DEBOUNCE) {
             SAVED_VALUES_DATA.SAVED_LEADERBOARD_DEBOUNCE = true;
             const loadingHtml = `<div style="display: grid;"> <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/9237-loading.gif?raw=true" style="height: 25%; max-height: 250px; justify-self: center; align-self: center;"></div>`;
             const channels = await fetchUserDMs(CONFIG_DATA.USER_TOKEN);
-            const fetchedSelfUser = await fetchUserSelf(CONFIG_DATA.USER_TOKEN);
+            const fetchedSelfUser = await clientGetSelfUserZycord();
             const selfUser = fetchedSelfUser.id;
             let modalLeaderboard = createModal(`${today ? (today === true ? ("Todays") : ("")) : ("")} Leaderboard`, loadingHtml);
             let interactionCounts = [];
@@ -551,10 +499,10 @@
                 }
                 if (interactions !== 0) {
                     const interactionBlacklist = SETTINGS.APP_CONFIG ? (SETTINGS.APP_CONFIG.LEADERBOARD_BLACKLIST ? (SETTINGS.APP_CONFIG.LEADERBOARD_BLACKLIST) : (['0'])) : (['0']);
-                    const dmChannelAuthor = await fetchUser(CONFIG_DATA.USER_TOKEN, dmChannelName);
+                    const dmChannelAuthor = await clientGetUserProfileZycord(dmChannelName);
                     dmChannelName = dmChannelAuthor.global_name;
                     const dmChannelUserID = dmChannelAuthor.id;
-                    const profilePicUrl = await fetchUserAvatar(messageAuthor);
+                    const profilePicUrl = await clientGetUserAvatarZycord(messageAuthor, "png", "4096");
                     if (!interactionBlacklist.includes(dmChannelUserID)) {
                         interactionCounts.push({
                             profilePic: profilePicUrl,
@@ -648,16 +596,9 @@
             loadCSS("https://discordstyles.github.io/RadialStatus/dist/RadialStatus.css");
         }
     }
-    async function fetchUserBannerColor(a, t) {
-        let e = "#000000";
-        return await fetch("https://discord.com/api/v9/users/" + t, createFetchOptions(a, null, "GET")).then(t => t.json()).then(t => {
-            const n = t.banner_color;
-            n && (e = n)
-        }), e
-    }
     async function fetchUserAvatarURL(t, a) {
         let s = null;
-        return await fetch("https://discord.com/api/v9/users/" + a, createFetchOptions(t, null, "GET")).then(t => t.json()).then(t => {
+        return await fetch("https://discord.com/api/v9/users/" + a, zycordCreateFetchOptions(null, "GET")).then(t => t.json()).then(t => {
             if (t.avatar) {
                 const n = t.avatar.startsWith("a_") ? ".gif" : ".png";
                 s = `https://cdn.discordapp.com/avatars/${a}/${t.avatar}${n}`
@@ -732,7 +673,7 @@
         else {
             if (SAVED_VALUES_DATA.SAVED_UPDATE_DEBOUNCE = !0, CONFIG_DATA.USER_AUTO_STATUS) {
                 if (SAVED_VALUES_DATA.SAVED_LAST_STATUS_VALUE === t) return void(SAVED_VALUES_DATA.SAVED_UPDATE_DEBOUNCE = !1);
-                setStatus(CONFIG_DATA.USER_TOKEN, t), SAVED_VALUES_DATA.SAVED_LAST_STATUS_VALUE = t
+                clientUpdateStatusZycord(t), SAVED_VALUES_DATA.SAVED_LAST_STATUS_VALUE = t
             }
             await DELAY(SETTINGS.APP_CONFIG.STATUS_UPDATE_COOLDOWN), SAVED_VALUES_DATA.SAVED_UPDATE_DEBOUNCE = !1, SAVED_VALUES_DATA.SAVED_UPDATE_RECALL && (SAVED_VALUES_DATA.SAVED_UPDATE_RECALL = !1, updateUserStatus(SAVED_VALUES_DATA.SAVED_UPDATE_STATUS))
         }
@@ -860,7 +801,7 @@
     }
 
     function setupSidebarMenu() {
-        const elementCode = generateRandomCode();
+        const elementCode = zycordGenerateRandomIdentifier(5);
         const TOPBAR_SIZE = SETTINGS.UI_CONFIG?.INTERACTIVE_MENU_SIZE || 35;
         const MAIN_ICON_URL = "https://github.com/Zy1ux/Zycord/blob/main/Images/8895-more-options.png?raw=true";
         const ICONS = {
@@ -916,7 +857,7 @@
         ShadeWeb(true, SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME);
         updateUserStatus(SETTINGS.APP_CONFIG.FOCUSED_STATUS);
     }));
-    SETTINGS.APP_CONFIG.AUTO_UPDATE_THEME && fetchThemeColor(CONFIG_DATA.USER_TOKEN);
+    SETTINGS.APP_CONFIG.AUTO_UPDATE_THEME && zycordGetUserThemeColor();
     autoUpdateAvatar();
     await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (2 / 5)) * 1000);
     ShadeWeb(true, SETTINGS.APP_CONFIG.INITIAL_OPACITY, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME * SETTINGS.APP_CONFIG.WINDOW_OPACITY_MULTIPLIER);
