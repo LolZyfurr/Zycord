@@ -1,7 +1,4 @@
 (async function() {
-    window.onerror = function(message, source, lineno, colno, error) {
-        console.log(error);
-    };
     let CONFIG_DATA = {
         USER_TOKEN: getToken(),
         USER_THEME_COLOR: SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR !== false ? SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR : null) : null,
@@ -15,9 +12,9 @@
         YEAR: 24,
         MONTH: 5,
         DAY: 7,
-        HOUR: 11,
+        HOUR: 12,
         AFTERNOON: 0,
-        MINUTES: 40,
+        MINUTES: 50,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -28,6 +25,12 @@
         VERSION_LABEL: "WIP",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Fixed some errors.",
+        DATA_TIME: "24.5.7.12.0.50"
+    }, {
+        DATA_MESSAGE: "Removed error handling as it is already handled and doesn't do anything.",
+        DATA_TIME: "24.5.7.12.0.50"
+    }, {
         DATA_MESSAGE: "Fixed the 'strict' error.",
         DATA_TIME: "24.5.7.11.0.40"
     }, {
@@ -155,7 +158,7 @@
         }
         return zycordCustomIdentifierCode;
     }
-    async function zycordGetUserThemeColor() 
+    async function zycordGetUserThemeColor() {
         let zycordCustomUserThemeColorCheck = (CONFIG_DATA.USER_THEME_COLOR == null);
         let zycordFetchUserSelfProfile = await clientGetSelfUserZycord();
         if (zycordCustomUserThemeColorCheck) {
