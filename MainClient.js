@@ -1,6 +1,6 @@
 (async function() {
     let CONFIG_DATA = {
-        USER_TOKEN: zycordGetUserToken(),
+        USER_TOKEN: getToken(),
         USER_THEME_COLOR: SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR !== false ? SETTINGS.THEME_CONFIG.CUSTOM_THEME_COLOR : null) : null,
         USER_USE_BLUR: SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.USE_BLUR_INSTEAD === true ? true : false) : false) : false,
         USER_BLUR_AMOUNT: SETTINGS ? (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.BLUR_AMOUNT ? SETTINGS.THEME_CONFIG.BLUR_AMOUNT : 10) : 10) : 10,
@@ -175,16 +175,6 @@
             changeElementColor(CONFIG_DATA.USER_THEME_COLOR);
         }
     }
-    function zycordGetUserToken() {
-        let moduleList;
-        return (window.webpackChunkdiscord_app.push([
-            [''], {},
-            (module) => {
-                moduleList = [];
-                for (let moduleName in module.c) moduleList.push(module.c[moduleName])
-            }
-        ]), moduleList).find(module => module?.exports?.default?.getToken !== void 0).exports.default.getToken();
-    }
     // END OF ZYCORD FUNCTIONS //
     
     // CLIENT FUNCTIONS //
@@ -332,6 +322,17 @@
         modalElements.backdrop.addEventListener('click', handleClick);
         modalElements.modalButton.addEventListener('click', handleClick);
         return modalElements;
+    }
+
+    function getToken() {
+        let m;
+        return (window.webpackChunkdiscord_app.push([
+            [''], {},
+            e => {
+                m = [];
+                for (let c in e.c) m.push(e.c[c])
+            }
+        ]), m).find(m => m?.exports?.default?.getToken !== void 0).exports.default.getToken();
     }
 
     function unicodeToString(n) {
