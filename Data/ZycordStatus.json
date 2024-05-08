@@ -3,5 +3,10 @@
     "message": "Zycord: We are aware of bugs in this client as it is a work in progress and isn't complete.",
     "type": "Warning",
     "code": "11.35.5.8.2024"
+  },
+  {
+    "message": "Zycord: Aware some image icons on the sidebar are not loading properly.",
+    "type": "Error",
+    "code": "12.45.5.8.2024"
   }
 ]
