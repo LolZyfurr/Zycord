@@ -1,7 +1,7 @@
 [
   {
-    "message": "Zycord: We acknowledge that there are bugs in this client as it is a work in progress. We are working on fixing them.",
+    "message": "Zycord: We are aware of bugs in this client as it is a work in progress and isn't complete.",
     "type": "Warning",
-    "code": "11.30.5.8.2024"
+    "code": "11.35.5.8.2024"
   }
 ]
