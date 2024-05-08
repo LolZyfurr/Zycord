@@ -11,10 +11,10 @@
     let UPDATED_DATA = {
         YEAR: 24,
         MONTH: 5,
-        DAY: 7,
-        HOUR: 12,
-        AFTERNOON: 2,
-        MINUTES: 50,
+        DAY: 8,
+        HOUR: 11,
+        AFTERNOON: 0,
+        MINUTES: 10,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -25,6 +25,9 @@
         VERSION_LABEL: "WIP",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Fixed some things and added a status message.",
+        DATA_TIME: "24.5.8.11.0.10"
+    }, {
         DATA_MESSAGE: "More errors?!",
         DATA_TIME: "24.5.7.12.2.50"
     }, {
@@ -106,22 +109,6 @@
         DISCORD_USER_API_URL: "https://discord.com/api/v9/users/@me",
     }
     let DATA_LIST_NOTIFICATIONS = ["Test01", "Test02"];
-    /*
-    // Initialize an array
-let array = ["apple", "banana", "cherry"];
-
-// Add a value to the array
-array.push("date");
-
-console.log(array);
-// Output: ["apple", "banana", "cherry", "date"]
-
-// Check if the array includes a value
-let hasBanana = array.includes("banana");
-
-console.log(hasBanana);
-// Output: true
-*/
     
     ShadeWeb(false, false, CONFIG_DATA.USER_USE_BLUR ? (CONFIG_DATA.USER_BLUR_AMOUNT / (1 - SETTINGS.APP_CONFIG.INITIAL_OPACITY)) : (SETTINGS.APP_CONFIG.INITIAL_OPACITY), false);
     const DELAY = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -408,6 +395,27 @@ console.log(hasBanana);
             childList: !0,
             characterData: !0
         });
+    }
+
+    function fetchJsonAndProcess(url, interval) {
+        function activateProcess() {
+            fetch(url).then(response => response.json()).then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    data.forEach(item => {
+                        if (item.hasOwnProperty('message') && item.hasOwnProperty('type') && item.hasOwnProperty('code')) {
+                            if (!DATA_LIST_NOTIFICATIONS.includes(item.code)) {
+                                DATA_LIST_NOTIFICATIONS.push(item.code);
+                                createNotification(item.message, item.type);
+                            }
+                        }
+                    });
+                }
+            }).catch(error => console.error('Error:', error));
+        }
+        activateProcess();
+        setInterval(() => {
+            activateProcess();
+        }, interval);
     }
 
     function uwuify(l) {
@@ -902,6 +910,7 @@ console.log(hasBanana);
             }
         });
     }
+    fetchJsonAndProcess('https://raw.githubusercontent.com/Zy1ux/Zycord/main/Data/ZycordStatus.json', 5*60*1000);
     setupSidebarMenu()
     window.addEventListener("blur", (function() {
         ShadeWeb(true, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME);
