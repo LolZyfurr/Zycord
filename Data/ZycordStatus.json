@@ -1,12 +1,12 @@
 [
   {
-    "message": "Zycord: We are aware of bugs in this client as it is a work in progress and isn't complete.",
+    "message": "Zycord: We are aware of bugs in the client since it is still under development and not yet finalized.",
     "type": "Warning",
-    "code": "11.35.5.8.2024"
+    "code": "1.40.5.8.2024"
   },
   {
-    "message": "Zycord: Aware some image icons on the sidebar are not loading properly.",
-    "type": "Error",
-    "code": "12.45.5.8.2024"
+    "message": "Zycord: Currently, account switching is not supported. Please reload the page after switching accounts.",
+    "type": "Neutral",
+    "code": "1.35.5.8.2024"
   }
 ]
