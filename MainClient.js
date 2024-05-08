@@ -25,6 +25,9 @@
         VERSION_LABEL: "WIP",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Fixed the position of the status message.",
+        DATA_TIME: "24.5.8.11.0.10"
+    }, {
         DATA_MESSAGE: "Fixed some things and added a status message.",
         DATA_TIME: "24.5.8.11.0.10"
     }, {
@@ -288,7 +291,7 @@
         let notificationContainer = document.querySelector('div.base_c0676e');
         let newNotification = document.createElement('div');
         let notificationHTML = `<div class="notice__5fd4c" style="background-color: ${notificationColor}; color: var(--white-500);"> <div id="${notificationCloseId}" class="closeButton__90904" aria-label="Dismiss" role="button" tabindex="0"><svg aria-hidden="true" role="img" class="closeIcon__967e7" width="18" height="18" viewBox="0 0 24 24"> <path fill="currentColor" d="${closeIconSvgPath}"> </path> </svg> </div>${notificationMessage}<button id="${notificationDismissId}" class="button__33db6">Dismiss</button> </div>`
-        notificationContainer.appendChild(newNotification);
+        notificationContainer.prepend(newNotification);
         newNotification.id = notificationMainId;
         newNotification.innerHTML = notificationHTML;
         const notificationElements = {
