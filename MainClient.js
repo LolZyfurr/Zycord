@@ -105,6 +105,23 @@
         DISCORD_STATUS_API_URL: "https://discord.com/api/v9/users/@me/settings-proto/1",
         DISCORD_USER_API_URL: "https://discord.com/api/v9/users/@me",
     }
+    let DATA_LIST_NOTIFICATIONS = ["Test01", "Test02"];
+    /*
+    // Initialize an array
+let array = ["apple", "banana", "cherry"];
+
+// Add a value to the array
+array.push("date");
+
+console.log(array);
+// Output: ["apple", "banana", "cherry", "date"]
+
+// Check if the array includes a value
+let hasBanana = array.includes("banana");
+
+console.log(hasBanana);
+// Output: true
+*/
     
     ShadeWeb(false, false, CONFIG_DATA.USER_USE_BLUR ? (CONFIG_DATA.USER_BLUR_AMOUNT / (1 - SETTINGS.APP_CONFIG.INITIAL_OPACITY)) : (SETTINGS.APP_CONFIG.INITIAL_OPACITY), false);
     const DELAY = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -268,6 +285,42 @@
         return V_newString;
     }
 
+    function createNotification(notificationMessage, notificationType) {
+        let isClickDebounced = false;
+        let notificationTypeColors = {
+            "Error": "var(--red-400)",
+            "Warning": "var(--yellow-360)",
+            "Neutral": "var(--brand-experiment)",
+        };
+        let notificationCode = zycordGenerateRandomIdentifier(5);
+        let notificationMainId = `zycord-MainNotification-${notificationCode}`;
+        let notificationCloseId = `zycord-NotificationClose-${notificationCode}`;
+        let notificationDismissId = `zycord-NotificationDismiss-${notificationCode}`;
+        let notificationColor = notificationTypeColors[notificationType] ? (notificationTypeColors[notificationType]) : (notificationTypeColors["Neutral"]);
+        let closeIconSvgPath = `M18.4 4L12 10.4L5.6 4L4 5.6L10.4 12L4 18.4L5.6 20L12 13.6L18.4 20L20 18.4L13.6 12L20 5.6L18.4 4Z`;
+        let notificationContainer = document.querySelector('div.base_c0676e');
+        let newNotification = document.createElement('div');
+        let notificationHTML = `<div class="notification__5fd4c" style="background-color: ${notificationColor}; color: var(--white-500);"> <div id="${notificationCloseId}" class="closeButton__90904" aria-label="Dismiss" role="button" tabindex="0"><svg aria-hidden="true" role="img" class="closeIcon__967e7" width="18" height="18" viewBox="0 0 24 24"> <path fill="currentColor" d="${closeIconSvgPath}"> </path> </svg> </div>${notificationMessage}<button id="${notificationDismissId}" class="button__33db6">Dismiss</button> </div>`
+        newNotification.id = notificationMainId;
+        newNotification.innerHTML = notificationHTML;
+        const notificationElements = {
+            notificationCode: notificationCode,
+            notificationMain: document.getElementById(notificationMainId),
+            notificationClose: document.getElementById(notificationCloseId),
+            notificationDismiss: document.getElementById(notificationDismissId),
+        }
+        const handleNotificationClick = async function() {
+            if (!isClickDebounced) {
+                isClickDebounced = true
+                notificationElements.notificationMain.innerHTML = "";
+                await DELAY(1 * 1000);
+            }
+        };
+        notificationElements.notificationClose.addEventListener('click', handleNotificationClick);
+        notificationElements.notificationDismiss.addEventListener('click', handleNotificationClick);
+        return notificationElements;
+    }
+    
     function createModal(Title, Body) {
         let clickDebounce = false;
         let elementCode = zycordGenerateRandomIdentifier(5);
