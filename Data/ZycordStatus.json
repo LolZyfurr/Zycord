@@ -1,7 +1,7 @@
 [
   {
-    "message": "Hello world!",
-    "type": "Neutral",
-    "code": "2024.8.5"
+    "message": "Zycord: We acknowledge that there are bugs in this client as it is a work in progress. We are working on fixing them.",
+    "type": "Warning",
+    "code": "11.30.5.8.2024"
   }
 ]
