@@ -801,7 +801,7 @@
             let changelogModalTitle = `Changelog`;
             let changelogModalBodyText = ``;
             CHANGELOG_DATA.forEach((changelogData, index) => {
-                if (index < 10) {
+                if (index <= 10) {
                     let changelogMessageData = changelogData.DATA_MESSAGE;
                     let changelogVersionData = formatChangelogTimeData(changelogData.DATA_TIME);
                     changelogModalBodyText += `<div><span style="color: var(--header-secondary);">${changelogVersionData} </span><span style="color: var(--header-primary); position: fixed; left: 75px;">- ${changelogMessageData}</span></div>`;               
