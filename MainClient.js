@@ -801,9 +801,11 @@
             let changelogModalTitle = `Changelog`;
             let changelogModalBodyText = ``;
             CHANGELOG_DATA.forEach((changelogData, index) => {
-                let changelogMessageData = changelogData.DATA_MESSAGE;
-                let changelogVersionData = formatChangelogTimeData(changelogData.DATA_TIME);
-                changelogModalBodyText += `<div><span style="color: var(--header-secondary);">${changelogVersionData} </span><span style="color: var(--header-primary); position: fixed; left: 75px;">- ${changelogMessageData}</span></div>`;
+                if (index < 10) {
+                    let changelogMessageData = changelogData.DATA_MESSAGE;
+                    let changelogVersionData = formatChangelogTimeData(changelogData.DATA_TIME);
+                    changelogModalBodyText += `<div><span style="color: var(--header-secondary);">${changelogVersionData} </span><span style="color: var(--header-primary); position: fixed; left: 75px;">- ${changelogMessageData}</span></div>`;               
+                }
             });
             let changelogModalBody = `<div style="display: grid;">${changelogModalBodyText}</div>`
             createModal(changelogModalTitle, changelogModalBody)
