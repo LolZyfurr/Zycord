@@ -57,48 +57,6 @@
     }, {
         DATA_MESSAGE: "Added more functions.",
         DATA_TIME: "24.5.3.9.0.25"
-    }, {
-        DATA_MESSAGE: "Fixed the shade web value.",
-        DATA_TIME: "24.5.3.9.0.25"
-    }, {
-        DATA_MESSAGE: "Added a delete messages function for future updates.",
-        DATA_TIME: "24.5.2.10.0.0"
-    }, {
-        DATA_MESSAGE: "Added more variables for easier updates.",
-        DATA_TIME: "24.5.1.11.0.30"
-    }, {
-        DATA_MESSAGE: "Removed some changelog values.",
-        DATA_TIME: "24.5.1.11.0.5"
-    }, {
-        DATA_MESSAGE: "Adjusted the changelog menu font colors.",
-        DATA_TIME: "24.5.1.11.0.5"
-    }, {
-        DATA_MESSAGE: "Adjusted the changelog menu.",
-        DATA_TIME: "24.5.1.11.0.0"
-    }, {
-        DATA_MESSAGE: "Redesigned the changelog menu.",
-        DATA_TIME: "24.5.1.10.0.55"
-    }, {
-        DATA_MESSAGE: "Attempted to fix the formatted version for the changelog again.",
-        DATA_TIME: "24.5.1.10.0.40"
-    }, {
-        DATA_MESSAGE: "Fixed the formatted version for the changelog again.",
-        DATA_TIME: "24.5.1.10.0.30"
-    }, {
-        DATA_MESSAGE: "Fixed the formatted version for the changelog.",
-        DATA_TIME: "24.5.1.10.0.20"
-    }, {
-        DATA_MESSAGE: "Formatted the version for the changelog.",
-        DATA_TIME: "24.5.1.10.0.15"
-    }, {
-        DATA_MESSAGE: "Fixed an error with the new changelog.",
-        DATA_TIME: "24.5.1.10.0.5"
-    }, {
-        DATA_MESSAGE: "Fixed an error with '.' being invalid. Updated the changelog.",
-        DATA_TIME: "24.5.1.9.0.58"
-    }, {
-        DATA_MESSAGE: "Changed the changelog data.",
-        DATA_TIME: "24.5.1.9.0.40"
     }, ];
     let SAVED_VALUES_DATA = {
         SAVED_LEADERBOARD_DEBOUNCE: false,
