@@ -11,10 +11,10 @@
     let UPDATED_DATA = {
         YEAR: 24,
         MONTH: 5,
-        DAY: 8,
-        HOUR: 11,
+        DAY: 10,
+        HOUR: 10,
         AFTERNOON: 0,
-        MINUTES: 10,
+        MINUTES: 30,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -25,6 +25,9 @@
         VERSION_LABEL: "WIP",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Rewrote the watermark script.",
+        DATA_TIME: "24.5.10.10.0.30"
+    }, {
         DATA_MESSAGE: "Fixed the position of the status message.",
         DATA_TIME: "24.5.8.11.0.10"
     }, {
@@ -106,6 +109,7 @@
         SAVED_UPDATE_STATUS: "",
         SAVED_APP_VERSION: `${VERSION_DATA.VERSION_LABEL} ${VERSION_DATA.VERSION_ALPHA_MONTH}${VERSION_DATA.VERSION_ALPHA_DAY}${VERSION_DATA.VERSION_ALPHA_YEAR}${VERSION_DATA.VERSION_ALPHA_MINUTES}${VERSION_DATA.VERSION_ALPHA_HOUR}`,
         SAVED_TIMEOUT_ID: null,
+        SAVED_WATERMARK: null,
     };
     let DATA_API_URLS = {
         DISCORD_STATUS_API_URL: "https://discord.com/api/v9/users/@me/settings-proto/1",
@@ -468,9 +472,31 @@
         }, document.head.appendChild(t)
     }
 
-    function WatermarkWeb(n, e) {
-        var t = document.createElement("style");
-        t.type = "text/css", t.innerHTML = `\nbody::after {\n color: ${e};\n content: "${n}";\n  position: fixed;\n  bottom: 10px;\n  right: 10px;\n  font-size: 25px;\n  font-weight: 900;\n  opacity: 1;\n}\n  z-index: 999999;\n`, document.getElementsByTagName("head")[0].appendChild(t)
+    function webpageWatermark(watermarkText) {
+        let watermarkCss = `
+        .zycord_textStyle_9f02k {
+            position: fixed;
+            bottom: 5px;
+            right: 5px;
+            font-size: 25px;
+            font-weight: 900;
+            opacity: 1;
+            z-index: 999999;
+            color: var(--header-primary);
+        }
+        .zycord_textStyle_9f02k:hover {
+            opacity: 0.5;
+        }
+        `;
+        let elementCode = SAVED_VALUES_DATA.SAVED_WATERMARK ? (SAVED_VALUES_DATA.SAVED_WATERMARK) : (zycordGenerateRandomIdentifier(20));
+        let watermarkHtml = `<style>${watermarkCss}</style><span class="zycord_textStyle_9f02k">${watermarkText}</span>`;
+        let currentElement = document.getElementById(elementCode);
+        let watermarkElement = currentElement ? (currentElement) : (document.createElement('div'));
+        watermarkElement.id = elementCode;
+        SAVED_VALUES_DATA.SAVED_WATERMARK = elementCode;
+        watermarkElement.innerHTML = watermarkHtml;
+        let watermarkContainer = document.querySelector('body');
+        watermarkContainer.appendChild(watermarkElement);
     }
 
     function ShadeWeb(tweenType, originalValue, goalValue, timeValue) {
@@ -481,7 +507,7 @@
             const valueGoalShade = CONFIG_DATA.USER_USE_BLUR ? (CONFIG_DATA.USER_BLUR_AMOUNT * valueGoalMultiplied) : valueGoalMultiplied;
             tween(valueOriginalShade, valueGoalShade, timeValue, T => ShadeWeb(false, false, (T/100), false));
         } else {
-            WatermarkWeb(`ZYCORD ${SAVED_VALUES_DATA.SAVED_APP_VERSION}`, "#FFFFFF");
+            webpageWatermark(`ZYCORD ${SAVED_VALUES_DATA.SAVED_APP_VERSION}`);
             const styleElement = document.getElementById("shadeWebStyle") || document.createElement("style");
             styleElement.type = "text/css";
             styleElement.id = "shadeWebStyle";
@@ -657,7 +683,7 @@
     }
 
     function ApplyTheme() {
-        WatermarkWeb(`ZYCORD ${SAVED_VALUES_DATA.SAVED_APP_VERSION}`, "#FFFFFF");
+        webpageWatermark(`ZYCORD ${SAVED_VALUES_DATA.SAVED_APP_VERSION}`);
         if (SETTINGS.THEME_CONFIG ? (SETTINGS.THEME_CONFIG.DISCORD_RECOLOR_CSS === true ? (true) : (false)) : (true)) {
             loadCSS("https://mwittrien.github.io/BetterDiscordAddons/Themes/DiscordRecolor/DiscordRecolor.css");
         }
@@ -726,7 +752,7 @@
                 _ = x.reduce((t, r) => t + r, 0) / x.length >= 155;
                 SAVED_VALUES_DATA.SAVED_LAST_THEME_VALUE = CONFIG_DATA.USER_LIGHT_THEME;
             }
-            $ ? u = !0 : ($ = !0, WatermarkWeb(`ZYCORD ${SAVED_VALUES_DATA.SAVED_APP_VERSION}`, m), E.style.setProperty("--mainaccentcolor", y, "important"), E.style.setProperty("--accentcolor", m, "important"), E.style.setProperty("--accentcolor2", m, "important"), E.style.setProperty("--linkcolor", m, "important"), E.style.setProperty("--mentioncolor", m, "important"), E.style.setProperty("--backgroundaccent", c, "important"), E.style.setProperty("--backgroundprimary", P, "important"), E.style.setProperty("--backgroundsecondary", g, "important"), E.style.setProperty("--backgroundsecondaryalt", b, "important"), E.style.setProperty("--backgroundtertiary", h, "important"), E.style.setProperty("--backgroundfloating", d, "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-medium-spacing", "3px", "important"), E.style.setProperty("--rs-large-spacing", "4px", "important"), E.style.setProperty("--rs-small-width", "2px", "important"), E.style.setProperty("--rs-medium-width", "3px", "important"), E.style.setProperty("--rs-large-width", "4px", "important"), E.style.setProperty("--rs-avatar-shape", CONFIG_DATA.USER_AVATAR_SHAPE, "important"), E.style.setProperty("--rs-online-color", "#43b581", "important"), E.style.setProperty("--rs-idle-color", "#faa61a", "important"), E.style.setProperty("--rs-dnd-color", "#f04747", "important"), E.style.setProperty("--rs-offline-color", "#636b75", "important"), E.style.setProperty("--rs-streaming-color", "#643da7", "important"), E.style.setProperty("--rs-invisible-color", "#747f8d", "important"), E.style.setProperty("--rs-phone-color", "var(--rs-online-color)", "important"), E.style.setProperty("--rs-phone-visible", "none", "important"), _ ? (E.style.setProperty("--textbrightest", "100,100,100", "important"), E.style.setProperty("--embed-title", "100,100,100", "important"), E.style.setProperty("--textbrighter", "90,90,90", "important"), E.style.setProperty("--textbright", "80,80,80", "important"), E.style.setProperty("--textdark", "70,70,70", "important"), E.style.setProperty("--textdarker", "60,60,60", "important"), E.style.setProperty("--textdarkest", "50,50,50", "important")) : (E.style.setProperty("--textbrightest", "250,250,250", "important"), E.style.setProperty("--textbrighter", "240,240,240", "important"), E.style.setProperty("--textbright", "230,230,230", "important"), E.style.setProperty("--textdark", "220,220,220", "important"), E.style.setProperty("--textdarker", "210,210,210", "important"), E.style.setProperty("--textdarkest", "200,200,200", "important")), ApplyTheme(), await DELAY(500), $ = !1, u && (u = !1, k()))
+            $ ? u = !0 : ($ = !0, webpageWatermark(`ZYCORD ${SAVED_VALUES_DATA.SAVED_APP_VERSION}`), E.style.setProperty("--mainaccentcolor", y, "important"), E.style.setProperty("--accentcolor", m, "important"), E.style.setProperty("--accentcolor2", m, "important"), E.style.setProperty("--linkcolor", m, "important"), E.style.setProperty("--mentioncolor", m, "important"), E.style.setProperty("--backgroundaccent", c, "important"), E.style.setProperty("--backgroundprimary", P, "important"), E.style.setProperty("--backgroundsecondary", g, "important"), E.style.setProperty("--backgroundsecondaryalt", b, "important"), E.style.setProperty("--backgroundtertiary", h, "important"), E.style.setProperty("--backgroundfloating", d, "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-small-spacing", "2px", "important"), E.style.setProperty("--rs-medium-spacing", "3px", "important"), E.style.setProperty("--rs-large-spacing", "4px", "important"), E.style.setProperty("--rs-small-width", "2px", "important"), E.style.setProperty("--rs-medium-width", "3px", "important"), E.style.setProperty("--rs-large-width", "4px", "important"), E.style.setProperty("--rs-avatar-shape", CONFIG_DATA.USER_AVATAR_SHAPE, "important"), E.style.setProperty("--rs-online-color", "#43b581", "important"), E.style.setProperty("--rs-idle-color", "#faa61a", "important"), E.style.setProperty("--rs-dnd-color", "#f04747", "important"), E.style.setProperty("--rs-offline-color", "#636b75", "important"), E.style.setProperty("--rs-streaming-color", "#643da7", "important"), E.style.setProperty("--rs-invisible-color", "#747f8d", "important"), E.style.setProperty("--rs-phone-color", "var(--rs-online-color)", "important"), E.style.setProperty("--rs-phone-visible", "none", "important"), _ ? (E.style.setProperty("--textbrightest", "100,100,100", "important"), E.style.setProperty("--embed-title", "100,100,100", "important"), E.style.setProperty("--textbrighter", "90,90,90", "important"), E.style.setProperty("--textbright", "80,80,80", "important"), E.style.setProperty("--textdark", "70,70,70", "important"), E.style.setProperty("--textdarker", "60,60,60", "important"), E.style.setProperty("--textdarkest", "50,50,50", "important")) : (E.style.setProperty("--textbrightest", "250,250,250", "important"), E.style.setProperty("--textbrighter", "240,240,240", "important"), E.style.setProperty("--textbright", "230,230,230", "important"), E.style.setProperty("--textdark", "220,220,220", "important"), E.style.setProperty("--textdarker", "210,210,210", "important"), E.style.setProperty("--textdarkest", "200,200,200", "important")), ApplyTheme(), await DELAY(500), $ = !1, u && (u = !1, k()))
         };
         k(), new MutationObserver((function(t) {
             t.forEach((function(t) {
