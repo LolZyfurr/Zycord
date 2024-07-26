@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      0.0.1
 // @description  An experimental discord client modification.
-// @author       Zy1ux
+// @author       Zyfurr
 // @match        *://*.discord.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=discord.com
 // @grant        none
@@ -72,7 +72,7 @@
         return GM_getValue(key);
     }
 
-    let url = 'https://raw.githubusercontent.com/Zy1ux/Zycord/main/MainClient.js';
+    let url = 'https://raw.githubusercontent.com/LolZyfurr/Zycord/main/MainClient.js';
     fetch(url).then(response => response.text()).then(data => {
         try {
             eval(data);
