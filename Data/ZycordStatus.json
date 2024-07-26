@@ -8,10 +8,5 @@
     "message": "Zycord: Currently, account switching is not supported. Please reload the page after switching accounts.",
     "type": "Neutral",
     "code": "1.35.5.8.2024"
-  },
-  {
-    "message": "Arcane is cute :3",
-    "type": "Neutral",
-    "code": "7.35.7.25.2024"
   }
 ]
