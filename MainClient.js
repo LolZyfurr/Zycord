@@ -10,11 +10,11 @@
     };
     let UPDATED_DATA = {
         YEAR: 24,
-        MONTH: 5,
-        DAY: 10,
-        HOUR: 10,
-        AFTERNOON: 0,
-        MINUTES: 30,
+        MONTH: 7,
+        DAY: 25,
+        HOUR: 12,
+        AFTERNOON: 7,
+        MINUTES: 28,
     };
     let VERSION_DATA = {
         VERSION_ALPHA_YEAR: UPDATED_DATA.YEAR.toString(36),
@@ -25,6 +25,9 @@
         VERSION_LABEL: "WIP",
     };
     let CHANGELOG_DATA = [{
+        DATA_MESSAGE: "Fixed errors, updated code, faster leaderboard waiting time.",
+        DATA_TIME: "24.7.25.12.7.28"
+    }, {
         DATA_MESSAGE: "Rewrote the watermark script.",
         DATA_TIME: "24.5.10.10.0.30"
     }, {
@@ -74,7 +77,7 @@
         DISCORD_USER_API_URL: "https://discord.com/api/v9/users/@me",
     }
     let DATA_LIST_NOTIFICATIONS = ["Test01", "Test02"];
-    
+
     ShadeWeb(false, false, CONFIG_DATA.USER_USE_BLUR ? (CONFIG_DATA.USER_BLUR_AMOUNT / (1 - SETTINGS.APP_CONFIG.INITIAL_OPACITY)) : (SETTINGS.APP_CONFIG.INITIAL_OPACITY), false);
     const DELAY = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     await DELAY((SETTINGS.APP_CONFIG.STARTUP_TIME * (3 / 5)) * 1000);
@@ -159,7 +162,7 @@
         ]), moduleList).find(module => module?.exports?.default?.getToken !== void 0).exports.default.getToken();
     }
     // END OF ZYCORD FUNCTIONS //
-    
+
     // CLIENT FUNCTIONS //
     async function clientDeleteMessageZycord(zycordChannelId, zycordMessageId) {
         let zycordApiVersion = "v9";
@@ -273,7 +276,7 @@
         notificationElements.notificationDismiss.addEventListener('click', handleNotificationClick);
         return notificationElements;
     }
-    
+
     function createModal(Title, Body) {
         let clickDebounce = false;
         let elementCode = zycordGenerateRandomIdentifier(5);
@@ -386,22 +389,22 @@
 
     function uwuify(l) {
         const a = ["rawr x3", "OwO", "UwU", "o.O", "-.-", ">w<", "(⑅˘꒳˘)", "(ꈍᴗꈍ)", "(˘ω˘)", "(U ᵕ U❁)", "σωσ", "òωó", "(///ˬ///✿)", "(U ﹏ U)", "( ͡o ω ͡o )", "ʘwʘ", ":3", ":3", "XD", "nyaa~~", "mya", ">_<", "😳", "🥺", "😳😳😳", "rawr", "^^", "^^;;", "(ˆ ﻌ ˆ)♡", "^•ﻌ•^", "/(^•ω•^)", "(✿oωo)"],
-            o = [
-                ["small", "smol"],
-                ["cute", "kawaii~"],
-                ["fluff", "floof"],
-                ["love", "luv"],
-                ["stupid", "baka"],
-                ["what", "nani"],
-                ["meow", "nya~"],
-                ["hello", "hewwo"]
-            ];
+              o = [
+                  ["small", "smol"],
+                  ["cute", "kawaii~"],
+                  ["fluff", "floof"],
+                  ["love", "luv"],
+                  ["stupid", "baka"],
+                  ["what", "nani"],
+                  ["meow", "nya~"],
+                  ["hello", "hewwo"]
+              ];
         l = l.toLowerCase();
         for (const a of o) l = l.replaceAll(a[0], a[1]);
         return l = l.replaceAll(/([ \t\n])n/g, "$1ny").replaceAll(/[lr]/g, "w").replaceAll(/([ \t\n])([a-z])/g, (l, a, o) => Math.random() < .5 ? `${a}${o}-${o}` : `${a}${o}`).replaceAll(/([^.,!][.,!])([ \t\n])/g, (l, o, e) => {
             return `${o} ${r=a,r[Math.floor(Math.random()*r.length)]}${e}`;
             var r
-        })
+            })
     }
 
     function hexToRgb(e) {
@@ -531,12 +534,22 @@
             let modalLeaderboard = createModal(`${today ? (today === true ? ("Todays") : ("")) : ("")} Leaderboard`, loadingHtml);
             let interactionCounts = [];
             for (const channel of channels.reverse().values()) {
+                if (!modalLeaderboard.modalBody || modalLeaderboard.mainContainer.innerHTML === "") {
+                    SAVED_VALUES_DATA.SAVED_LEADERBOARD_DEBOUNCE = false;
+                    leaderboardButtonPress(button, true);
+                    return
+                }
                 let lastCheckedAuthor = 0;
                 let interactions = 0;
                 let dmChannelName = channel.id;
                 let messageAuthor = null;
                 let messages = await fetchMessages(CONFIG_DATA.USER_TOKEN, channel.id, today ? (today === true ? (500) : (50000)) : (50000));
                 for (const message of messages.reverse().values()) {
+                    if (!modalLeaderboard.modalBody || modalLeaderboard.mainContainer.innerHTML === "") {
+                        SAVED_VALUES_DATA.SAVED_LEADERBOARD_DEBOUNCE = false;
+                        leaderboardButtonPress(button, true);
+                        return
+                    }
                     const msgAuthor = message.author.id;
                     if (msgAuthor !== selfUser) {
                         messageAuthor = message.author;
@@ -636,7 +649,7 @@
 `;
             modalLeaderboard.modalBody.innerHTML = html;
             SAVED_VALUES_DATA.SAVED_LEADERBOARD_DEBOUNCE = false;
-            leaderboardButtonPress(button, true)
+            leaderboardButtonPress(button, true);
         }
     }
 
@@ -788,7 +801,7 @@
                 if (index <= 10) {
                     let changelogMessageData = changelogData.DATA_MESSAGE;
                     let changelogVersionData = formatChangelogTimeData(changelogData.DATA_TIME);
-                    changelogModalBodyText += `<div><span style="color: var(--header-secondary);">${changelogVersionData} </span><span style="color: var(--header-primary); position: fixed; left: 75px;">- ${changelogMessageData}</span></div>`;               
+                    changelogModalBodyText += `<div><span style="color: var(--header-secondary);">${changelogVersionData} </span><span style="color: var(--header-primary); position: fixed; left: 75px;">- ${changelogMessageData}</span></div>`;
                 }
             });
             let changelogModalBody = `<div style="display: grid;">${changelogModalBodyText}</div>`
