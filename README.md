@@ -60,7 +60,7 @@ An experimental discord client modification.
             SEPTENARY: 0.25,
         },
     }
-    let url = 'https://raw.githubusercontent.com/Zy1ux/Zycord/main/MainClient.js';
+    let url = 'https://raw.githubusercontent.com/LolZyfurr/Zycord/main/MainClient.js';
     fetch(url)
         .then(response => response.text())
         .then(data => {eval(data);})
