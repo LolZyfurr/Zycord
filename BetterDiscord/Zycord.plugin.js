@@ -5,8 +5,8 @@
  * @version 0.0.7
  * @authorId 723659289377636423
  * @authorLink https://github.com/Zy1ux
- * @source https://github.com/Zy1ux/Zycord/blob/main/BetterDiscord/Zycord.plugin.js
- * @updateUrl https://raw.githubusercontent.com/Zy1ux/Zycord/main/BetterDiscord/Zycord.plugin.js
+ * @source https://github.com/LolZyfurr/Zycord/blob/main/BetterDiscord/Zycord.plugin.js
+ * @updateUrl https://raw.githubusercontent.com/LolZyfurr/Zycord/main/BetterDiscord/Zycord.plugin.js
  */
 module.exports = meta => {
     let USER_ACTIVITY_STATUS = {
@@ -193,7 +193,7 @@ module.exports = meta => {
             (async function() {
                 "use strict";
                 refreshSettingsData();
-                let url = 'https://raw.githubusercontent.com/Zy1ux/Zycord/main/MainClient.js';
+                let url = 'https://raw.githubusercontent.com/LolZyfurr/Zycord/main/MainClient.js';
                 fetch(url).then(response => response.text()).then(data => {
                     eval(data);
                 }).catch(error => {
