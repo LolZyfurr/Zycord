@@ -524,7 +524,7 @@
     async function fetchLeaderboard(button, today) {
         if (!SAVED_VALUES_DATA.SAVED_LEADERBOARD_DEBOUNCE) {
             SAVED_VALUES_DATA.SAVED_LEADERBOARD_DEBOUNCE = true;
-            const loadingHtml = `<div style="display: grid;"> <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/9237-loading.gif?raw=true" style="height: 25%; max-height: 250px; justify-self: center; align-self: center;"></div>`;
+            const loadingHtml = `<div style="display: grid;"> <img src="https://github.com/LolZyfurr/Zycord/blob/main/Images/9237-loading.gif?raw=true" style="height: 25%; max-height: 250px; justify-self: center; align-self: center;"></div>`;
             const channels = await fetchUserDMs(CONFIG_DATA.USER_TOKEN);
             const fetchedSelfUser = await clientGetSelfUserZycord();
             const selfUser = fetchedSelfUser.id;
@@ -741,7 +741,7 @@
     function toggleSettingsMenu(button, startup) {
         if (!startup) {
             let settingsModalTitle = `Settings`;
-            let settingsModalBody = `<div style="display: grid;"> <img src="https://github.com/Zy1ux/Zycord/blob/main/Images/9237-loading.gif?raw=true" style="height: 25%; max-height: 250px; justify-self: center; align-self: center;"></div>`;
+            let settingsModalBody = `<div style="display: grid;"> <img src="https://github.com/LolZyfurr/Zycord/blob/main/Images/9237-loading.gif?raw=true" style="height: 25%; max-height: 250px; justify-self: center; align-self: center;"></div>`;
             createModal(settingsModalTitle, settingsModalBody)
         }
         const buttonSettings = '0,0,0,0';
@@ -858,13 +858,13 @@
     function setupSidebarMenu() {
         const elementCode = zycordGenerateRandomIdentifier(5);
         const TOPBAR_SIZE = SETTINGS.UI_CONFIG?.INTERACTIVE_MENU_SIZE || 35;
-        const MAIN_ICON_URL = "https://github.com/Zy1ux/Zycord/blob/main/Images/8895-more-options.png?raw=true";
+        const MAIN_ICON_URL = "https://github.com/LolZyfurr/Zycord/blob/main/Images/8895-more-options.png?raw=true";
         const ICONS = {
-            "SETTINGS": 'https://github.com/Zy1ux/Zycord/blob/main/Images/2888-settings.png?raw=true',
-            "LIGHT-THEME": 'https://github.com/Zy1ux/Zycord/blob/main/Images/8410-appearance-mobile-white.png?raw=true',
-            "LEADERBOARD": 'https://github.com/Zy1ux/Zycord/blob/main/Images/5971-forum.png?raw=true',
-            "AUTO-STATUS": 'https://github.com/Zy1ux/Zycord/blob/main/Images/1731-discord-profile-activity-white.png?raw=true',
-            "LEADERBOARD-TODAY": 'https://github.com/Zy1ux/Zycord/blob/main/Images/8312-active-threads.png?raw=true',
+            "SETTINGS": 'https://github.com/LolZyfurr/Zycord/blob/main/Images/2888-settings.png?raw=true',
+            "LIGHT-THEME": 'https://github.com/LolZyfurr/Zycord/blob/main/Images/8410-appearance-mobile-white.png?raw=true',
+            "LEADERBOARD": 'https://github.com/LolZyfurr/Zycord/blob/main/Images/5971-forum.png?raw=true',
+            "AUTO-STATUS": 'https://github.com/LolZyfurr/Zycord/blob/main/Images/1731-discord-profile-activity-white.png?raw=true',
+            "LEADERBOARD-TODAY": 'https://github.com/LolZyfurr/Zycord/blob/main/Images/8312-active-threads.png?raw=true',
             "CHANGELOG": ''
         };
         const buttonNames = ["settings", "light-theme", "leaderboard", "auto-status", "leaderboard-today", "changelog"];
@@ -900,7 +900,7 @@
             }
         });
     }
-    fetchJsonAndProcess('https://raw.githubusercontent.com/Zy1ux/Zycord/main/Data/ZycordStatus.json', 5*60*1000);
+    fetchJsonAndProcess('https://raw.githubusercontent.com/LolZyfurr/Zycord/main/Data/ZycordStatus.json', 5*60*1000);
     setupSidebarMenu()
     window.addEventListener("blur", (function() {
         ShadeWeb(true, SETTINGS.APP_CONFIG.FOCUSED_OPACITY, SETTINGS.APP_CONFIG.UNFOCUSED_OPACITY, SETTINGS.APP_CONFIG.WINDOW_OPACITY_TRANSITION_TIME);
