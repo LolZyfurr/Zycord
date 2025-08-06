@@ -212,26 +212,24 @@
         @supports (height: 100dvh) {
             .zycord-AppWindow {
                 height: calc(100dvh - 60px);
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
             }
 
             .zycord-AppContainer {
                 height: 100dvh;
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
             }
 
             .zycord-MessageContainer {
                 height: 100dvh;
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
             }
 
             .zycord-LoadContainer {
                 height: 100dvh;
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+
+        @media all and (display-mode: standalone) {
+            .zycord-LoadContainer {
+                height: 100vh;
             }
         }
 
@@ -792,8 +790,6 @@
         @supports (height: 100dvh) {
             .zycord-FocusContainer {
                 height: 100dvh;
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
             }
         }
 
