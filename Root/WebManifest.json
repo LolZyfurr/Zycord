@@ -1,18 +1,18 @@
 {
-  "name": "Zycord",
-  "short_name": "AppShort",
+  "name": "ZycordMobile",
+  "short_name": "Zycord",
   "start_url": "/ZycordMobile",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "/icons/icon-192.png",
+      "src": "https://raw.githubusercontent.com/LolZyfurr/Zycord/refs/heads/main/Root/Logo/ZycordLogo192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "https://raw.githubusercontent.com/LolZyfurr/Zycord/refs/heads/main/Root/Logo/ZycordLogo512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
