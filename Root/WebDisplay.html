@@ -212,18 +212,26 @@
         @supports (height: 100dvh) {
             .zycord-AppWindow {
                 height: calc(100dvh - 60px);
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
             }
 
             .zycord-AppContainer {
                 height: 100dvh;
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
             }
 
             .zycord-MessageContainer {
                 height: 100dvh;
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
             }
 
             .zycord-LoadContainer {
                 height: 100dvh;
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
             }
         }
 
@@ -784,6 +792,8 @@
         @supports (height: 100dvh) {
             .zycord-FocusContainer {
                 height: 100dvh;
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
             }
         }
 
@@ -1464,13 +1474,13 @@
         }
 
         function getDiscordAuth() {
-            let token = sessionStorage.getItem("discordAuth");
+            let token = localStorage.getItem("discordAuth");
 
             if (!isValidDiscordToken(token)) {
                 token = prompt("Enter your Discord account auth token:");
 
                 if (isValidDiscordToken(token)) {
-                    sessionStorage.setItem("discordAuth", token);
+                    localStorage.setItem("discordAuth", token);
                 } else {
                     alert("Invalid or missing token. Please try again.");
                     return null;
