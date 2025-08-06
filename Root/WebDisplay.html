@@ -1,1 +1,81 @@
-<h1>Hello!</h1>
+<html lang="en">
+
+<head>
+    <title>Zycord</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <link rel="stylesheet" href="https://raw.githubusercontent.com/LolZyfurr/Zycord/main/Root/WebStyle.css">
+    <script src="https://raw.githubusercontent.com/LolZyfurr/Zycord/main/Root/WebScript.js" defer></script>
+</head>
+
+<body>
+    <div class="zycord-AppContainer">
+        <div class="zycord-MessageContainer">
+            <div class="zycord-MessageContainerList">
+            </div>
+            <div class="zycord-MessageInputStack">
+                <div class="zycord-MessageCreationExtra">
+                    <div class="zycord-MessageCreationReply">
+                        <div class="zycord-CreationReplyContent">TextContent</div>
+                        <div class="zycord-ReplyRemoveBtn">X</div>
+                    </div>
+                    <div id="zycord-MediaPreviewContainer" class="zycord-MediaPreviewContainer" style="display: none;">
+                    </div>
+                </div>
+                <div class="zycord-MessageCreation">
+                    <label for="fileInput" class="zycord-ButtonInputStyle">
+                        <div class="zycord-NavigationIcon zycord-ButtonInputFile"></div>
+                    </label>
+                    <input type="file" id="fileInput" hidden />
+                    <button class="zycord-ButtonInputStyle" onclick="launchApp()">
+                        <div class="zycord-NavigationIcon zycord-ButtonInputApp"></div>
+                    </button>
+                    <input class="zycord-TextInputStyle" type="text" id="messageInput" placeholder="Message @User" />
+                    <button class="zycord-ButtonInputStyle" onclick="sendMessage()">
+                        <div class="zycord-NavigationIcon zycord-ButtonInputSend"></div>
+                    </button>
+                </div>
+                <div class="zycord-ChannelTopNavigationStack">
+                    <div class="zycord-TopNavigationButtonContainer" id="closeMessagesButton">
+                        <div class="zycord-TopNavigationButton zycord-NavigationMessages">
+                        </div>
+                        <div class="zycord-NavigationNew"></div>
+                    </div>
+                    <div class="zycord-TopNavigationContainer">
+                        <div class="zycord-directNavigationUsername">Username</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="zycord-FocusContainerList">
+        </div>
+        <div class="zycord-LoadContainer">
+            <div class="zycord-AppMask"></div>
+        </div>
+        <div class="zycord-NavigationContainer">
+            <div class="zycord-AppWindow">
+                <div class="zycord-ThreadWindow"></div>
+                <div class="zycord-ConsoleWindow"></div>
+                <div class="zycord-NotificationWindow"></div>
+                <div class="zycord-SettingsWindow"></div>
+            </div>
+            <div class="zycord-AppSwitcher">
+                <div class="zycord-NavigationButton">
+                    <div class="zycord-NavigationIcon zycord-ThreadMask"></div>
+                    <div class="zycord-NavigationNew"></div>
+                </div>
+                <div class="zycord-NavigationButton">
+                    <div class="zycord-NavigationIcon zycord-ConsoleMask"></div>
+                </div>
+                <div class="zycord-NavigationButton">
+                    <div class="zycord-NavigationIcon zycord-NotificationMask"></div>
+                </div>
+                <div class="zycord-NavigationButton">
+                    <div class="zycord-NavigationIcon zycord-SettingsMask"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
