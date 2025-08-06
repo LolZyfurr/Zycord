@@ -228,18 +228,26 @@
         }
 
         @media all and (display-mode: standalone) {
-            .zycord-AppWindow,
-            .zycord-AppContainer,
-            .zycord-MessageContainer {
-                height: calc(100vh - 60px);
-                margin-top: env(safe-area-inset-top);
-                margin-bottom: env(safe-area-inset-bottom);
-            }
-
             .zycord-LoadContainer {
                 height: 100vh;
-                margin-top: env(safe-area-inset-top);
-                margin-bottom: env(safe-area-inset-bottom);
+            }
+
+            .zycord-AppWindow {
+                height: calc(100vh - 60px);
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+
+            .zycord-AppContainer {
+                height: 100vh;
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+
+            .zycord-MessageContainer {
+                height: 100vh;
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
             }
         }
 
