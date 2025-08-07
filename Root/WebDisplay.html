@@ -49,7 +49,7 @@
         .zycord-AppWindow {
             position: absolute;
             scrollbar-width: none;
-            height: calc(100vh - 60px);
+            height: calc(100% - 60px);
             width: 100%;
             background-color: var(--bg-primary);
             margin-bottom: 40px;
@@ -57,15 +57,20 @@
             z-index: 1;
         }
 
+        .zycord-NavigationContainer {
+            position: relative;
+            height: 100vh;
+        }
+
         .zycord-AppSwitcher {
             z-index: 8;
             display: flex;
+            position: absolute;
             bottom: 0;
             height: 40px;
             padding: 10px;
             width: 100%;
             background-color: var(--bg-secondary);
-            position: fixed;
             justify-content: space-evenly;
             align-items: center;
             flex-direction: row;
@@ -210,8 +215,8 @@
         }
 
         @supports (height: 100dvh) {
-            .zycord-AppWindow {
-                height: calc(100dvh - 60px);
+            .zycord-NavigationContainer {
+                height: 100dvh;
             }
 
             .zycord-AppContainer {
@@ -230,6 +235,11 @@
         @media all and (display-mode: standalone) {
             .zycord-LoadContainer {
                 height: 100vh;
+            }
+
+            .zycord-NavigationContainer {
+                height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+                margin-top: env(safe-area-inset-top);
             }
 
             /*.zycord-AppWindow {
