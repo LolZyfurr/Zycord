@@ -1394,6 +1394,11 @@
             color: var(--text-muted);
             font-size: 14px;
         }
+
+        .keyboard-open .zycord-MessageContainer {
+            height: 400px;
+            transition: height 0.2s ease;
+        }
     </style>
 </head>
 
@@ -1440,6 +1445,11 @@
     </div> <!-- End AppContainer -->
     <script>
         // Check if auth token is already stored
+        visualViewport.addEventListener('resize', () => {
+            const isKeyboardOpen = visualViewport.height < window.innerHeight;
+            document.body.classList.toggle('keyboard-open', isKeyboardOpen);
+        });
+
         function isValidDiscordToken(token) {
             return typeof token === "string" && token.length > 10;
         }
@@ -2258,9 +2268,6 @@
 
 
                     if (fetchGestureLock() === gestureName) {
-                        // Exit early if Y exceeds threshold to preserve horizontal intent
-
-
                         if (!gesturePrimed) {
                             bufferFrame++;
                             if (bufferFrame > 2) gesturePrimed = true;
@@ -2274,8 +2281,6 @@
                         }
                     }
                 };
-
-
 
                 const onTouchEnd = () => {
                     if (!isDragging || fetchGestureLock() !== gestureName) return;
