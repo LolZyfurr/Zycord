@@ -27,8 +27,6 @@
             --bottom-gap: 20px;
         }
 
-
-
         body {
             background-color: var(--bg-primary);
             font-family: 'Segoe UI', sans-serif;
@@ -3596,112 +3594,19 @@
                     try {
                         const { op, t: type, d: data } = JSON.parse(event.data);
                         const userId = data?.user?.id;
-
-                        // Start heartbeat interval when server sends HELLO
                         if (!currentlyReconnecting && op === 10) {
                             startHeartbeat(socket, data.heartbeat_interval);
                             updateLoadStatus('websocketHeartbeat', true);
                             return;
                         }
-
-                        // Handle READY: update user status and unread messages
-                        if (type === "READY") {
-                            if (userId) {
-                                updateActivityData({ user: { id: userId, activities: [] }, status: "online" });
-                            }
-
-                            data?.presences?.forEach(({ user, status = "offline", activities }) => {
-                                updateActivityData({
-                                    user: { id: user.id, activities },
-                                    status
-                                });
-                            });
-
-                            const readState = data?.read_state;
-                            const unreadChannels = readState ? Object.values(readState).filter(({ mention_count, id, last_message_id }) =>
-                                typeof mention_count === "number" && mention_count > 0 &&
-                                typeof id === "string" && typeof last_message_id === "string"
-                            ) : [];
-                            unreadChannels.forEach(({ id: channelId, last_message_id: messageId }) => {
-                                setDirectMessageUnread(channelId, true);
-                            });
-                            updateLoadStatus('websocketReady', true);
-                        }
-                        if (type === "PRESENCE_UPDATE") {
-                            const presenceUserId = data?.user?.id;
-                            const status = data?.status ?? "offline";
-                            const activities = Array.isArray(data?.activities) ? data.activities : [];
-                            if (presenceUserId) {
-                                updateActivityData({
-                                    user: { id: presenceUserId, activities },
-                                    status
-                                });
-                            }
-                        }
-                        // Handle MESSAGE_CREATE: mark message as unread if not current channel
-                        if (type === "MESSAGE_CREATE" && data?.channel_id && data?.id && currentChannelId !== data.channel_id) {
-                            setDirectMessageUnread(data.channel_id, true);
-                        }
-                        if (type === "MESSAGE_ACK") {
-                            console.log("Received MESSAGE_ACK:", data);
-                            const { channel_id, mention_count, message_id } = data || {};
-                            if (!channel_id) return;
-                            console.log(`Message ACK received for channel ${channel_id} with mention count ${mention_count}`);
-                            if (typeof mention_count === "number" && mention_count > 0) {
-                                console.log(`Unread messages for channel ${channel_id}: ${mention_count}`);
-                                setDirectMessageUnread(channel_id, true);
-                            } else {
-                                console.log(`No unread messages for channel ${channel_id}, clearing state.`);
-                                setDirectMessageUnread(channel_id, false);
-                            }
-                        }
-
-                        if (type === "MESSAGE_CREATE" && data?.channel_id && data?.id) {
-                            const container = document.querySelector(
-                                `.zycord-directMessageContainer[data-channel-id="${data.channel_id}"]`
-                            );
-
-                            if (container) {
-                                const parent = container.parentElement;
-                                if (parent) {
-                                    parent.prepend(container);
-                                }
-                            }
-                        }
-
-                        if (type === "MESSAGE_CREATE" && data?.channel_id && data?.id) {
-                            const storeKey = `channel-${data.channel_id}-messages`;
-                            if (zycordDataStore.has(storeKey)) {
-                                const cachedMessages = zycordDataStore.get(storeKey);
-                                if (!cachedMessages.some(msg => msg.id === data.id)) {
-                                    cachedMessages.push(data);
-                                    zycordDataStore.set(storeKey, cachedMessages);
-                                }
-                            }
-                        }
-
-                        if (
-                            type === "MESSAGE_DELETE" &&
-                            data?.channel_id &&
-                            data?.id
-                        ) {
-                            const storeKey = `channel-${data.channel_id}-messages`;
-
-                            if (zycordDataStore.has(storeKey)) {
-                                const cachedMessages = zycordDataStore.get(storeKey) || [];
-                                const updatedCache = cachedMessages.filter(msg => msg.id !== data.id);
-
-                                // Update the data store
-                                zycordDataStore.set(storeKey, updatedCache);
-
-                                // Optionally remove from UI if it's visible
-                                if (currentChannelId === data.channel_id) {
-                                    removeMessage(data.id); // assumes you have a UI handler like upsertMessage()
-                                }
-
-                                console.log(`🗑️ Message deleted: ${data.id}`);
-                            }
-                        }
+                        
+                        if("READY"===type){userId&&updateActivityData({user:{id:userId,activities:[]},status:"online"}),data?.presences?.forEach((({user:t,status:e="offline",activities:s})=>{updateActivityData({user:{id:t.id,activities:s},status:e})}));const t=data?.read_state;(t?Object.values(t).filter((({mention_count:t,id:e,last_message_id:s})=>"number"==typeof t&&t>0&&"string"==typeof e&&"string"==typeof s)):[]).forEach((({id:t,last_message_id:e})=>{setDirectMessageUnread(t,!0)})),updateLoadStatus("websocketReady",!0)}
+                        if("PRESENCE_UPDATE"===type){const t=data?.user?.id,a=data?.status??"offline",i=Array.isArray(data?.activities)?data.activities:[];t&&updateActivityData({user:{id:t,activities:i},status:a})}
+                        "MESSAGE_CREATE"===type&&data?.channel_id&&data?.id&&currentChannelId!==data.channel_id&&setDirectMessageUnread(data.channel_id,!0);
+                        if("MESSAGE_ACK"===type){console.log("Received MESSAGE_ACK:",data);const{channel_id:e,mention_count:n,message_id:o}=data||{};e&&(console.log(`Message ACK received for channel ${e} with mention count ${n}`),"number"==typeof n&&n>0?(console.log(`Unread messages for channel ${e}: ${n}`),setDirectMessageUnread(e,!0)):(console.log(`No unread messages for channel ${e}, clearing state.`),setDirectMessageUnread(e,!1)))}
+                        if ("MESSAGE_CREATE" === type && data?.channel_id && data?.id) { const e = document.querySelector(`.zycord-directMessageContainer[data-channel-id="${data.channel_id}"]`); if (e) { const a = e.parentElement; a && a.prepend(e) } }
+                        if ("MESSAGE_CREATE" === type && data?.channel_id && data?.id) { const a = `channel-${data.channel_id}-messages`; if (zycordDataStore.has(a)) { const t = zycordDataStore.get(a); t.some((a => a.id === data.id)) || (t.push(data), zycordDataStore.set(a, t)) } }
+                        if ("MESSAGE_DELETE" === type && data?.channel_id && data?.id) { const a = `channel-${data.channel_id}-messages`; if (zycordDataStore.has(a)) { const e = (zycordDataStore.get(a) || []).filter((a => a.id !== data.id)); zycordDataStore.set(a, e), currentChannelId === data.channel_id && removeMessage(data.id), console.log(`🗑️ Message deleted: ${data.id}`) } }
 
                         if (
                             type === "MESSAGE_UPDATE" &&
