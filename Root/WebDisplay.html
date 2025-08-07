@@ -240,6 +240,10 @@
                 height: calc(100% - env(safe-area-inset-bottom));
             }
 
+            .zycord-MessageContainer {
+                height: calc(100% - env(safe-area-inset-bottom));
+            }
+
             /*.
             zycord-AppWindow {
                 height: calc(100vh - 60px);
@@ -3029,6 +3033,7 @@
                     // Optional local message ID, used for client-side rendering
                     let localMessageId;
 
+                    console.log("line 3036");
                     try {
                         localMessageId = crypto.randomUUID();
                     } catch (error) {
@@ -3038,6 +3043,7 @@
                         localMessageId = btoa(String.fromCharCode(...tsBuffer));
                     }
 
+                    console.log("line 3046");
                     const pendingMessage = createMessageElement({
                         messageReference: currentMessageState && currentMessageState.type === 1 ? {
                             message_id: currentMessageState.reference,
