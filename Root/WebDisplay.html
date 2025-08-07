@@ -1405,48 +1405,6 @@
 
             </div>
 
-            <div class="zycord-MessageInputStack">
-                <div class="zycord-MessageCreationExtra">
-                    <div class="zycord-MessageCreationReply">
-                        <div class="zycord-CreationReplyContent">TextContent</div>
-                        <div class="zycord-ReplyRemoveBtn">X</div>
-                    </div>
-                    <div id="zycord-MediaPreviewContainer" class="zycord-MediaPreviewContainer" style="display: none;">
-                        <!-- Dynamically inserted media previews -->
-                    </div>
-
-                </div>
-
-                <div class="zycord-MessageCreation">
-                    <label for="fileInput" class="zycord-ButtonInputStyle">
-                        <div class="zycord-NavigationIcon zycord-ButtonInputFile"></div>
-                    </label>
-                    <input type="file" id="fileInput" hidden />
-
-                    <button class="zycord-ButtonInputStyle" onclick="launchApp()">
-                        <div class="zycord-NavigationIcon zycord-ButtonInputApp"></div>
-                    </button>
-
-                    <input class="zycord-TextInputStyle" type="text" id="messageInput" placeholder="Message @User" />
-
-                    <button class="zycord-ButtonInputStyle" onclick="sendMessage()">
-                        <div class="zycord-NavigationIcon zycord-ButtonInputSend"></div>
-                    </button>
-                </div>
-
-                <div class="zycord-ChannelTopNavigationStack">
-                    <div class="zycord-TopNavigationButtonContainer" id="closeMessagesButton">
-                        <div class="zycord-TopNavigationButton zycord-NavigationMessages">
-                        </div>
-                        <div class="zycord-NavigationNew"></div>
-                    </div>
-
-                    <div class="zycord-TopNavigationContainer">
-                        <div class="zycord-directNavigationUsername">Username</div>
-                    </div>
-                </div>
-            </div>
-
         </div>
         <div class="zycord-FocusContainerList">
 
@@ -2339,6 +2297,123 @@
                 element.addEventListener("touchend", onTouchEnd);
             }
 
+            function createMessageInputStack() {
+                const stack = document.createElement('div');
+                stack.className = 'zycord-MessageInputStack';
+
+                // ─── MessageCreationExtra ────────────────────────────────
+                const creationExtra = document.createElement('div');
+                creationExtra.className = 'zycord-MessageCreationExtra';
+
+                const replyBlock = document.createElement('div');
+                replyBlock.className = 'zycord-MessageCreationReply';
+
+                const replyContent = document.createElement('div');
+                replyContent.className = 'zycord-CreationReplyContent';
+                replyContent.textContent = 'TextContent';
+
+                const replyRemoveBtn = document.createElement('div');
+                replyRemoveBtn.className = 'zycord-ReplyRemoveBtn';
+                replyRemoveBtn.textContent = 'X';
+
+                replyBlock.appendChild(replyContent);
+                replyBlock.appendChild(replyRemoveBtn);
+
+                const mediaPreview = document.createElement('div');
+                mediaPreview.id = 'zycord-MediaPreviewContainer';
+                mediaPreview.className = 'zycord-MediaPreviewContainer';
+                mediaPreview.style.display = 'none';
+
+                creationExtra.appendChild(replyBlock);
+                creationExtra.appendChild(mediaPreview);
+
+                // ─── MessageCreation ─────────────────────────────────────
+                const creation = document.createElement('div');
+                creation.className = 'zycord-MessageCreation';
+
+                const fileLabel = document.createElement('label');
+                fileLabel.htmlFor = 'fileInput';
+                fileLabel.className = 'zycord-ButtonInputStyle';
+
+                const fileIcon = document.createElement('div');
+                fileIcon.className = 'zycord-NavigationIcon zycord-ButtonInputFile';
+                fileLabel.appendChild(fileIcon);
+
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.id = 'fileInput';
+                fileInput.hidden = true;
+
+                const appButton = document.createElement('button');
+                appButton.className = 'zycord-ButtonInputStyle';
+                appButton.onclick = () => launchApp();
+
+                const appIcon = document.createElement('div');
+                appIcon.className = 'zycord-NavigationIcon zycord-ButtonInputApp';
+                appButton.appendChild(appIcon);
+
+                const textInput = document.createElement('input');
+                textInput.className = 'zycord-TextInputStyle';
+                textInput.type = 'text';
+                textInput.id = 'messageInput';
+                textInput.placeholder = 'Message @User';
+
+                const sendButton = document.createElement('button');
+                sendButton.className = 'zycord-ButtonInputStyle';
+                sendButton.onclick = () => sendMessage();
+
+                const sendIcon = document.createElement('div');
+                sendIcon.className = 'zycord-NavigationIcon zycord-ButtonInputSend';
+                sendButton.appendChild(sendIcon);
+
+                creation.appendChild(fileLabel);
+                creation.appendChild(fileInput);
+                creation.appendChild(appButton);
+                creation.appendChild(textInput);
+                creation.appendChild(sendButton);
+
+                // ─── ChannelTopNavigationStack ───────────────────────────
+                const navStack = document.createElement('div');
+                navStack.className = 'zycord-ChannelTopNavigationStack';
+
+                const navButtonContainer = document.createElement('div');
+                navButtonContainer.className = 'zycord-TopNavigationButtonContainer';
+                navButtonContainer.id = 'closeMessagesButton';
+
+                const navButton = document.createElement('div');
+                navButton.className = 'zycord-TopNavigationButton zycord-NavigationMessages';
+
+                const navNew = document.createElement('div');
+                navNew.className = 'zycord-NavigationNew';
+
+                navButtonContainer.appendChild(navButton);
+                navButtonContainer.appendChild(navNew);
+
+                const navContainer = document.createElement('div');
+                navContainer.className = 'zycord-TopNavigationContainer';
+
+                const username = document.createElement('div');
+                username.className = 'zycord-directNavigationUsername';
+                username.textContent = 'Username';
+
+                navContainer.appendChild(username);
+                navStack.appendChild(navButtonContainer);
+                navStack.appendChild(navContainer);
+
+                // ─── Final Assembly ──────────────────────────────────────
+                stack.appendChild(creationExtra);
+                stack.appendChild(creation);
+                stack.appendChild(navStack);
+
+                const target = document.querySelector('.zycord-MessageContainer');
+                if (target) {
+                    target.appendChild(stack);
+                } else {
+                    console.warn('Target container #zycord-MessageContainer not found.');
+                }
+            }
+            createMessageInputStack();
+
             document.getElementById("closeMessagesButton").addEventListener("click", () => swipeMessageContainer(false));
             document.getElementById('fileInput').addEventListener('change', function (event) {
                 const previewContainer = document.getElementById('zycord-MediaPreviewContainer');
@@ -2991,9 +3066,8 @@
                 });
             }
 
-            async function sendMessage() {
 
-                console.log("line 2996");
+            async function sendMessage() {
                 try {
                     const inputField = document.getElementById('messageInput');
                     const messageText = inputField.value.trim();
@@ -3001,21 +3075,13 @@
                     const mediaFiles = zycordMediaStore.getFiles();
                     const currentMessageState = zycordStateStore.getState();
 
-                    console.log("line 3004");
-
                     if (!messageText && mediaFiles.length === 0) return;
                     if (!currentChannelId || !discordAccountAuth) return;
-
-
-                    console.log("line 3010");
 
                     let messageFetchMethod = currentMessageState && currentMessageState.type === 2 ? 'PATCH' : 'POST';
                     let messageFetchUrl = currentMessageState && currentMessageState.type === 2
                         ? `https://discord.com/api/v9/channels/${currentChannelId}/messages/${currentMessageState.reference}`
                         : `https://discord.com/api/v9/channels/${currentChannelId}/messages`;
-
-
-                    console.log("line 3018");
 
                     const formData = new FormData();
 
@@ -3023,9 +3089,6 @@
                         content: messageText,
                         tts: false
                     };
-
-
-                    console.log("line 3028");
 
                     if (currentMessageState && currentMessageState.type === 1) {
                         payload.message_reference = {
@@ -3045,8 +3108,6 @@
 
                     // Optional local message ID, used for client-side rendering
                     let localMessageId;
-
-                    console.log("line 3049");
                     try {
                         localMessageId = crypto.randomUUID();
                     } catch (error) {
@@ -3055,8 +3116,6 @@
                         new DataView(tsBuffer.buffer).setUint32(0, unixTs, false); // big-endian
                         localMessageId = btoa(String.fromCharCode(...tsBuffer));
                     }
-
-                    console.log("line 3059");
                     const pendingMessage = createMessageElement({
                         messageReference: currentMessageState && currentMessageState.type === 1 ? {
                             message_id: currentMessageState.reference,
