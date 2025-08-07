@@ -1394,11 +1394,6 @@
             color: var(--text-muted);
             font-size: 14px;
         }
-
-        .keyboard-open .zycord-MessageContainer {
-            height: 400px;
-            transition: height 0.2s ease;
-        }
     </style>
 </head>
 
@@ -1445,11 +1440,6 @@
     </div> <!-- End AppContainer -->
     <script>
         // Check if auth token is already stored
-        visualViewport.addEventListener('resize', () => {
-            const isKeyboardOpen = visualViewport.height < window.innerHeight;
-            document.body.classList.toggle('keyboard-open', isKeyboardOpen);
-        });
-
         function isValidDiscordToken(token) {
             return typeof token === "string" && token.length > 10;
         }
@@ -1476,28 +1466,6 @@
         if (discordAccountAuth) {
             startupZycord();
         }
-
-        (function setupDoubleTapToSkip() {
-            const loader = document.querySelector('.zycord-LoadContainer');
-            if (!loader) return;
-
-            let lastTap = 0;
-            const tapThreshold = 300; // ms between taps
-
-            loader.addEventListener('touchend', (e) => {
-                const currentTime = new Date().getTime();
-                const tapLength = currentTime - lastTap;
-
-                if (tapLength < tapThreshold && tapLength > 0) {
-                    // Double-tap detected
-                    loader.style.display = 'none';
-                    loader.classList.add('zycord-skipped');
-                    startupZycord();
-                }
-
-                lastTap = currentTime;
-            });
-        })();
 
         function startupZycord() {
             const originalLog = console.log;
