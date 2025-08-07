@@ -237,11 +237,11 @@
             }
 
             .zycord-NavigationContainer {
-                height: calc(100% - env(safe-area-inset-bottom));
+                height: calc(100% - 20px);
             }
 
             .zycord-MessageContainer {
-                height: calc(100% - env(safe-area-inset-bottom));
+                height: calc(100% - 20px);
             }
 
             /*.
@@ -2992,6 +2992,8 @@
             }
 
             async function sendMessage() {
+
+                console.log("line 2996");
                 try {
                     const inputField = document.getElementById('messageInput');
                     const messageText = inputField.value.trim();
@@ -2999,13 +3001,21 @@
                     const mediaFiles = zycordMediaStore.getFiles();
                     const currentMessageState = zycordStateStore.getState();
 
+                    console.log("line 3004");
+
                     if (!messageText && mediaFiles.length === 0) return;
                     if (!currentChannelId || !discordAccountAuth) return;
+
+
+                    console.log("line 3010");
 
                     let messageFetchMethod = currentMessageState && currentMessageState.type === 2 ? 'PATCH' : 'POST';
                     let messageFetchUrl = currentMessageState && currentMessageState.type === 2
                         ? `https://discord.com/api/v9/channels/${currentChannelId}/messages/${currentMessageState.reference}`
                         : `https://discord.com/api/v9/channels/${currentChannelId}/messages`;
+
+
+                    console.log("line 3018");
 
                     const formData = new FormData();
 
@@ -3013,6 +3023,9 @@
                         content: messageText,
                         tts: false
                     };
+
+
+                    console.log("line 3028");
 
                     if (currentMessageState && currentMessageState.type === 1) {
                         payload.message_reference = {
@@ -3033,7 +3046,7 @@
                     // Optional local message ID, used for client-side rendering
                     let localMessageId;
 
-                    console.log("line 3036");
+                    console.log("line 3049");
                     try {
                         localMessageId = crypto.randomUUID();
                     } catch (error) {
@@ -3043,7 +3056,7 @@
                         localMessageId = btoa(String.fromCharCode(...tsBuffer));
                     }
 
-                    console.log("line 3046");
+                    console.log("line 3059");
                     const pendingMessage = createMessageElement({
                         messageReference: currentMessageState && currentMessageState.type === 1 ? {
                             message_id: currentMessageState.reference,
