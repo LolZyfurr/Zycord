@@ -24,7 +24,10 @@
             --glass-blur: blur(10px);
             --glass-alpha: rgba(255, 255, 255, 0.04);
             --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.3);
+            --bottom-gap: 20px;
         }
+
+
 
         body {
             background-color: var(--bg-primary);
@@ -236,21 +239,11 @@
                 height: 100vh;
             }
 
-            .zycord-NavigationContainer {
-                height: calc(100% - 20px);
-            }
-
+            .zycord-NavigationContainer,
             .zycord-MessageContainer {
-                height: calc(100% - 20px);
+                height: calc(100% - var(--bottom-gap));
+                transition: height 0.3s ease;
             }
-
-            /*.
-            zycord-AppWindow {
-                height: calc(100vh - 60px);
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
-            }
-                */
         }
 
         @keyframes zycordPulse {
@@ -1439,6 +1432,18 @@
         </div> <!-- End NavigationContainer -->
     </div> <!-- End AppContainer -->
     <script>
+        const inputs = document.querySelectorAll('input, textarea');
+
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                document.documentElement.style.setProperty('--bottom-gap', '0px');
+            });
+
+            input.addEventListener('blur', () => {
+                document.documentElement.style.setProperty('--bottom-gap', '20px');
+            });
+        });
+
         // Check if auth token is already stored
         function isValidDiscordToken(token) {
             return typeof token === "string" && token.length > 10;
