@@ -2530,12 +2530,12 @@
                 }
 
                 function hideSelf() {
-                    bottomMenu.style.transition = "transform 0.25s ease";
-                    bottomMenu.style.transform = "translateY(100%)";
+                    bottomFocusContainer.style.transition = "transform 0.25s ease";
+                    bottomFocusContainer.style.transform = "translate3d(-50%, 100%, 0px)";
                     focusContainer.style.transition = "opacity 0.3s ease";
                     focusContainer.style.opacity = "0";
                     setTimeout(() => {
-                        focusContainer.remove(); // 🔥 Full teardown
+                        focusContainer.remove();
                     }, 300);
                 }
 
@@ -2543,9 +2543,23 @@
                     bottomMenu: bottomFocusContainer,
                     scrollContainer: menuContainer,
                     overlay: focusContainer,
-                    thresholds: { lock: 10, dismissDistanceVH: 25, dismissVelocity: 0.75 },
-                    durations: { snap: 250, dismiss: 300 },
+                    thresholds: {
+                        lock: 10,
+                        dismissDistanceVH: 25,
+                        dismissVelocity: 0.75
+                    },
+                    durations: {
+                        snap: 250,
+                        dismiss: 300
+                    },
                     easing: 'cubic-bezier(0.2, 0, 0, 1)',
+                    removeOverlayOnDismiss: true,
+                    removeSheetOnDismiss: false,
+                    onRemoved: ({ reason, removed, elements }) => {
+                        console.log('Focus sheet dismissed:', reason);
+                        console.log('Removed:', removed);
+                        // Could fade back into ambient UI or re-enable scroll lock
+                    }
                 });
 
                 return focusContainer;
@@ -2843,55 +2857,60 @@
                 bottomMenu,
                 scrollContainer = null,
                 overlay = null,
+                dragHandle = null,
                 thresholds = {},
                 durations = {},
-                easing = 'ease',
+                easing = 'cubic-bezier(.2,.8,.2,1)',
+                // NEW:
+                removeOverlayOnDismiss = false,
+                removeSheetOnDismiss = false,
+                onRemoved = null // function(details) | null
             } = {}) {
-                if (!bottomMenu || !(bottomMenu instanceof HTMLElement)) {
+                // ... existing body ...
+
+                if (!(bottomMenu && bottomMenu instanceof HTMLElement)) {
                     console.warn('[BottomSheet] bottomMenu is required and must be an element.');
                     return { destroy() { } };
                 }
 
-                const cfg = {
-                    lock: Math.max(0, thresholds.lock ?? 10),                 // px
-                    dismissDistanceVH: Math.min(100, Math.max(0, thresholds.dismissDistanceVH ?? 25)), // percent of viewport height
-                    dismissVelocity: Math.max(0, thresholds.dismissVelocity ?? 0.75), // px/ms
+                const T = {
+                    lock: Math.max(0, thresholds.lock ?? 10),               // px before locking gesture
+                    dismissDistanceVH: Math.min(100, Math.max(0, thresholds.dismissDistanceVH ?? 25)),
+                    dismissVelocity: Math.max(0, thresholds.dismissVelocity ?? 0.75), // px/ms, directional
                     snap: Math.max(0, durations.snap ?? 250),
                     dismiss: Math.max(0, durations.dismiss ?? 300),
-                    easing,
+                    easing
                 };
 
-                const state = {
+                const S = {
                     dragging: false,
-                    gestureLocked: null,   // null | 'profileDrag'
+                    mode: null,                // 'sheet' | 'scroll' | null
                     startY: 0,
                     lastY: 0,
-                    deltaY: 0,
-                    bufferY: 0,
-                    raf: 0,
-                    pendingY: 0,
+                    deltaY: 0,                 // sheet translation (>= 0)
+                    bufferY: 0,                // accumulates scroll delta until handoff
                     lastMoveTime: 0,
-                    velocity: 0,
+                    velocity: 0,               // signed px/ms
                     viewportH: window.innerHeight || 0,
                     prevOverflow: null,
+                    raf: 0,
+                    pendingY: 0,
                     usingPointer: !!window.PointerEvent,
+                    pointerId: null,
+                    startedOnHandle: false
                 };
 
-                // Optional: set a friendly touch-action to reduce browser interference.
-                // If your CSS already sets this, you can remove it.
-                bottomMenu.style.touchAction = 'none';
+                // Allow vertical pan by default; don't globally block scrolling.
+                // If you 100% want internal scroll, `pan-y` is safer than `none`.
+                bottomMenu.style.touchAction = 'pan-y';
 
-                function getYFromEvent(e) {
-                    if ('touches' in e && e.touches && e.touches.length) {
-                        return e.touches[0].clientY;
-                    }
-                    if ('changedTouches' in e && e.changedTouches && e.changedTouches.length) {
-                        return e.changedTouches[0].clientY;
-                    }
+                function getY(e) {
+                    if ('touches' in e && e.touches && e.touches.length) return e.touches[0].clientY;
+                    if ('changedTouches' in e && e.changedTouches && e.changedTouches.length) return e.changedTouches[0].clientY;
                     return e.clientY;
                 }
 
-                function isScrollAtTop() {
+                function atTop() {
                     if (!scrollContainer) return true;
                     try {
                         return (scrollContainer.scrollTop || 0) <= 0;
@@ -2900,253 +2919,291 @@
                     }
                 }
 
-                function setOverlayProgress(dragPx) {
-                    if (!overlay) return;
-                    // Fade overlay as the sheet is dragged down.
-                    const fade = Math.max(0, 1 - Math.min(dragPx / (state.viewportH * 0.8), 1));
-                    overlay.style.opacity = String(fade);
+                function setVisual(yPx) {
+                    const y = Math.max(0, Math.min(yPx, S.viewportH));
+                    bottomMenu.style.transform = `translate3d(-50%, ${y}px, 0)`;
+                    if (overlay) {
+                        const t = Math.max(0, 1 - Math.min(y / (0.8 * S.viewportH), 1));
+                        overlay.style.opacity = String(t);
+                    }
                 }
 
-                function applyTransform(yPx) {
-                    // Clamp to [0, 100vh] downward only; upward drag is ignored for the sheet
-                    const clamped = Math.max(0, Math.min(yPx, state.viewportH));
-                    bottomMenu.style.transform = `translate3d(-50%, ${clamped}px, 0)`;
-                    setOverlayProgress(clamped);
+                function queueVisual(yPx) {
+                    S.pendingY = yPx;
+                    if (!S.raf) {
+                        S.raf = requestAnimationFrame(() => {
+                            S.raf = 0;
+                            setVisual(S.pendingY);
+                        });
+                    }
                 }
 
-                function scheduleRender(yPx) {
-                    state.pendingY = yPx;
-                    if (state.raf) return;
-                    state.raf = requestAnimationFrame(() => {
-                        state.raf = 0;
-                        applyTransform(state.pendingY);
-                    });
+                function stopRAF() {
+                    if (S.raf) cancelAnimationFrame(S.raf);
+                    S.raf = 0;
                 }
 
-                function clearRender() {
-                    if (state.raf) cancelAnimationFrame(state.raf);
-                    state.raf = 0;
-                }
-
-                function disableTransitions() {
-                    bottomMenu.style.transition = 'none';
-                    if (overlay) overlay.style.transition = 'none';
-                    bottomMenu.style.willChange = 'transform';
-                }
-
-                function enableTransitions(duration, curve) {
-                    bottomMenu.style.transition = `transform ${duration}ms ${curve}`;
-                    if (overlay) overlay.style.transition = `opacity ${duration}ms ${curve}`;
+                function setTransition(ms, ease) {
+                    bottomMenu.style.transition = `transform ${ms}ms ${ease}`;
+                    if (overlay) overlay.style.transition = `opacity ${ms}ms ${ease}`;
                     bottomMenu.style.willChange = 'auto';
                 }
 
+                function lockOverflow() {
+                    if (scrollContainer && S.prevOverflow === null) {
+                        S.prevOverflow = scrollContainer.style.overflow || '';
+                        scrollContainer.style.overflow = 'hidden';
+                    }
+                }
+
                 function restoreOverflow() {
-                    if (!scrollContainer) return;
-                    if (state.prevOverflow !== null) {
-                        scrollContainer.style.overflow = state.prevOverflow;
-                        state.prevOverflow = null;
+                    if (scrollContainer && S.prevOverflow !== null) {
+                        scrollContainer.style.overflow = S.prevOverflow;
+                        S.prevOverflow = null;
                     }
                 }
 
-                function lockOverflowHidden() {
-                    if (!scrollContainer) return;
-                    if (state.prevOverflow === null) {
-                        state.prevOverflow = scrollContainer.style.overflow || '';
-                    }
-                    scrollContainer.style.overflow = 'hidden';
+                function openSnap() {
+                    setTransition(T.snap, T.easing);
+                    bottomMenu.style.transform = 'translate3d(-50%, 0, 0)';
+                    if (overlay) overlay.style.opacity = '1';
+                    const onEnd = () => {
+                        bottomMenu.removeEventListener('transitionend', onEnd);
+                        restoreOverflow();
+                    };
+                    bottomMenu.addEventListener('transitionend', onEnd);
                 }
 
-                function onStart(e) {
-                    // Only single-finger / primary pointer
-                    if ('touches' in e && e.touches.length !== 1) return;
-                    if (state.dragging) return;
-
-                    state.viewportH = window.innerHeight || state.viewportH;
-                    state.dragging = true;
-                    state.gestureLocked = null;
-                    state.startY = getYFromEvent(e);
-                    state.lastY = state.startY;
-                    state.deltaY = 0;
-                    state.bufferY = 0;
-                    state.lastMoveTime = performance.now();
-                    state.velocity = 0;
-
-                    disableTransitions();
-
-                    // Let the sheet take charge for smoothness
-                    lockOverflowHidden();
-
-                    // In case the browser would scroll, request the right kind of listener and prevent default when needed in move.
-                    // We don't preventDefault here to not block scroll if the gesture doesn't lock yet.
-                }
-
-                function onMove(e) {
-                    if (!state.dragging) return;
-
-                    const y = getYFromEvent(e);
-                    const dy = y - state.lastY;
-                    const totalDeltaFromStart = y - state.startY;
-
-                    const now = performance.now();
-                    const dt = Math.max(1, now - state.lastMoveTime); // ms
-                    state.velocity = 0.6 * (Math.abs(dy) / dt) + 0.4 * state.velocity; // EMA smoothing
-
-                    // Lock gesture once threshold passed
-                    if (state.gestureLocked === null && Math.abs(totalDeltaFromStart) > cfg.lock) {
-                        state.gestureLocked = 'profileDrag';
-                    }
-
-                    // While not locked, allow scroll to proceed
-                    if (state.gestureLocked !== 'profileDrag') {
-                        state.lastY = y;
-                        state.lastMoveTime = now;
-                        return;
-                    }
-
-                    // Gate by scroll top; if inner content isn't at top, accumulate into buffer and reset baseline
-                    const atTop = isScrollAtTop();
-                    if (!atTop) {
-                        state.bufferY += dy;
-                        state.startY = y;
-                        state.lastY = y;
-                        state.lastMoveTime = now;
-                        return;
-                    }
-
-                    // Effective downward drag includes buffer; only act on downward motion
-                    state.deltaY = totalDeltaFromStart + state.bufferY;
-
-                    if (state.deltaY > 0) {
-                        // We own the gesture now — stop scrolling
-                        if (e.cancelable) e.preventDefault();
-
-                        scheduleRender(state.deltaY);
-                    } else {
-                        // Upward move: snap back to zero without preventing scroll
-                        scheduleRender(0);
-                    }
-
-                    state.lastY = y;
-                    state.lastMoveTime = now;
-                }
-
-                function finishDismiss() {
-                    enableTransitions(cfg.dismiss, cfg.easing);
-                    // Send it down fully
+                function dismissSnap() {
+                    setTransition(T.dismiss, T.easing);
                     bottomMenu.style.transform = 'translate3d(-50%, 100vh, 0)';
                     if (overlay) overlay.style.opacity = '0';
 
-                    const cleanup = () => {
-                        bottomMenu.removeEventListener('transitionend', cleanup);
+                    const onEnd = () => {
+                        bottomMenu.removeEventListener('transitionend', onEnd);
                         restoreOverflow();
-                        // Remove overlay after animation
-                        if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+
+                        // Compute removals
+                        let removedOverlay = false;
+                        let removedSheet = false;
+
+                        if (removeOverlayOnDismiss && overlay && overlay.parentNode) {
+                            overlay.parentNode.removeChild(overlay);
+                            removedOverlay = true;
+                        }
+
+                        if (removeSheetOnDismiss && bottomMenu && bottomMenu.parentNode) {
+                            bottomMenu.parentNode.removeChild(bottomMenu);
+                            removedSheet = true;
+                        }
+
+                        // Optional hook — only fire if something was actually removed
+                        if (onRemoved && (removedOverlay || removedSheet)) {
+                            onRemoved({
+                                reason: 'dismiss',
+                                removed: { sheet: removedSheet, overlay: removedOverlay },
+                                elements: { bottomMenu, overlay }
+                            });
+                        }
                     };
-                    bottomMenu.addEventListener('transitionend', cleanup);
+
+                    bottomMenu.addEventListener('transitionend', onEnd);
                 }
 
-                function finishReset() {
-                    enableTransitions(cfg.snap, cfg.easing);
-                    bottomMenu.style.transform = 'translate3d(-50%, 0, 0)';
-                    if (overlay) overlay.style.opacity = '1';
+                function begin(e) {
+                    // Only primary pointer (when supported)
+                    if (S.usingPointer) {
+                        if (e.isPrimary === false) return;
+                        S.pointerId = e.pointerId;
+                    }
+                    // If touch, ignore multitouch
+                    if ('touches' in e && e.touches && e.touches.length > 1) return;
 
-                    const cleanup = () => {
-                        bottomMenu.removeEventListener('transitionend', cleanup);
-                        restoreOverflow();
-                    };
-                    bottomMenu.addEventListener('transitionend', cleanup);
+                    S.viewportH = window.innerHeight || S.viewportH;
+
+                    S.dragging = true;
+                    S.mode = null;
+                    S.startY = getY(e);
+                    S.lastY = S.startY;
+                    S.deltaY = 0;
+                    S.bufferY = 0;
+                    S.lastMoveTime = performance.now();
+                    S.velocity = 0;
+                    S.startedOnHandle = !!(dragHandle && (dragHandle === e.target || dragHandle.contains(e.target)));
+
+                    // No transition while dragging
+                    bottomMenu.style.transition = 'none';
+                    if (overlay) overlay.style.transition = 'none';
+                    bottomMenu.style.willChange = 'transform';
+                    // IMPORTANT: do not lock overflow yet. Wait until we decide it's a sheet drag.
                 }
 
-                function onEnd() {
-                    if (!state.dragging) return;
-                    state.dragging = false;
-                    clearRender();
+                function move(e) {
+                    if (!S.dragging) return;
 
-                    const distancePx = Math.max(0, state.deltaY);
-                    const distanceVH = (distancePx / Math.max(1, state.viewportH)) * 100;
+                    // Respect pointerId routing
+                    if (S.usingPointer && e.pointerId != null && S.pointerId !== e.pointerId) return;
 
-                    const shouldDismiss =
-                        state.gestureLocked === 'profileDrag' &&
-                        (distanceVH > cfg.dismissDistanceVH || state.velocity > cfg.dismissVelocity);
+                    const y = getY(e);
+                    const dyStep = y - S.lastY;
+                    const totalDy = y - S.startY;
+                    const now = performance.now();
+                    const dt = Math.max(1, now - S.lastMoveTime);
 
-                    // Re-enable transitions and either dismiss or reset
-                    if (shouldDismiss) {
-                        finishDismiss();
-                    } else {
-                        finishReset();
+                    // Signed velocity (px/ms). Low-pass filter to stabilize.
+                    const instV = dyStep / dt;
+                    S.velocity = 0.6 * instV + 0.4 * S.velocity;
+
+                    // Decide mode when surpassing lock threshold or forced by handle
+                    if (S.mode == null) {
+                        const crossed = Math.abs(totalDy) > T.lock || S.startedOnHandle;
+                        if (crossed) {
+                            if (S.startedOnHandle) {
+                                // Force sheet drag; decide direction later
+                                S.mode = 'sheet';
+                                lockOverflow();
+                            } else {
+                                if (totalDy > 0 && atTop()) {
+                                    // Dragging down from top => sheet drag
+                                    S.mode = 'sheet';
+                                    lockOverflow();
+                                } else {
+                                    // Otherwise, let it be a scroll gesture
+                                    S.mode = 'scroll';
+                                }
+                            }
+                        }
                     }
 
-                    state.gestureLocked = null;
-                    state.bufferY = 0;
-                    state.deltaY = 0;
+                    if (S.mode === 'scroll') {
+                        // We do not interfere; we simply keep tracking to allow a future handoff if needed.
+                        // If user scrolls back to top and continues dragging down, we can hand off:
+                        if (totalDy > 0 && atTop()) {
+                            // Handoff to sheet drag; reset anchors to avoid jump
+                            S.mode = 'sheet';
+                            lockOverflow();
+                            S.startY = y;
+                            S.lastY = y;
+                            S.bufferY = 0;
+                            S.lastMoveTime = now;
+                            return;
+                        }
+                        S.lastY = y;
+                        S.lastMoveTime = now;
+                        return;
+                    }
+
+                    if (S.mode === 'sheet') {
+                        // Prevent the page from stealing the gesture
+                        if (e.cancelable) e.preventDefault();
+
+                        // Accumulate translation; clamp to [0, viewportH]
+                        S.deltaY = Math.max(0, totalDy + S.bufferY);
+                        queueVisual(S.deltaY);
+
+                        S.lastY = y;
+                        S.lastMoveTime = now;
+                        return;
+                    }
+
+                    // Mode is still undecided; keep tracking
+                    S.lastY = y;
+                    S.lastMoveTime = now;
                 }
 
-                function onCancel() {
-                    // Treat cancel like a reset
-                    if (!state.dragging) return;
-                    state.dragging = false;
-                    clearRender();
-                    finishReset();
-                    state.gestureLocked = null;
-                    state.bufferY = 0;
-                    state.deltaY = 0;
+                function end(e) {
+                    if (!S.dragging) return;
+                    S.dragging = false;
+                    stopRAF();
+
+                    const progress = Math.max(0, S.deltaY) / Math.max(1, S.viewportH); // 0..1
+                    const v = S.velocity; // signed
+
+                    // Only allow dismissal on downward intent:
+                    const downwardFlick = v > T.dismissVelocity;
+                    const farEnough = progress * 100 > T.dismissDistanceVH;
+
+                    if (S.mode === 'sheet' && (farEnough || downwardFlick)) {
+                        dismissSnap(false);
+                    } else {
+                        openSnap();
+                    }
+
+                    S.mode = null;
+                    S.bufferY = 0;
+                    S.deltaY = 0;
+                    S.pointerId = null;
+                    S.startedOnHandle = false;
+                }
+
+                function cancel() {
+                    if (!S.dragging) return;
+                    S.dragging = false;
+                    stopRAF();
+                    openSnap();
+                    S.mode = null;
+                    S.bufferY = 0;
+                    S.deltaY = 0;
+                    S.pointerId = null;
+                    S.startedOnHandle = false;
                 }
 
                 function onResize() {
-                    state.viewportH = window.innerHeight || state.viewportH;
+                    S.viewportH = window.innerHeight || S.viewportH;
                 }
 
-                // Listener wiring
-                const optsNonPassive = { passive: false };
-                const optsPassive = { passive: true };
-
-                if (state.usingPointer) {
-                    bottomMenu.addEventListener('pointerdown', onStart, optsPassive);
-                    window.addEventListener('pointermove', onMove, optsNonPassive);
-                    window.addEventListener('pointerup', onEnd, optsPassive);
-                    window.addEventListener('pointercancel', onCancel, optsPassive);
-                } else {
-                    // Touch fallback
-                    bottomMenu.addEventListener('touchstart', onStart, optsPassive);
-                    window.addEventListener('touchmove', onMove, optsNonPassive);
-                    window.addEventListener('touchend', onEnd, optsPassive);
-                    window.addEventListener('touchcancel', onCancel, optsPassive);
-                    // Optional mouse fallback for desktop testing
-                    bottomMenu.addEventListener('mousedown', onStart);
-                    window.addEventListener('mousemove', onMove);
-                    window.addEventListener('mouseup', onEnd);
-                }
-
-                window.addEventListener('resize', onResize);
-                window.addEventListener('orientationchange', onResize);
-
-                // Initialize visual state
+                // Initial visual state
                 bottomMenu.style.transform = 'translate3d(-50%, 0, 0)';
                 if (overlay) overlay.style.opacity = '1';
 
+                // Listeners
+                const activeOpts = { passive: false };
+                const passiveOpts = { passive: true };
+
+                if (S.usingPointer) {
+                    (dragHandle || bottomMenu).addEventListener('pointerdown', begin, passiveOpts);
+                    window.addEventListener('pointermove', move, activeOpts);
+                    window.addEventListener('pointerup', end, passiveOpts);
+                    window.addEventListener('pointercancel', cancel, passiveOpts);
+                    window.addEventListener('pointerleave', () => { }, passiveOpts); // no-op, but you could cancel on leave if desired
+                } else {
+                    (dragHandle || bottomMenu).addEventListener('touchstart', begin, passiveOpts);
+                    window.addEventListener('touchmove', move, activeOpts);
+                    window.addEventListener('touchend', end, passiveOpts);
+                    window.addEventListener('touchcancel', cancel, passiveOpts);
+
+                    (dragHandle || bottomMenu).addEventListener('mousedown', begin);
+                    window.addEventListener('mousemove', move);
+                    window.addEventListener('mouseup', end);
+                }
+
+                window.addEventListener('resize', onResize, passiveOpts);
+                window.addEventListener('orientationchange', onResize, passiveOpts);
+
                 return {
                     destroy() {
-                        clearRender();
+                        stopRAF();
                         restoreOverflow();
 
-                        if (state.usingPointer) {
-                            bottomMenu.removeEventListener('pointerdown', onStart);
-                            window.removeEventListener('pointermove', onMove);
-                            window.removeEventListener('pointerup', onEnd);
-                            window.removeEventListener('pointercancel', onCancel);
+                        if (S.usingPointer) {
+                            (dragHandle || bottomMenu).removeEventListener('pointerdown', begin);
+                            window.removeEventListener('pointermove', move);
+                            window.removeEventListener('pointerup', end);
+                            window.removeEventListener('pointercancel', cancel);
                         } else {
-                            bottomMenu.removeEventListener('touchstart', onStart);
-                            window.removeEventListener('touchmove', onMove);
-                            window.removeEventListener('touchend', onEnd);
-                            window.removeEventListener('touchcancel', onCancel);
-                            bottomMenu.removeEventListener('mousedown', onStart);
-                            window.removeEventListener('mousemove', onMove);
-                            window.removeEventListener('mouseup', onEnd);
+                            (dragHandle || bottomMenu).removeEventListener('touchstart', begin);
+                            window.removeEventListener('touchmove', move);
+                            window.removeEventListener('touchend', end);
+                            window.removeEventListener('touchcancel', cancel);
+
+                            (dragHandle || bottomMenu).removeEventListener('mousedown', begin);
+                            window.removeEventListener('mousemove', move);
+                            window.removeEventListener('mouseup', end);
                         }
 
                         window.removeEventListener('resize', onResize);
                         window.removeEventListener('orientationchange', onResize);
-                    },
+                    }
                 };
             }
 
@@ -3394,7 +3451,7 @@
                         overlay.style.opacity = "0";
                         setTimeout(() => {
                             overlay.remove();
-
+                            zycordInternals_setUserActivity.clearActivity(2);
                         }, 300);
                     }
                 });
@@ -3425,13 +3482,24 @@
                     bottomMenu,
                     scrollContainer, // the inner scrollable content; can be null
                     overlay,         // optional overlay element; can be null
-                    thresholds: { lock: 10, dismissDistanceVH: 25, dismissVelocity: 0.75 },
-                    durations: { snap: 250, dismiss: 300 },
+                    thresholds: {
+                        lock: 10,
+                        dismissDistanceVH: 25,
+                        dismissVelocity: 0.75
+                    },
+                    durations: {
+                        snap: 250,
+                        dismiss: 300
+                    },
                     easing: 'cubic-bezier(0.2, 0, 0, 1)',
+                    removeOverlayOnDismiss: true,
+                    removeSheetOnDismiss: false,
+                    onRemoved: ({ reason, removed, elements }) => {
+                        console.log('Sheet removed after', reason);
+                        console.log('Removed elements:', removed);
+                        zycordInternals_setUserActivity.clearActivity(2);
+                    }
                 });
-
-                // When you need to remove behavior (e.g., teardown page)
-                // controller.destroy();
             }
 
             function createFocusConfirmMenu({ title, description, onConfirm, onCancel }) {
@@ -3489,105 +3557,334 @@
                 return menu;
             }
 
-            function attachSwipeToElement(element, onSwipeConfirmed) {
-                let startX, startY, currentX, deltaX;
-                const gestureName = "dismiss-right-to-left";
-                let customGestureLocked = null;
+            // Swipe left to dismiss (right-to-left). Pointer Events + selection/editing guards.
+            // Returns an API with detach().
 
-                // Suggested tweak
-                function updateGestureLock(gesture) {
-                    if (gesture === gestureName) {
-                        gestureLocked = gestureName;
-                        customGestureLocked = gestureName;
-                    } else if (gesture === null) {
-                        gestureLocked = null;
-                        customGestureLocked = null;
-                    } else {
-                        customGestureLocked = gestureName;
-                    }
-                }
+            function attachSwipeToElement(element, onSwipeConfirmed, options = {}) {
+                const config = {
+                    gestureName: "dismiss-right-to-left",
+                    swipeThresholdPx: 10,      // min horizontal movement before considering swipe
+                    yMaxThresholdPx: 6,        // if vertical exceeds this (or dominates), we yield to scroll
+                    confirmRatio: 0.25,        // portion of window.innerWidth to confirm
+                    bufferFrames: 2,           // tiny debounce before we "prime" the gesture
+                    allowPointerTypes: ["touch", "mouse", "pen"],
+                    ignoreWhenEditable: true,
+                    ignoreWhenSelection: true,
+                    transitionMs: 250,
+                    // new toggles
+                    forceTouch: false,         // attach touch listeners regardless of PointerEvent support
+                    forcePointer: false        // use only pointer listeners
+                };
+                Object.assign(config, options);
 
-                function fetchGestureLock() {
-                    return gestureLocked || customGestureLocked;
-                }
+                const state = {
+                    pointerId: null,       // pointerId or touch identifier
+                    pointerType: null,     // "touch" | "mouse" | "pen"
+                    startX: 0,
+                    startY: 0,
+                    deltaX: 0,
+                    isDragging: false,
+                    primed: false,
+                    buffer: 0,
+                    lock: null, // null | "scroll" | config.gestureName
+                };
 
-                let gesturePrimed = false;
-                let bufferFrame = 0;
+                // --- helpers ---
+                const updateLock = (l) => { state.lock = l; };
+                const fetchLock = () => state.lock;
 
-                const onTouchStart = (t) => {
-                    if (t.touches.length !== 1) return;
-                    startX = t.touches[0].clientX;
-                    startY = t.touches[0].clientY;
-                    isDragging = true;
-                    gesturePrimed = false;
-                    bufferFrame = 0;
-                    updateGestureLock(null);
+                const isEditable = (target) => {
+                    if (!target) return false;
+                    return !!target.closest('input, textarea, select, [contenteditable=""], [contenteditable="true"]');
+                };
+
+                const hasActiveSelection = () => {
+                    const sel = window.getSelection ? window.getSelection() : null;
+                    return !!(sel && !sel.isCollapsed && String(sel).length > 0);
+                };
+
+                const setDraggingStyles = () => {
                     element.style.transition = "none";
                     element.style.willChange = "transform";
                     element.style.transform = "translateZ(0)";
+                    // allow vertical scroll, discourage horizontal; inline to ensure it sticks for this element
+                    element.__prevTouchAction = element.style.touchAction;
+                    element.style.touchAction = "pan-y";
                 };
 
-                const onTouchMove = (t) => {
-                    if (!isDragging) return;
+                const clearDraggingStyles = () => {
+                    element.style.willChange = "auto";
+                    element.style.userSelect = "";
+                    element.style.webkitUserSelect = "";
+                    if ("__prevTouchAction" in element) {
+                        element.style.touchAction = element.__prevTouchAction || "";
+                        delete element.__prevTouchAction;
+                    }
+                };
 
-                    const e = t.touches[0];
-                    currentX = e.clientX;
-                    const deltaY = e.clientY - startY;
-                    const deltaXRaw = startX - currentX;
-                    const absX = Math.abs(deltaXRaw);
-                    const absY = Math.abs(deltaY);
-                    const swipeThreshold = 10;
-                    const YMaxThreshold = 5;
+                const translateByProgress = (progress01) => {
+                    const clamped = Math.max(0, Math.min(progress01, 1));
+                    // Move left in vw so it scales with viewport width (like your original)
+                    element.style.transform = `translateX(-${clamped * 100}vw)`;
+                };
 
-                    if (!fetchGestureLock()) {
-                        if (absY > YMaxThreshold) {
-                            updateGestureLock("scroll");
-                        } else if (absX < swipeThreshold || absX < absY) {
-                            updateGestureLock("scroll");
-                        } else {
-                            const direction = deltaXRaw > 0 ? "left" : "right"; // 🧭 add directional nuance
-                            if (direction === "left") {
-                                updateGestureLock(gestureName);
-                            } else {
-                                updateGestureLock("scroll");
+                const settle = (confirmed) => {
+                    element.style.transition = `transform ${config.transitionMs}ms ease`;
+                    element.style.transform = confirmed ? `translateX(-100vw)` : `translateX(0)`;
+                    clearDraggingStyles();
+                };
+
+                // Normalize preventDefault usage to the raw DOM event (pointer or touch)
+                const maybePreventDefault = (evtLike, rawEvt) => {
+                    if (rawEvt && rawEvt.cancelable) {
+                        rawEvt.preventDefault();
+                    } else if (evtLike && evtLike.cancelable) {
+                        evtLike.preventDefault();
+                    }
+                };
+
+                // --- core logic (shared by pointer + touch adapters) ---
+                const begin = (evtLike, rawEvt) => {
+                    const { pointerType, button } = evtLike;
+                    const target = rawEvt?.target || evtLike.target;
+
+                    if (!config.allowPointerTypes.includes(pointerType)) return;
+                    if (pointerType === "mouse" && button !== 0) return; // only primary mouse button
+                    if (config.ignoreWhenEditable && isEditable(target)) return;
+                    if (config.ignoreWhenSelection && hasActiveSelection()) return;
+                    if (state.pointerId !== null) return; // already tracking
+
+                    state.pointerId = evtLike.pointerId;
+                    state.pointerType = pointerType;
+                    state.startX = evtLike.clientX;
+                    state.startY = evtLike.clientY;
+                    state.deltaX = 0;
+                    state.isDragging = true;
+                    state.primed = false;
+                    state.buffer = 0;
+                    updateLock(null);
+
+                    // Pointer capture only for real PointerEvents
+                    if (rawEvt?.type?.startsWith("pointer")) {
+                        try { element.setPointerCapture(evtLike.pointerId); } catch { }
+                    }
+
+                    setDraggingStyles();
+                };
+
+                const move = (evtLike, rawEvt) => {
+                    if (!state.isDragging || evtLike.pointerId !== state.pointerId) return;
+
+                    // If selection starts mid-gesture and we never locked to swipe, abort gracefully
+                    if (config.ignoreWhenSelection && hasActiveSelection() && fetchLock() !== config.gestureName) {
+                        state.isDragging = false;
+                        updateLock(null);
+                        settle(false);
+                        return;
+                    }
+
+                    const dxRaw = state.startX - evtLike.clientX; // >0 means moving left
+                    const dy = evtLike.clientY - state.startY;
+                    const absX = Math.abs(dxRaw);
+                    const absY = Math.abs(dy);
+
+                    if (!fetchLock()) {
+                        // Decide if we hand off to scroll or lock to our swipe
+                        if (absY > config.yMaxThresholdPx || absY > absX) {
+                            updateLock("scroll");
+                        } else if (absX >= config.swipeThresholdPx) {
+                            updateLock(dxRaw > 0 ? config.gestureName : "scroll"); // only leftward swipes
+                            if (fetchLock() === config.gestureName) {
+                                // prevent text selection while we're in our gesture
+                                element.style.userSelect = "none";
+                                element.style.webkitUserSelect = "none";
                             }
                         }
                     }
 
-
-                    if (fetchGestureLock() === gestureName) {
-                        if (!gesturePrimed) {
-                            bufferFrame++;
-                            if (bufferFrame > 2) gesturePrimed = true;
+                    if (fetchLock() === config.gestureName) {
+                        if (!state.primed) {
+                            state.buffer++;
+                            if (state.buffer > config.bufferFrames) state.primed = true;
                         }
 
-                        if (gesturePrimed && deltaXRaw > 0) {
-                            deltaX = deltaXRaw;
-                            const progress = Math.min(deltaX / window.innerWidth * 100, 100);
-                            element.style.transform = `translateX(-${progress}vw)`;
-                            t.preventDefault();
+                        if (state.primed && dxRaw > 0) {
+                            state.deltaX = dxRaw;
+                            const progress = state.deltaX / window.innerWidth;
+                            translateByProgress(progress);
+                            // only when we own the gesture
+                            maybePreventDefault(evtLike, rawEvt);
                         }
                     }
                 };
 
-                const onTouchEnd = () => {
-                    if (!isDragging || fetchGestureLock() !== gestureName) return;
+                const end = (evtLike, rawEvt) => {
+                    if (evtLike.pointerId !== state.pointerId) return;
 
-                    isDragging = false;
-                    updateGestureLock(null);
+                    const locked = fetchLock();
+                    const confirm = locked === config.gestureName && state.deltaX > config.confirmRatio * window.innerWidth;
 
-                    if (deltaX > 0.25 * window.innerWidth) {
-                        if (typeof onSwipeConfirmed === "function") onSwipeConfirmed(element);
+                    // Release pointer capture only for PointerEvents
+                    if (rawEvt?.type?.startsWith("pointer")) {
+                        try {
+                            if (element.hasPointerCapture && element.hasPointerCapture(state.pointerId)) {
+                                element.releasePointerCapture(state.pointerId);
+                            }
+                        } catch { }
                     }
 
-                    element.style.transition = "transform 0.25s ease";
-                    element.style.transform = "translateX(0)";
-                    element.style.willChange = "auto";
+                    state.isDragging = false;
+                    state.pointerId = null;
+                    updateLock(null);
+
+                    if (confirm) {
+                        try { if (typeof onSwipeConfirmed === "function") onSwipeConfirmed(element); } catch { }
+                    }
+
+                    // Animate back to origin by default; keep if you want to leave it off-screen on confirm
+                    settle(false);
                 };
 
-                element.addEventListener("touchstart", onTouchStart);
-                element.addEventListener("touchmove", onTouchMove);
-                element.addEventListener("touchend", onTouchEnd);
+                const cancel = (evtLike, rawEvt) => {
+                    if (evtLike.pointerId !== state.pointerId) return;
+
+                    if (rawEvt?.type?.startsWith("pointer")) {
+                        try {
+                            if (element.hasPointerCapture && element.hasPointerCapture(state.pointerId)) {
+                                element.releasePointerCapture(state.pointerId);
+                            }
+                        } catch { }
+                    }
+
+                    state.isDragging = false;
+                    state.pointerId = null;
+                    updateLock(null);
+                    settle(false);
+                };
+
+                const onKeyDown = (e) => {
+                    if (e.key === "Escape" && state.isDragging) {
+                        state.isDragging = false;
+                        updateLock(null);
+                        settle(false);
+                    }
+                };
+
+                // --- pointer event adapter ---
+                const onPointerDown = (e) => {
+                    if (!config.allowPointerTypes.includes(e.pointerType)) return;
+                    begin(e, e);
+                };
+                const onPointerMove = (e) => move(e, e);
+                const onPointerUpOrCancel = (e) => end(e, e);
+                const onPointerCancel = (e) => cancel(e, e);
+                const onLostPointerCapture = (e) => cancel(e, e);
+
+                // --- touch event adapter (only used when pointer isn't used) ---
+                const activeTouch = { id: null };
+
+                const makeTouchEvtLike = (touch, type) => ({
+                    pointerId: touch.identifier,
+                    pointerType: "touch",
+                    clientX: touch.clientX,
+                    clientY: touch.clientY,
+                    button: 0,     // synthesized
+                    target: touch.target,
+                    type
+                });
+
+                const findChangedTouchById = (touchList, id) => {
+                    for (let i = 0; i < touchList.length; i++) {
+                        if (touchList[i].identifier === id) return touchList[i];
+                    }
+                    return null;
+                };
+
+                const onTouchStart = (e) => {
+                    // pick the first touch that originated on or within element
+                    let t = null;
+                    for (let i = 0; i < e.changedTouches.length; i++) {
+                        const cand = e.changedTouches[i];
+                        if (element === cand.target || element.contains(cand.target)) { t = cand; break; }
+                    }
+                    if (!t) t = e.changedTouches[0];
+                    if (!t) return;
+
+                    activeTouch.id = t.identifier;
+                    const evtLike = makeTouchEvtLike(t, "touchstart");
+                    begin(evtLike, e);
+                };
+
+                const onTouchMove = (e) => {
+                    if (activeTouch.id == null) return;
+                    const t = findChangedTouchById(e.touches, activeTouch.id) || findChangedTouchById(e.changedTouches, activeTouch.id);
+                    if (!t) return;
+
+                    const evtLike = makeTouchEvtLike(t, "touchmove");
+                    move(evtLike, e);
+                };
+
+                const onTouchEnd = (e) => {
+                    if (activeTouch.id == null) return;
+                    const t = findChangedTouchById(e.changedTouches, activeTouch.id);
+                    if (!t) return;
+
+                    const evtLike = makeTouchEvtLike(t, "touchend");
+                    end(evtLike, e);
+                    activeTouch.id = null;
+                };
+
+                const onTouchCancel = (e) => {
+                    if (activeTouch.id == null) return;
+                    const t = findChangedTouchById(e.changedTouches, activeTouch.id);
+                    if (!t) return;
+
+                    const evtLike = makeTouchEvtLike(t, "touchcancel");
+                    cancel(evtLike, e);
+                    activeTouch.id = null;
+                };
+
+                // --- listeners ---
+                const supportsPointer = "PointerEvent" in window;
+                const usePointer = !config.forceTouch && (supportsPointer || config.forcePointer);
+                const useTouch = config.forceTouch || (!supportsPointer && !config.forcePointer);
+
+                if (usePointer) {
+                    element.addEventListener("pointerdown", onPointerDown, { passive: true });
+                    element.addEventListener("pointermove", onPointerMove, { passive: false }); // we call preventDefault when locked
+                    element.addEventListener("pointerup", onPointerUpOrCancel, { passive: true });
+                    element.addEventListener("pointercancel", onPointerCancel, { passive: true });
+                    element.addEventListener("lostpointercapture", onLostPointerCapture, { passive: true });
+                }
+
+                if (useTouch) {
+                    // touchstart/end can be passive; touchmove must be non-passive if we may preventDefault()
+                    element.addEventListener("touchstart", onTouchStart, { passive: true });
+                    element.addEventListener("touchmove", onTouchMove, { passive: false });
+                    element.addEventListener("touchend", onTouchEnd, { passive: true });
+                    element.addEventListener("touchcancel", onTouchCancel, { passive: true });
+                }
+
+                document.addEventListener("keydown", onKeyDown, { passive: true });
+
+                return {
+                    detach() {
+                        if (usePointer) {
+                            element.removeEventListener("pointerdown", onPointerDown);
+                            element.removeEventListener("pointermove", onPointerMove);
+                            element.removeEventListener("pointerup", onPointerUpOrCancel);
+                            element.removeEventListener("pointercancel", onPointerCancel);
+                            element.removeEventListener("lostpointercapture", onLostPointerCapture);
+                        }
+                        if (useTouch) {
+                            element.removeEventListener("touchstart", onTouchStart);
+                            element.removeEventListener("touchmove", onTouchMove);
+                            element.removeEventListener("touchend", onTouchEnd);
+                            element.removeEventListener("touchcancel", onTouchCancel);
+                        }
+                        document.removeEventListener("keydown", onKeyDown);
+                    }
+                };
             }
 
             function createMessageInputStack() {
