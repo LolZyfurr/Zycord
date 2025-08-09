@@ -1905,6 +1905,16 @@
                 --time-size: clamp(11px, 1.4vw, 14px);
             }
         }
+
+        .zycord-ConsoleLog {
+            position: absolute;
+            bottom: 0px;
+            display: flex;
+            flex-direction: column-reverse;
+            overflow: auto;
+            max-height: 100%;
+            justify-content: flex-start;
+        }
     </style>
 </head>
 
@@ -1930,7 +1940,11 @@
         <div class="zycord-NavigationContainer">
             <div class="zycord-AppWindow">
                 <div class="zycord-ThreadWindow"></div>
-                <div class="zycord-ConsoleWindow"></div>
+                <div class="zycord-ConsoleWindow">
+                    <div class="zycord-ConsoleLog">
+
+                    </div>
+                </div>
                 <div class="zycord-NotificationWindow"></div>
                 <div class="zycord-SettingsWindow"></div>
             </div> <!-- End AppWindow -->
@@ -1954,39 +1968,30 @@
     </div> <!-- End AppContainer -->
     <script>
         const inputs = document.querySelectorAll('input, textarea');
-
         inputs.forEach(input => {
             input.addEventListener('focus', () => {
                 document.documentElement.style.setProperty('--bottom-gap', '0px');
             });
-
             input.addEventListener('blur', () => {
                 document.documentElement.style.setProperty('--bottom-gap', '20px');
             });
         });
-
         function createZycordAuthMenu(accounts = []) {
             const container = document.querySelector(".zycord-AuthContainer");
             if (!container) return;
-
-            // Utility to create elements with classes and attributes
             const el = (tag, classNames = [], attrs = {}) => {
                 const element = document.createElement(tag);
                 classNames.forEach(cls => element.classList.add(cls));
                 Object.entries(attrs).forEach(([key, val]) => element.setAttribute(key, val));
                 return element;
             };
-
-            // Authorization Token Field
             const authFieldGroup = el('div', ['zycord-AuthModule__FieldGroup']);
             const labelWrapper = el('div', ['zycord-AuthModule__LabelWrapper']);
             const label = el('label', ['zycord-AuthModule__LabelText'], {
                 for: 'auth-code'
             });
-
             label.textContent = 'Authorization Token';
             labelWrapper.appendChild(label);
-
             const inputWrapper = el('div', ['zycord-AuthModule__InputWrapper']);
             const inputShell = el('div', ['zycord-AuthModule__InputShell']);
             const input = el('input', ['zycord-AuthModule__InputField'], {
@@ -1996,30 +2001,21 @@
             });
             inputShell.appendChild(input);
             inputWrapper.appendChild(inputShell);
-
             authFieldGroup.append(labelWrapper, inputWrapper);
-
             const authInner = el('div', ['zycord-AuthModule__InnerWrapper']);
             authInner.appendChild(authFieldGroup);
-
             const authOuter = el('div', ['zycord-AuthModule__OuterWrapper']);
             authOuter.appendChild(authInner);
-
-            // Final Assembly
             const authModule = el('div', ['zycord-AuthModule']);
             authModule.append(authOuter);
             if (accounts.length > 0) {
-                // Divider
                 const divider = el('div', ['zycord-AuthModule__AccountDivider']);
                 const line1 = el('div', ['zycord-AccountDivider__DividerLine']);
                 const text = el('div', ['zycord-AccountDivider__TextContent']);
                 text.textContent = 'Or';
                 const line2 = el('div', ['zycord-AccountDivider__DividerLine']);
                 divider.append(line1, text, line2);
-
-                // Accounts List
                 const accountsWrapper = el('div', ['zycord-AccountsModule__OuterWrapper']);
-
                 const latestAddedAt = Math.max(...accounts.map(acc => new Date(acc.addedAt).getTime()));
                 accounts.forEach(({
                     avatar,
@@ -2030,58 +2026,43 @@
                 }) => {
                     const accountItem = el('div', ['zycord-AccountItem']);
                     accountItem.dataset.userId = userId;
-
                     const avatarWrapper = el('div', ['zycord-AvatarWrapper']);
                     const img = el('img', ['zycord-AvatarIcon'], {
                         src: avatar,
                         alt: 'Avatar'
                     });
                     avatarWrapper.appendChild(img);
-
                     const details = el('div', ['zycord-AccountDetails']);
                     const name = el('div', ['zycord-DisplayName']);
                     name.textContent = displayName;
-
                     const usernameContainer = el('div', ['zycord-UsernameContainer']);
                     const userSpan = el('span', ['zycord-Username']);
                     userSpan.textContent = username;
-
                     const dotSpacer = el('span', ['zycord-DotSpacer']);
                     const statusSpan = el('span', ['ProfileActivityState']);
-
                     const currentTimestamp = new Date(addedAt).getTime();
                     statusSpan.textContent = currentTimestamp === latestAddedAt ? 'Current' : addedAt || 'Unknown';
-
                     usernameContainer.append(userSpan, dotSpacer, statusSpan);
                     details.append(name, usernameContainer);
-
                     accountItem.append(avatarWrapper, details);
                     accountsWrapper.appendChild(accountItem);
                 });
-
                 authModule.append(divider, accountsWrapper);
             }
-
             const authContainer = el('div', ['zycord-AuthContainer']);
             authContainer.appendChild(authModule);
-
             container.appendChild(authContainer);
             return container
         }
-
-        // Check if auth token is already stored
         function isValidDiscordToken(token) {
             if (typeof token !== "string" || token.length < 10) {
                 return false
             }
-
             const parts = token.split(".");
             if (parts.length !== 3) return false;
-
             const decodeBase64Url = (str) => {
                 return atob(str);
             };
-
             try {
                 const userId = decodeBase64Url(parts[0]);
                 const isNumericId = /^\d+$/.test(userId);
@@ -2091,26 +2072,19 @@
                 return false;
             }
         }
-
-
         async function fetchDiscordUserMetadata(token) {
             const response = await fetch("https://discord.com/api/v9/users/@me", {
                 headers: {
                     Authorization: token
                 }
             });
-
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Discord API error: ${response.status} – ${errorText}`);
             }
-
             const userData = await response.json();
-
             return userData
         }
-
-
         async function getDiscordAuth() {
             return new Promise(async (resolve) => {
                 const raw = localStorage.getItem("discordAuth");
@@ -2237,31 +2211,441 @@
             }
         });
         function startupZycord() {
-            const originalLog = console.log;
-            const originalError = console.error;
-            const originalWarn = console.warn;
+            (() => {
+                // ConsoleTap: mirror console + global errors to a DOM container.
+                const ConsoleTap = (() => {
+                    const STATE = {
+                        installed: false,
+                        containerSelector: '.zycord-ConsoleLog',
+                        container: null,
+                        originals: {},
+                        queue: [],
+                        flushing: false,
+                        groupDepth: 0,
+                        showTime: true,
+                        maxEntries: 500,
+                        captureGlobal: true,
+                        mo: null,
+                        rafId: 0,
+                        listeners: [],
+                    };
 
-            console.log = function (...args) {
-                originalLog.apply(console, args);
-                const logContent = document.createElement("div");
-                logContent.className = "zycord-ConsoleContent zycord-LogConsole";
-                logContent.textContent = args.join(' ')
-                document.querySelector('.zycord-ConsoleWindow').appendChild(logContent)
-            };
-            console.error = function (...args) {
-                originalError.apply(console, args);
-                const logContent = document.createElement("div");
-                logContent.className = "zycord-ConsoleContent zycord-ErrorConsole";
-                logContent.textContent = args.join(' ')
-                document.querySelector('.zycord-ConsoleWindow').appendChild(logContent)
-            };
-            console.warn = function (...args) {
-                originalWarn.apply(console, args);
-                const logContent = document.createElement("div");
-                logContent.className = "zycord-ConsoleContent zycord-WarnConsole";
-                logContent.textContent = args.join(' ')
-                document.querySelector('.zycord-ConsoleWindow').appendChild(logContent)
-            };
+                    const LEVELS = [
+                        'log', 'info', 'warn', 'error', 'debug', 'trace', 'assert', 'table',
+                        'group', 'groupCollapsed', 'groupEnd'
+                    ];
+
+                    // ---------- Utilities ----------
+                    const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
+
+                    function nowString() {
+                        const d = new Date();
+                        const h = String(d.getHours()).padStart(2, '0');
+                        const m = String(d.getMinutes()).padStart(2, '0');
+                        const s = String(d.getSeconds()).padStart(2, '0');
+                        const ms = String(d.getMilliseconds()).padStart(3, '0');
+                        return `${h}:${m}:${s}.${ms}`;
+                    }
+
+                    function isPlainObject(o) {
+                        return Object.prototype.toString.call(o) === '[object Object]';
+                    }
+
+                    function domSummary(node) {
+                        try {
+                            if (!(node && node.nodeType)) return null;
+                            if (node.nodeType === 3) return `#text("${String(node.nodeValue).slice(0, 60)}…")`;
+                            if (node.nodeType === 8) return `<!-- ${String(node.nodeValue).slice(0, 60)}… -->`;
+                            if (node.nodeType === 1) {
+                                const el = node;
+                                const id = el.id ? `#${el.id}` : '';
+                                const cls = el.classList && el.classList.length ? '.' + [...el.classList].join('.') : '';
+                                const src = el.getAttribute('src') || el.getAttribute('href');
+                                const srcStr = src ? ` ${src}` : '';
+                                return `<${el.tagName.toLowerCase()}${id}${cls}${srcStr}>`;
+                            }
+                        } catch { }
+                        return null;
+                    }
+
+                    function safeStringify(value, seen = new WeakSet(), depth = 0) {
+                        try {
+                            if (value === null) return 'null';
+                            const t = typeof value;
+                            if (t === 'string') return value;
+                            if (t === 'number' || t === 'boolean' || t === 'bigint') return String(value);
+                            if (t === 'undefined') return 'undefined';
+                            if (t === 'function') return `[Function ${value.name || 'anonymous'}]`;
+                            if (value instanceof Error) {
+                                return `${value.name}: ${value.message}\n${value.stack || ''}`.trim();
+                            }
+                            const dom = domSummary(value);
+                            if (dom) return dom;
+
+                            if (seen.has(value)) return '[Circular]';
+                            seen.add(value);
+
+                            if (Array.isArray(value)) {
+                                if (depth > 2) return `[Array(${value.length})]`;
+                                return `[${value.map(v => safeStringify(v, seen, depth + 1)).join(', ')}]`;
+                            }
+
+                            if (isPlainObject(value)) {
+                                if (depth > 2) return '[Object]';
+                                const keys = Object.keys(value);
+                                const shown = keys.slice(0, 50);
+                                const kv = shown.map(k => {
+                                    let v;
+                                    try { v = safeStringify(value[k], seen, depth + 1); } catch { v = '[Unserializable]'; }
+                                    return `${k}: ${v}`;
+                                }).join(', ');
+                                const suffix = keys.length > shown.length ? `, …(+${keys.length - shown.length})` : '';
+                                return `{ ${kv}${suffix} }`;
+                            }
+
+                            // Fallback for exotic objects
+                            try {
+                                return String(value);
+                            } catch {
+                                return '[Unserializable]';
+                            }
+                        } catch {
+                            return '[StringifyError]';
+                        }
+                    }
+
+                    function joinArgs(args) {
+                        try {
+                            return args.map(a => safeStringify(a)).join(' ');
+                        } catch {
+                            return '[ArgsError]';
+                        }
+                    }
+
+                    function ensureContainer() {
+                        if (STATE.container && document.contains(STATE.container)) return STATE.container;
+                        STATE.container = document.querySelector(STATE.containerSelector);
+                        if (!STATE.container && !STATE.mo) {
+                            STATE.mo = new MutationObserver(() => {
+                                const node = document.querySelector(STATE.containerSelector);
+                                if (node) {
+                                    STATE.container = node;
+                                    if (STATE.mo) { STATE.mo.disconnect(); STATE.mo = null; }
+                                    flush();
+                                }
+                            });
+                            STATE.mo.observe(document.documentElement, { childList: true, subtree: true });
+                        }
+                        return STATE.container;
+                    }
+
+                    function enqueue(entry) {
+                        STATE.queue.push(entry);
+                        scheduleFlush();
+                    }
+
+                    function scheduleFlush() {
+                        if (STATE.flushing) return;
+                        STATE.flushing = true;
+                        STATE.rafId = requestAnimationFrame(flush);
+                    }
+
+                    function trimToMax(container) {
+                        const max = clamp(STATE.maxEntries, 50, 5000);
+                        const extra = container.children.length - max;
+                        if (extra > 0) {
+                            // Remove oldest entries
+                            for (let i = 0; i < extra; i++) {
+                                container.removeChild(container.firstChild);
+                            }
+                        }
+                    }
+
+                    function flush() {
+                        STATE.flushing = false;
+                        STATE.rafId = 0;
+
+                        const container = ensureContainer();
+                        if (!container || STATE.queue.length === 0) return;
+
+                        const frag = document.createDocumentFragment();
+                        while (STATE.queue.length) {
+                            const e = STATE.queue.shift();
+                            const div = document.createElement('div');
+
+                            const levelClass =
+                                e.level === 'error' ? 'zycord-ErrorConsole' :
+                                    e.level === 'warn' ? 'zycord-WarnConsole' :
+                                        e.level === 'group' || e.level === 'groupCollapsed' ? 'zycord-GroupConsole' :
+                                            e.level === 'groupEnd' ? 'zycord-GroupEndConsole' :
+                                                e.level === 'trace' ? 'zycord-TraceConsole' :
+                                                    e.level === 'table' ? 'zycord-TableConsole' :
+                                                        'zycord-LogConsole';
+
+                            div.className = `zycord-ConsoleContent ${levelClass}`;
+                            if (e.groupDepth > 0) {
+                                div.style.paddingLeft = `${e.groupDepth * 12}px`;
+                            }
+
+                            const time = STATE.showTime ? `[${e.time}] ` : '';
+                            div.textContent = `${time}${e.text}`;
+
+                            frag.appendChild(div);
+                        }
+
+                        try {
+                            for (let i = frag.childNodes.length - 1; i >= 0; i--) {
+                                const node = frag.childNodes[i];
+                                container.insertBefore(node, container.firstChild);
+                            }
+                            trimToMax(container);
+                        } catch {
+                            // Avoid recursive logging; fail silently.
+                        }
+                    }
+
+                    // ---------- Wrappers ----------
+                    function makeWrapper(level) {
+                        const original = STATE.originals[level];
+
+                        if (level === 'assert') {
+                            return function assertWrapper(condition, ...rest) {
+                                try {
+                                    original.apply(console, [condition, ...rest]);
+                                } finally {
+                                    if (!condition) {
+                                        enqueue({
+                                            level: 'error',
+                                            time: nowString(),
+                                            text: `Assertion failed: ${joinArgs(rest)}`,
+                                            groupDepth: STATE.groupDepth
+                                        });
+                                    }
+                                }
+                            };
+                        }
+
+                        if (level === 'group' || level === 'groupCollapsed') {
+                            return function groupWrapper(...args) {
+                                try {
+                                    original.apply(console, args);
+                                } finally {
+                                    enqueue({
+                                        level,
+                                        time: nowString(),
+                                        text: `▼ ${joinArgs(args)}`,
+                                        groupDepth: STATE.groupDepth
+                                    });
+                                    STATE.groupDepth++;
+                                }
+                            };
+                        }
+
+                        if (level === 'groupEnd') {
+                            return function groupEndWrapper(...args) {
+                                try {
+                                    original.apply(console, args);
+                                } finally {
+                                    STATE.groupDepth = Math.max(0, STATE.groupDepth - 1);
+                                    enqueue({
+                                        level,
+                                        time: nowString(),
+                                        text: `▲ end`,
+                                        groupDepth: STATE.groupDepth
+                                    });
+                                }
+                            };
+                        }
+
+                        if (level === 'trace') {
+                            return function traceWrapper(...args) {
+                                try {
+                                    original.apply(console, args);
+                                } finally {
+                                    const stack = (() => {
+                                        try { return (new Error()).stack || ''; } catch { return ''; }
+                                    })();
+                                    const msg = joinArgs(args);
+                                    enqueue({
+                                        level: 'trace',
+                                        time: nowString(),
+                                        text: msg ? `${msg}\n${stack}` : stack,
+                                        groupDepth: STATE.groupDepth
+                                    });
+                                }
+                            };
+                        }
+
+                        if (level === 'table') {
+                            return function tableWrapper(data, columns) {
+                                try {
+                                    original.apply(console, [data, columns]);
+                                } finally {
+                                    let summary = '[table]';
+                                    try {
+                                        if (Array.isArray(data)) {
+                                            summary = `[table rows=${data.length}] ${safeStringify(columns ?? '')}`;
+                                        } else if (isPlainObject(data)) {
+                                            summary = `[table keys=${Object.keys(data).length}] ${safeStringify(columns ?? '')}`;
+                                        }
+                                    } catch { }
+                                    enqueue({
+                                        level: 'log',
+                                        time: nowString(),
+                                        text: summary,
+                                        groupDepth: STATE.groupDepth
+                                    });
+                                }
+                            };
+                        }
+
+                        // Generic levels: log/info/warn/error/debug
+                        return function genericWrapper(...args) {
+                            try {
+                                original.apply(console, args);
+                            } finally {
+                                enqueue({
+                                    level,
+                                    time: nowString(),
+                                    text: joinArgs(args),
+                                    groupDepth: STATE.groupDepth
+                                });
+                            }
+                        };
+                    }
+
+                    // ---------- Global error capture ----------
+                    function onWindowError(event) {
+                        try {
+                            // Resource load errors emit 'error' with target set; no Error object.
+                            const tgt = event.target;
+                            if (tgt && tgt !== window) {
+                                const summary = domSummary(tgt) || '[resource]';
+                                enqueue({
+                                    level: 'error',
+                                    time: nowString(),
+                                    text: `Resource error: ${summary}`,
+                                    groupDepth: STATE.groupDepth
+                                });
+                                return;
+                            }
+                            const err = event.error;
+                            if (err instanceof Error) {
+                                enqueue({
+                                    level: 'error',
+                                    time: nowString(),
+                                    text: `${err.name}: ${err.message}\n${err.stack || ''}`.trim(),
+                                    groupDepth: STATE.groupDepth
+                                });
+                            } else {
+                                // Sometimes only message/filename/lineno is available
+                                const parts = [
+                                    event.message || 'Uncaught error',
+                                    event.filename ? `@ ${event.filename}:${event.lineno}:${event.colno}` : ''
+                                ].filter(Boolean).join(' ');
+                                enqueue({
+                                    level: 'error',
+                                    time: nowString(),
+                                    text: parts,
+                                    groupDepth: STATE.groupDepth
+                                });
+                            }
+                        } catch { }
+                    }
+
+                    function onUnhandledRejection(event) {
+                        try {
+                            const reason = event.reason;
+                            const text = reason instanceof Error
+                                ? `${reason.name}: ${reason.message}\n${reason.stack || ''}`.trim()
+                                : `Unhandled rejection: ${safeStringify(reason)}`;
+                            enqueue({
+                                level: 'error',
+                                time: nowString(),
+                                text,
+                                groupDepth: STATE.groupDepth
+                            });
+                        } catch { }
+                    }
+
+                    // ---------- Install / Uninstall ----------
+                    function install(opts = {}) {
+                        if (STATE.installed) return;
+                        STATE.installed = true;
+
+                        STATE.containerSelector = opts.containerSelector || STATE.containerSelector;
+                        STATE.showTime = 'showTime' in opts ? !!opts.showTime : STATE.showTime;
+                        STATE.maxEntries = Number.isFinite(opts.maxEntries) ? opts.maxEntries : STATE.maxEntries;
+                        STATE.captureGlobal = 'captureGlobal' in opts ? !!opts.captureGlobal : STATE.captureGlobal;
+
+                        // Cache originals
+                        for (const lvl of LEVELS) {
+                            if (typeof console[lvl] === 'function') {
+                                STATE.originals[lvl] = console[lvl];
+                            }
+                        }
+
+                        // Wrap only those that exist
+                        for (const lvl of LEVELS) {
+                            if (STATE.originals[lvl]) {
+                                try {
+                                    console[lvl] = makeWrapper(lvl);
+                                } catch {
+                                    // Some environments may block reassignment
+                                }
+                            }
+                        }
+
+                        // Global error listeners
+                        if (STATE.captureGlobal) {
+                            window.addEventListener('error', onWindowError, true); // capture to get resource errors
+                            window.addEventListener('unhandledrejection', onUnhandledRejection);
+                            STATE.listeners.push(['error', onWindowError, true], ['unhandledrejection', onUnhandledRejection, false]);
+                        }
+
+                        // Try to lock onto container or observe until it appears
+                        ensureContainer();
+                    }
+
+                    function uninstall() {
+                        if (!STATE.installed) return;
+                        STATE.installed = false;
+
+                        // Restore console methods
+                        for (const lvl of Object.keys(STATE.originals)) {
+                            try { console[lvl] = STATE.originals[lvl]; } catch { }
+                        }
+                        STATE.originals = {};
+
+                        // Remove listeners
+                        for (const [type, fn, opts] of STATE.listeners) {
+                            try { window.removeEventListener(type, fn, opts); } catch { }
+                        }
+                        STATE.listeners = [];
+
+                        // Disconnect observers
+                        if (STATE.mo) { try { STATE.mo.disconnect(); } catch { } STATE.mo = null; }
+
+                        // Cancel pending flush
+                        if (STATE.rafId) { cancelAnimationFrame(STATE.rafId); STATE.rafId = 0; }
+                        STATE.queue.length = 0;
+                        STATE.groupDepth = 0;
+                    }
+
+                    return Object.freeze({ install, uninstall });
+                })();
+
+                // Install with your existing class names.
+                ConsoleTap.install({
+                    containerSelector: '.zycord-ConsoleLog',
+                    maxEntries: 800,     // adjust as needed
+                    showTime: true,
+                    captureGlobal: true
+                });
+
+                // Optional: expose for manual control in dev
+                window.ZycordConsoleTap = ConsoleTap;
+            })();
 
             // ZycordSystemInternals -=-=-=-=-=-=-=-=-=-=-=-=-
             // ZycordSystemInternals -=-=-=-=-=-=-=-=-=-=-=-=-
@@ -2594,7 +2978,6 @@
                         }
                         const data = await response.json();
                         zycordDataStore.set(storeKey, data);
-                        console.log(JSON.stringify(data));
                     }
                     const jsonResponse = zycordDataStore.get(storeKey);
                     if (!jsonResponse || !jsonResponse.user) {
@@ -2887,23 +3270,23 @@
                     startedOnHandle: false
                 };
                 bottomMenu.style.touchAction = 'pan-y';
-                function getY(e){return"touches"in e&&e.touches&&e.touches.length?e.touches[0].clientY:"changedTouches"in e&&e.changedTouches&&e.changedTouches.length?e.changedTouches[0].clientY:e.clientY}
-                function atTop(){if(!scrollContainer)return!0;try{return(scrollContainer.scrollTop||0)<=0}catch{return!0}}
-                function setVisual(t){const a=Math.max(0,Math.min(t,S.viewportH));if(bottomMenu.style.transform=`translate3d(-50%, ${a}px, 0)`,overlay){const t=Math.max(0,1-Math.min(a/(.8*S.viewportH),1));overlay.style.opacity=String(t)}}
-                function queueVisual(e){S.pendingY=e,S.raf||(S.raf=requestAnimationFrame((()=>{S.raf=0,setVisual(S.pendingY)})))}
-                function stopRAF(){S.raf&&cancelAnimationFrame(S.raf),S.raf=0}
-                function setTransition(t,o){bottomMenu.style.transition=`transform ${t}ms ${o}`,overlay&&(overlay.style.transition=`opacity ${t}ms ${o}`),bottomMenu.style.willChange="auto"}
-                function lockOverflow(){scrollContainer&&!S.lockedOverflow&&(S.lockedOverflow={overflow:scrollContainer.style.overflow||"",touchAction:scrollContainer.style.touchAction||"",overscrollBehaviorY:scrollContainer.style.overscrollBehaviorY||""},scrollContainer.style.overflow="hidden",scrollContainer.style.touchAction="none",scrollContainer.style.overscrollBehaviorY="contain",scrollContainer.classList.add("sheet-active"))}
-                function restoreOverflow(){if(!scrollContainer||!S.lockedOverflow)return;const o=S.lockedOverflow;scrollContainer.style.overflow=o.overflow,scrollContainer.style.touchAction=o.touchAction,scrollContainer.style.overscrollBehaviorY=o.overscrollBehaviorY,S.lockedOverflow=null,scrollContainer.classList.remove("sheet-active")}
-                function openSnap(){setTransition(T.snap,T.easing),bottomMenu.style.transform="translate3d(-50%, 0, 0)",overlay&&(overlay.style.opacity="1");const t=()=>{bottomMenu.removeEventListener("transitionend",t),restoreOverflow()};bottomMenu.addEventListener("transitionend",t)}
-                function dismissSnap(){setTransition(T.dismiss,T.easing),bottomMenu.style.transform="translate3d(-50%, 100vh, 0)",overlay&&(overlay.style.opacity="0");const e=()=>{bottomMenu.removeEventListener("transitionend",e),restoreOverflow();let o=!1,t=!1;removeOverlayOnDismiss&&overlay&&overlay.parentNode&&(overlay.parentNode.removeChild(overlay),o=!0),removeSheetOnDismiss&&bottomMenu&&bottomMenu.parentNode&&(bottomMenu.parentNode.removeChild(bottomMenu),t=!0),onRemoved&&(o||t)&&onRemoved({reason:"dismiss",removed:{sheet:t,overlay:o},elements:{bottomMenu:bottomMenu,overlay:overlay}})};bottomMenu.addEventListener("transitionend",e)}
-                function begin(t){if(S.usingPointer){if(!1===t.isPrimary)return;S.pointerId=t.pointerId}"touches"in t&&t.touches&&t.touches.length>1||(S.viewportH=window.innerHeight||S.viewportH,S.dragging=!0,S.mode=null,S.startY=getY(t),S.lastY=S.startY,S.deltaY=0,S.bufferY=0,S.lastMoveTime=performance.now(),S.velocity=0,S.startedOnHandle=!(!dragHandle||dragHandle!==t.target&&!dragHandle.contains(t.target)),bottomMenu.style.transition="none",overlay&&(overlay.style.transition="none"),bottomMenu.style.willChange="transform")}
-                function atTopEps(){const n=S.scroller||scrollContainer||document.scrollingElement||document.documentElement;return!n||n.scrollTop<=1}
-                function latchToSheet(e,t,l){S.mode="sheet",lockOverflow(),l&&l.cancelable&&l.preventDefault(),S.velocity=0,S.startY=e,S.lastY=e,S.bufferY=0,S.lastMoveTime=t,queueVisual(0)}
-                function move(e){if(!S.dragging)return;if(S.usingPointer&&null!=e.pointerId&&S.pointerId!==e.pointerId)return;const t=getY(e),o=t-S.lastY,l=t-S.startY,a=performance.now(),i=o/Math.max(1,a-S.lastMoveTime);S.velocity=.6*i+.4*S.velocity;const r=atTopEps();if(null==S.mode){if(S.startedOnHandle)return void latchToSheet(t,a,e);if(Math.abs(l)>T.lock){if(l>0&&r)return void latchToSheet(t,a,e);S.mode="scroll"}else if(r&&o>0)return void latchToSheet(t,a,e);return S.lastY=t,void(S.lastMoveTime=a)}if("scroll"===S.mode)return r&&o>0?void latchToSheet(t,a,e):(S.lastY=t,void(S.lastMoveTime=a));if("sheet"===S.mode){e.cancelable&&e.preventDefault();const o=l+S.bufferY,i=o>=0?o:.2*o;return S.deltaY=Math.max(0,i),queueVisual(S.deltaY),S.lastY=t,void(S.lastMoveTime=a)}S.lastY=t,S.lastMoveTime=a}
-                function end(e){if(!S.dragging)return;S.dragging=!1,stopRAF();const t=Math.max(0,S.deltaY)/Math.max(1,S.viewportH),n=S.velocity>T.dismissVelocity,i=100*t>T.dismissDistanceVH,s="sheet"===S.mode,a=s&&(i||n);s&&restoreOverflow(),a?dismissSnap(!1):openSnap(),S.mode=null,S.bufferY=0,S.deltaY=0,S.pointerId=null,S.startedOnHandle=!1}
-                function cancel(){S.dragging&&(S.dragging=!1,stopRAF(),openSnap(),S.mode=null,S.bufferY=0,S.deltaY=0,S.pointerId=null,S.startedOnHandle=!1)}
-                function onResize(){S.viewportH=window.innerHeight||S.viewportH}
+                function getY(e) { return "touches" in e && e.touches && e.touches.length ? e.touches[0].clientY : "changedTouches" in e && e.changedTouches && e.changedTouches.length ? e.changedTouches[0].clientY : e.clientY }
+                function atTop() { if (!scrollContainer) return !0; try { return (scrollContainer.scrollTop || 0) <= 0 } catch { return !0 } }
+                function setVisual(t) { const a = Math.max(0, Math.min(t, S.viewportH)); if (bottomMenu.style.transform = `translate3d(-50%, ${a}px, 0)`, overlay) { const t = Math.max(0, 1 - Math.min(a / (.8 * S.viewportH), 1)); overlay.style.opacity = String(t) } }
+                function queueVisual(e) { S.pendingY = e, S.raf || (S.raf = requestAnimationFrame((() => { S.raf = 0, setVisual(S.pendingY) }))) }
+                function stopRAF() { S.raf && cancelAnimationFrame(S.raf), S.raf = 0 }
+                function setTransition(t, o) { bottomMenu.style.transition = `transform ${t}ms ${o}`, overlay && (overlay.style.transition = `opacity ${t}ms ${o}`), bottomMenu.style.willChange = "auto" }
+                function lockOverflow() { scrollContainer && !S.lockedOverflow && (S.lockedOverflow = { overflow: scrollContainer.style.overflow || "", touchAction: scrollContainer.style.touchAction || "", overscrollBehaviorY: scrollContainer.style.overscrollBehaviorY || "" }, scrollContainer.style.overflow = "hidden", scrollContainer.style.touchAction = "none", scrollContainer.style.overscrollBehaviorY = "contain", scrollContainer.classList.add("sheet-active")) }
+                function restoreOverflow() { if (!scrollContainer || !S.lockedOverflow) return; const o = S.lockedOverflow; scrollContainer.style.overflow = o.overflow, scrollContainer.style.touchAction = o.touchAction, scrollContainer.style.overscrollBehaviorY = o.overscrollBehaviorY, S.lockedOverflow = null, scrollContainer.classList.remove("sheet-active") }
+                function openSnap() { setTransition(T.snap, T.easing), bottomMenu.style.transform = "translate3d(-50%, 0, 0)", overlay && (overlay.style.opacity = "1"); const t = () => { bottomMenu.removeEventListener("transitionend", t), restoreOverflow() }; bottomMenu.addEventListener("transitionend", t) }
+                function dismissSnap() { setTransition(T.dismiss, T.easing), bottomMenu.style.transform = "translate3d(-50%, 100vh, 0)", overlay && (overlay.style.opacity = "0"); const e = () => { bottomMenu.removeEventListener("transitionend", e), restoreOverflow(); let o = !1, t = !1; removeOverlayOnDismiss && overlay && overlay.parentNode && (overlay.parentNode.removeChild(overlay), o = !0), removeSheetOnDismiss && bottomMenu && bottomMenu.parentNode && (bottomMenu.parentNode.removeChild(bottomMenu), t = !0), onRemoved && (o || t) && onRemoved({ reason: "dismiss", removed: { sheet: t, overlay: o }, elements: { bottomMenu: bottomMenu, overlay: overlay } }) }; bottomMenu.addEventListener("transitionend", e) }
+                function begin(t) { if (S.usingPointer) { if (!1 === t.isPrimary) return; S.pointerId = t.pointerId } "touches" in t && t.touches && t.touches.length > 1 || (S.viewportH = window.innerHeight || S.viewportH, S.dragging = !0, S.mode = null, S.startY = getY(t), S.lastY = S.startY, S.deltaY = 0, S.bufferY = 0, S.lastMoveTime = performance.now(), S.velocity = 0, S.startedOnHandle = !(!dragHandle || dragHandle !== t.target && !dragHandle.contains(t.target)), bottomMenu.style.transition = "none", overlay && (overlay.style.transition = "none"), bottomMenu.style.willChange = "transform") }
+                function atTopEps() { const n = S.scroller || scrollContainer || document.scrollingElement || document.documentElement; return !n || n.scrollTop <= 1 }
+                function latchToSheet(e, t, l) { S.mode = "sheet", lockOverflow(), l && l.cancelable && l.preventDefault(), S.velocity = 0, S.startY = e, S.lastY = e, S.bufferY = 0, S.lastMoveTime = t, queueVisual(0) }
+                function move(e) { if (!S.dragging) return; if (S.usingPointer && null != e.pointerId && S.pointerId !== e.pointerId) return; const t = getY(e), o = t - S.lastY, l = t - S.startY, a = performance.now(), i = o / Math.max(1, a - S.lastMoveTime); S.velocity = .6 * i + .4 * S.velocity; const r = atTopEps(); if (null == S.mode) { if (S.startedOnHandle) return void latchToSheet(t, a, e); if (Math.abs(l) > T.lock) { if (l > 0 && r) return void latchToSheet(t, a, e); S.mode = "scroll" } else if (r && o > 0) return void latchToSheet(t, a, e); return S.lastY = t, void (S.lastMoveTime = a) } if ("scroll" === S.mode) return r && o > 0 ? void latchToSheet(t, a, e) : (S.lastY = t, void (S.lastMoveTime = a)); if ("sheet" === S.mode) { e.cancelable && e.preventDefault(); const o = l + S.bufferY, i = o >= 0 ? o : .2 * o; return S.deltaY = Math.max(0, i), queueVisual(S.deltaY), S.lastY = t, void (S.lastMoveTime = a) } S.lastY = t, S.lastMoveTime = a }
+                function end(e) { if (!S.dragging) return; S.dragging = !1, stopRAF(); const t = Math.max(0, S.deltaY) / Math.max(1, S.viewportH), n = S.velocity > T.dismissVelocity, i = 100 * t > T.dismissDistanceVH, s = "sheet" === S.mode, a = s && (i || n); s && restoreOverflow(), a ? dismissSnap(!1) : openSnap(), S.mode = null, S.bufferY = 0, S.deltaY = 0, S.pointerId = null, S.startedOnHandle = !1 }
+                function cancel() { S.dragging && (S.dragging = !1, stopRAF(), openSnap(), S.mode = null, S.bufferY = 0, S.deltaY = 0, S.pointerId = null, S.startedOnHandle = !1) }
+                function onResize() { S.viewportH = window.innerHeight || S.viewportH }
                 bottomMenu.style.transform = 'translate3d(-50%, 0, 0)';
                 if (overlay) overlay.style.opacity = '1';
                 const activeOpts = { passive: false };
