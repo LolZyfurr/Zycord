@@ -822,16 +822,15 @@
             }
         }
 
-        /* Bottom Menu */
-
         .zycord-BottomFocusContainer {
+            transform: translate3d(-50%, 0px, 0px);
+            left: 50%;
             position: fixed;
             bottom: 0;
             width: 100%;
             max-height: 80%;
             min-height: 60%;
             padding: 0;
-            /* remove internal spacing */
             display: flex;
             flex-direction: column;
             background-color: var(--bg-primary);
@@ -976,71 +975,6 @@
             gap: 6px;
             color: var(--text-main);
             font-weight: 600;
-        }
-
-
-
-        .zycord-CustomAudioAttachment {
-            overflow: hidden;
-            gap: 6px;
-            display: flex;
-            aspect-ratio: 1;
-            width: 100%;
-            object-fit: cover;
-            border-radius: 6px;
-            background-color: var(--bg-primary);
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        .zycord-CustomAudioButton {
-            display: flex;
-            height: 60px;
-            width: 60px;
-            border-radius: 100%;
-            background-color: var(--accent);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .zycord-CustomAudioButtonsContainer {
-            gap: 6px;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .zycord-CustomAudioBar {
-            background-color: var(--text-main);
-            overflow: hidden;
-            height: 10px;
-            width: 200px;
-            border-radius: 1000px;
-        }
-
-        .zycord-CustomAudioBarFill {
-            transition: width 0.2s ease;
-            background-color: var(--accent);
-            height: 100%;
-            width: 50%;
-        }
-
-        .zycord-CustomAudioIcon {
-            height: 80%;
-            aspect-ratio: 1;
-            background-color: var(--text-main);
-            mask-repeat: no-repeat;
-            mask-position: center;
-            mask-size: contain;
-            -webkit-mask-repeat: no-repeat;
-            -webkit-mask-position: center;
-            -webkit-mask-size: contain;
-        }
-
-        .zycord-CustomAudioTitle {
-            font-size: 1.8rem;
         }
 
         .zycord-FocusConfirmMenu {
@@ -1303,8 +1237,8 @@
             gap: 6px;
         }
 
-        .zycord-MutedDotSpacer {
-            background-color: var(--text-muted);
+        .zycord-DotSpacer {
+            background-color: var(--text-main);
             border-radius: 50%;
             height: 4px;
             width: 4px;
@@ -1710,6 +1644,263 @@
             width: 20px;
             border-radius: 50%;
         }
+
+        /* Root: container-aware scaling tokens */
+        .zycord-CustomAudioAttachment {
+            aspect-ratio: 1;
+            container-type: inline-size;
+            --pad: clamp(10px, 3cqi, 20px);
+            --gap: clamp(6px, 2.5cqi, 16px);
+            --radius: clamp(8px, 2cqi, 16px);
+            --btn: clamp(40px, 12cqi, 72px);
+            --icon: calc(var(--btn) * 0.6);
+            --bar-h: clamp(6px, 1.2cqi, 12px);
+            --title-size: clamp(14px, 3cqi, 22px);
+            --time-size: clamp(11px, 2cqi, 14px);
+            --ring: color-mix(in oklab, var(--accent) 60%, white 0%);
+            width: 100%;
+            display: grid;
+            grid-auto-rows: min-content;
+            grid-template-areas:
+                "title"
+                "status"
+                "bar"
+                "controls";
+            align-items: center;
+            gap: var(--gap);
+            padding: var(--pad);
+            border-radius: var(--radius);
+            background: var(--bg-secondary);
+            color: var(--text-main);
+            box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.12), 0 6px 14px rgba(0, 0, 0, 0.18);
+        }
+
+        /* Title + status */
+        .zycord-CustomAudioTitle {
+            grid-area: title;
+            font-size: var(--title-size);
+            font-weight: 600;
+            line-height: 1.2;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .zycord-CustomAudioStatus {
+            grid-area: status;
+            font-size: var(--time-size);
+            opacity: 0.8;
+            min-height: 1.2em;
+            /* reserve line height so layout doesn't jump */
+        }
+
+        /* Time + controls wrapper (your JS uses .zycord-CustomAudioControls) */
+        .zycord-CustomAudioControls {
+            grid-area: controls;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--gap);
+            flex-wrap: wrap;
+        }
+
+        /* Time readout */
+        .zycord-CustomAudioTime {
+            font-size: var(--time-size);
+            font-variant-numeric: tabular-nums;
+            opacity: 0.9;
+        }
+
+        /* Buttons row */
+        .zycord-CustomAudioButtonsContainer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: calc(var(--gap) * 0.75);
+        }
+
+        /* Buttons */
+        .zycord-CustomAudioButton {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: var(--btn);
+            height: var(--btn);
+            border-radius: 999px;
+            background: var(--accent);
+            color: var(--text-main);
+            border: 0;
+            padding: 0;
+            cursor: pointer;
+            transition: transform 120ms ease, filter 160ms ease, box-shadow 160ms ease, background 160ms ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.18);
+        }
+
+        .zycord-CustomAudioButton:hover:not([aria-disabled="true"]):not(:disabled) {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+        }
+
+        .zycord-CustomAudioButton:active:not([aria-disabled="true"]):not(:disabled) {
+            transform: translateY(0);
+            filter: brightness(0.98);
+        }
+
+        .zycord-CustomAudioButton:focus-visible {
+            outline: 2px solid var(--ring);
+            outline-offset: 2px;
+        }
+
+        /* Icon — mask first, background-image fallback from JS setIcon() */
+        .zycord-CustomAudioIcon {
+            width: var(--icon);
+            height: var(--icon);
+            background-color: currentColor;
+            /* for mask tinting */
+            background-repeat: no-repeat;
+            /* fallback image */
+            background-position: center;
+            background-size: contain;
+
+            mask-repeat: no-repeat;
+            mask-position: center;
+            mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            -webkit-mask-size: contain;
+        }
+
+        /* Progress bar */
+        .zycord-CustomAudioBar {
+            grid-area: bar;
+            position: relative;
+            width: 100%;
+            height: var(--bar-h);
+            background: color-mix(in oklab, var(--text-main) 16%, transparent);
+            border-radius: 999px;
+            overflow: hidden;
+            cursor: pointer;
+            user-select: none;
+            /* larger tap target without changing visual height */
+            padding-block: max(0px, (32px - var(--bar-h)) / 2);
+        }
+
+        .zycord-CustomAudioBarFill {
+            height: var(--bar-h);
+            width: 0%;
+            background: linear-gradient(90deg, color-mix(in oklab, var(--accent) 92%, white 0%), var(--accent));
+            border-radius: inherit;
+            transition: width 120ms linear;
+            position: relative;
+        }
+
+        /* Seek thumb for a tactile feel */
+        .zycord-CustomAudioBarFill::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            translate: 50% -50%;
+            width: clamp(8px, 2cqi, 12px);
+            height: clamp(8px, 2cqi, 12px);
+            border-radius: 999px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+            opacity: 0.95;
+        }
+
+        /* While dragging */
+        .zycord-CustomAudioAttachment.is-seeking .zycord-CustomAudioBarFill {
+            transition: none;
+        }
+
+        /* Loading / buffering vibes (tie to your JS data-state) */
+        .zycord-CustomAudioAttachment[data-state="loading"] .zycord-CustomAudioBarFill {
+            animation: barPulse 1.2s ease-in-out infinite;
+            opacity: 0.7;
+        }
+
+        .zycord-CustomAudioAttachment[data-state="buffering"] .zycord-CustomAudioStatus::after {
+            content: ' ⏳';
+        }
+
+        .zycord-CustomAudioAttachment[data-state="playing"] .zycord-CustomAudioBarFill {
+            transition: width 80ms linear;
+            /* snappier during play */
+        }
+
+        @keyframes barPulse {
+
+            0%,
+            100% {
+                opacity: .45
+            }
+
+            50% {
+                opacity: .9
+            }
+        }
+
+        /* Wide layout: spread controls when there’s room */
+        @container (min-width: 420px) {
+            .zycord-CustomAudioAttachment {
+                grid-template-areas:
+                    "title  title"
+                    "status status"
+                    "bar    bar"
+                    "buttons time";
+                grid-template-columns: 1fr auto;
+            }
+
+            .zycord-CustomAudioButtonsContainer {
+                grid-area: buttons;
+                justify-content: flex-start;
+            }
+
+            .zycord-CustomAudioTime {
+                grid-area: time;
+            }
+        }
+
+        /* Extra-wide: title + time inline, compact height */
+        @container (min-width: 700px) {
+            .zycord-CustomAudioAttachment {
+                grid-template-areas:
+                    "title  time"
+                    "bar    bar"
+                    "buttons buttons";
+                align-items: center;
+            }
+        }
+
+        /* Respect user preference */
+        @media (prefers-reduced-motion: reduce) {
+
+            .zycord-CustomAudioButton,
+            .zycord-CustomAudioBarFill {
+                transition: none;
+                animation: none;
+            }
+
+            .zycord-CustomAudioBarFill::after {
+                box-shadow: none;
+            }
+        }
+
+        /* Fallback if container queries aren’t supported */
+        @supports not (container-type: inline-size) {
+            .zycord-CustomAudioAttachment {
+                /* Scale with viewport as a reasonable fallback */
+                --pad: clamp(10px, 2vw, 20px);
+                --gap: clamp(6px, 1.5vw, 16px);
+                --btn: clamp(40px, 6vw, 72px);
+                --icon: calc(var(--btn) * 0.6);
+                --bar-h: clamp(6px, 0.8vw, 12px);
+                --title-size: clamp(14px, 2vw, 22px);
+                --time-size: clamp(11px, 1.4vw, 14px);
+            }
+        }
     </style>
 </head>
 
@@ -1851,7 +2042,7 @@
                     const userSpan = el('span', ['zycord-Username']);
                     userSpan.textContent = username;
 
-                    const dotSpacer = el('span', ['zycord-MutedDotSpacer']);
+                    const dotSpacer = el('span', ['zycord-DotSpacer']);
                     const statusSpan = el('span', ['ProfileActivityState']);
 
                     const currentTimestamp = new Date(addedAt).getTime();
@@ -2247,7 +2438,7 @@
                 focusContainer.addEventListener("click", (e) => {
                     const clickedInsideMenu = bottomFocusContainer.contains(e.target);
                     if (!clickedInsideMenu) {
-                        hideSelf(); // 📦 Removes the menu entirely after transition
+                        hideSelf();
                     }
                 });
 
@@ -2327,8 +2518,6 @@
                 focusContainer.style.transform = "translateY(20px)";
                 focusContainer.style.transition = "opacity 0.4s ease, transform 0.4s ease";
 
-
-
                 // Inject into container list
                 const list = document.querySelector(".zycord-FocusContainerList");
                 if (list) {
@@ -2336,11 +2525,9 @@
                     requestAnimationFrame(() => {
                         focusContainer.style.opacity = "1";
                         focusContainer.style.transform = "translateY(0)";
+                        transform: ;
                     });
                 }
-
-                const scrollContainer = menuContainer; // Adjust this if your scroll target is nested differently
-                const bottomMenu = bottomFocusContainer;
 
                 function hideSelf() {
                     bottomMenu.style.transition = "transform 0.25s ease";
@@ -2352,80 +2539,27 @@
                     }, 300);
                 }
 
-                bottomMenu.addEventListener("touchstart", (e) => {
-                    if (e.touches.length === 1) {
-                        focusMenuStartY = e.touches[0].clientY;
-                        dragBuffer = 0;
-                        focusMenuDeltaY = 0;
-                        isDragging = true;
-                        gestureLocked = null;
-                        scrollLocked = false;
-                        bottomMenu.style.transition = "none";
-                        bottomMenu.style.willChange = "transform";
-                    }
-                });
-
-                bottomMenu.addEventListener("touchmove", (e) => {
-                    if (!isDragging) return;
-                    const y = e.touches[0].clientY;
-                    focusMenuDeltaY = y - focusMenuStartY;
-
-                    if (gestureLocked === null && Math.abs(focusMenuDeltaY) > 10) {
-                        gestureLocked = "drag";
-                    }
-
-                    if (gestureLocked === "drag") {
-                        const isAtTop = scrollContainer.scrollTop <= 0;
-
-                        if (!isAtTop) {
-                            dragBuffer += focusMenuDeltaY;
-                            focusMenuStartY = y;
-                            return;
-                        }
-
-                        const totalDrag = focusMenuDeltaY + dragBuffer;
-                        if (totalDrag > 0) {
-                            const dragPercent = Math.min((totalDrag / window.innerHeight) * 100, 100);
-                            bottomMenu.style.transform = `translateY(${dragPercent}vh)`;
-                            e.preventDefault();
-                        }
-                    }
-                });
-
-                bottomMenu.addEventListener("touchend", () => {
-                    if (!isDragging) return;
-                    isDragging = false;
-
-                    const totalDrag = focusMenuDeltaY + dragBuffer;
-                    bottomMenu.style.transition = "transform 0.25s ease";
-                    focusContainer.style.transition = "opacity 0.3s ease";
-                    bottomMenu.style.willChange = "auto";
-
-                    if (gestureLocked === "drag" && totalDrag > window.innerHeight * 0.25) {
-                        hideSelf();
-                    } else {
-                        bottomMenu.style.transform = "translateY(0)";
-                    }
-
-
-                    gestureLocked = null;
-                    dragBuffer = 0;
+                const controller = createBottomSheetDrag({
+                    bottomMenu: bottomFocusContainer,
+                    scrollContainer: menuContainer,
+                    overlay: focusContainer,
+                    thresholds: { lock: 10, dismissDistanceVH: 25, dismissVelocity: 0.75 },
+                    durations: { snap: 250, dismiss: 300 },
+                    easing: 'cubic-bezier(0.2, 0, 0, 1)',
                 });
 
                 return focusContainer;
             }
 
             function getDiscordCreationDate(userId) {
-                const discordEpoch = 1420070400000; // Jan 1, 2015
+                const discordEpoch = 1420070400000;
                 const timestamp = (BigInt(userId) >> 22n) + BigInt(discordEpoch);
                 return new Date(Number(timestamp));
             }
 
             async function fetchCachedUserProfile(userId, forceRefresh = false) {
                 const storeKey = `users-${userId}-profile`;
-
                 try {
-                    // Fetch from API if not cached or if forceRefresh is true
                     if (forceRefresh || !zycordDataStore.has(storeKey)) {
                         const response = await fetch(
                             `https://discord.com/api/v9/users/${userId}/profile?type=popout&with_mutual_guilds=true&with_mutual_friends=true&with_mutual_friends_count=false`,
@@ -2436,28 +2570,19 @@
                                 }
                             }
                         );
-
                         if (!response.ok) {
                             console.error(`Failed to fetch user profile. Status: ${response.status}`);
                             return null;
                         }
-
-
-
                         const data = await response.json();
                         zycordDataStore.set(storeKey, data);
-
                         console.log(JSON.stringify(data));
                     }
-
                     const jsonResponse = zycordDataStore.get(storeKey);
-
                     if (!jsonResponse || !jsonResponse.user) {
                         console.warn("User data missing from response.");
                         return null;
                     }
-
-                    // Optional normalization for UI rendering
                     return jsonResponse
                 } catch (err) {
                     console.error("Error fetching or parsing user profile:", err);
@@ -2702,6 +2827,329 @@
                 }
             }
 
+            // Bottom sheet drag controller
+            // Usage:
+            // const controller = createBottomSheetDrag({
+            //   bottomMenu,
+            //   scrollContainer,
+            //   overlay,
+            //   thresholds: { lock: 10, dismissDistanceVH: 25, dismissVelocity: 0.75 },
+            //   durations: { snap: 250, dismiss: 300 },
+            //   easing: 'cubic-bezier(0.2, 0, 0, 1)',
+            // });
+            // controller.destroy() to remove listeners.
+
+            function createBottomSheetDrag({
+                bottomMenu,
+                scrollContainer = null,
+                overlay = null,
+                thresholds = {},
+                durations = {},
+                easing = 'ease',
+            } = {}) {
+                if (!bottomMenu || !(bottomMenu instanceof HTMLElement)) {
+                    console.warn('[BottomSheet] bottomMenu is required and must be an element.');
+                    return { destroy() { } };
+                }
+
+                const cfg = {
+                    lock: Math.max(0, thresholds.lock ?? 10),                 // px
+                    dismissDistanceVH: Math.min(100, Math.max(0, thresholds.dismissDistanceVH ?? 25)), // percent of viewport height
+                    dismissVelocity: Math.max(0, thresholds.dismissVelocity ?? 0.75), // px/ms
+                    snap: Math.max(0, durations.snap ?? 250),
+                    dismiss: Math.max(0, durations.dismiss ?? 300),
+                    easing,
+                };
+
+                const state = {
+                    dragging: false,
+                    gestureLocked: null,   // null | 'profileDrag'
+                    startY: 0,
+                    lastY: 0,
+                    deltaY: 0,
+                    bufferY: 0,
+                    raf: 0,
+                    pendingY: 0,
+                    lastMoveTime: 0,
+                    velocity: 0,
+                    viewportH: window.innerHeight || 0,
+                    prevOverflow: null,
+                    usingPointer: !!window.PointerEvent,
+                };
+
+                // Optional: set a friendly touch-action to reduce browser interference.
+                // If your CSS already sets this, you can remove it.
+                bottomMenu.style.touchAction = 'none';
+
+                function getYFromEvent(e) {
+                    if ('touches' in e && e.touches && e.touches.length) {
+                        return e.touches[0].clientY;
+                    }
+                    if ('changedTouches' in e && e.changedTouches && e.changedTouches.length) {
+                        return e.changedTouches[0].clientY;
+                    }
+                    return e.clientY;
+                }
+
+                function isScrollAtTop() {
+                    if (!scrollContainer) return true;
+                    try {
+                        return (scrollContainer.scrollTop || 0) <= 0;
+                    } catch {
+                        return true;
+                    }
+                }
+
+                function setOverlayProgress(dragPx) {
+                    if (!overlay) return;
+                    // Fade overlay as the sheet is dragged down.
+                    const fade = Math.max(0, 1 - Math.min(dragPx / (state.viewportH * 0.8), 1));
+                    overlay.style.opacity = String(fade);
+                }
+
+                function applyTransform(yPx) {
+                    // Clamp to [0, 100vh] downward only; upward drag is ignored for the sheet
+                    const clamped = Math.max(0, Math.min(yPx, state.viewportH));
+                    bottomMenu.style.transform = `translate3d(-50%, ${clamped}px, 0)`;
+                    setOverlayProgress(clamped);
+                }
+
+                function scheduleRender(yPx) {
+                    state.pendingY = yPx;
+                    if (state.raf) return;
+                    state.raf = requestAnimationFrame(() => {
+                        state.raf = 0;
+                        applyTransform(state.pendingY);
+                    });
+                }
+
+                function clearRender() {
+                    if (state.raf) cancelAnimationFrame(state.raf);
+                    state.raf = 0;
+                }
+
+                function disableTransitions() {
+                    bottomMenu.style.transition = 'none';
+                    if (overlay) overlay.style.transition = 'none';
+                    bottomMenu.style.willChange = 'transform';
+                }
+
+                function enableTransitions(duration, curve) {
+                    bottomMenu.style.transition = `transform ${duration}ms ${curve}`;
+                    if (overlay) overlay.style.transition = `opacity ${duration}ms ${curve}`;
+                    bottomMenu.style.willChange = 'auto';
+                }
+
+                function restoreOverflow() {
+                    if (!scrollContainer) return;
+                    if (state.prevOverflow !== null) {
+                        scrollContainer.style.overflow = state.prevOverflow;
+                        state.prevOverflow = null;
+                    }
+                }
+
+                function lockOverflowHidden() {
+                    if (!scrollContainer) return;
+                    if (state.prevOverflow === null) {
+                        state.prevOverflow = scrollContainer.style.overflow || '';
+                    }
+                    scrollContainer.style.overflow = 'hidden';
+                }
+
+                function onStart(e) {
+                    // Only single-finger / primary pointer
+                    if ('touches' in e && e.touches.length !== 1) return;
+                    if (state.dragging) return;
+
+                    state.viewportH = window.innerHeight || state.viewportH;
+                    state.dragging = true;
+                    state.gestureLocked = null;
+                    state.startY = getYFromEvent(e);
+                    state.lastY = state.startY;
+                    state.deltaY = 0;
+                    state.bufferY = 0;
+                    state.lastMoveTime = performance.now();
+                    state.velocity = 0;
+
+                    disableTransitions();
+
+                    // Let the sheet take charge for smoothness
+                    lockOverflowHidden();
+
+                    // In case the browser would scroll, request the right kind of listener and prevent default when needed in move.
+                    // We don't preventDefault here to not block scroll if the gesture doesn't lock yet.
+                }
+
+                function onMove(e) {
+                    if (!state.dragging) return;
+
+                    const y = getYFromEvent(e);
+                    const dy = y - state.lastY;
+                    const totalDeltaFromStart = y - state.startY;
+
+                    const now = performance.now();
+                    const dt = Math.max(1, now - state.lastMoveTime); // ms
+                    state.velocity = 0.6 * (Math.abs(dy) / dt) + 0.4 * state.velocity; // EMA smoothing
+
+                    // Lock gesture once threshold passed
+                    if (state.gestureLocked === null && Math.abs(totalDeltaFromStart) > cfg.lock) {
+                        state.gestureLocked = 'profileDrag';
+                    }
+
+                    // While not locked, allow scroll to proceed
+                    if (state.gestureLocked !== 'profileDrag') {
+                        state.lastY = y;
+                        state.lastMoveTime = now;
+                        return;
+                    }
+
+                    // Gate by scroll top; if inner content isn't at top, accumulate into buffer and reset baseline
+                    const atTop = isScrollAtTop();
+                    if (!atTop) {
+                        state.bufferY += dy;
+                        state.startY = y;
+                        state.lastY = y;
+                        state.lastMoveTime = now;
+                        return;
+                    }
+
+                    // Effective downward drag includes buffer; only act on downward motion
+                    state.deltaY = totalDeltaFromStart + state.bufferY;
+
+                    if (state.deltaY > 0) {
+                        // We own the gesture now — stop scrolling
+                        if (e.cancelable) e.preventDefault();
+
+                        scheduleRender(state.deltaY);
+                    } else {
+                        // Upward move: snap back to zero without preventing scroll
+                        scheduleRender(0);
+                    }
+
+                    state.lastY = y;
+                    state.lastMoveTime = now;
+                }
+
+                function finishDismiss() {
+                    enableTransitions(cfg.dismiss, cfg.easing);
+                    // Send it down fully
+                    bottomMenu.style.transform = 'translate3d(-50%, 100vh, 0)';
+                    if (overlay) overlay.style.opacity = '0';
+
+                    const cleanup = () => {
+                        bottomMenu.removeEventListener('transitionend', cleanup);
+                        restoreOverflow();
+                        // Remove overlay after animation
+                        if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+                    };
+                    bottomMenu.addEventListener('transitionend', cleanup);
+                }
+
+                function finishReset() {
+                    enableTransitions(cfg.snap, cfg.easing);
+                    bottomMenu.style.transform = 'translate3d(-50%, 0, 0)';
+                    if (overlay) overlay.style.opacity = '1';
+
+                    const cleanup = () => {
+                        bottomMenu.removeEventListener('transitionend', cleanup);
+                        restoreOverflow();
+                    };
+                    bottomMenu.addEventListener('transitionend', cleanup);
+                }
+
+                function onEnd() {
+                    if (!state.dragging) return;
+                    state.dragging = false;
+                    clearRender();
+
+                    const distancePx = Math.max(0, state.deltaY);
+                    const distanceVH = (distancePx / Math.max(1, state.viewportH)) * 100;
+
+                    const shouldDismiss =
+                        state.gestureLocked === 'profileDrag' &&
+                        (distanceVH > cfg.dismissDistanceVH || state.velocity > cfg.dismissVelocity);
+
+                    // Re-enable transitions and either dismiss or reset
+                    if (shouldDismiss) {
+                        finishDismiss();
+                    } else {
+                        finishReset();
+                    }
+
+                    state.gestureLocked = null;
+                    state.bufferY = 0;
+                    state.deltaY = 0;
+                }
+
+                function onCancel() {
+                    // Treat cancel like a reset
+                    if (!state.dragging) return;
+                    state.dragging = false;
+                    clearRender();
+                    finishReset();
+                    state.gestureLocked = null;
+                    state.bufferY = 0;
+                    state.deltaY = 0;
+                }
+
+                function onResize() {
+                    state.viewportH = window.innerHeight || state.viewportH;
+                }
+
+                // Listener wiring
+                const optsNonPassive = { passive: false };
+                const optsPassive = { passive: true };
+
+                if (state.usingPointer) {
+                    bottomMenu.addEventListener('pointerdown', onStart, optsPassive);
+                    window.addEventListener('pointermove', onMove, optsNonPassive);
+                    window.addEventListener('pointerup', onEnd, optsPassive);
+                    window.addEventListener('pointercancel', onCancel, optsPassive);
+                } else {
+                    // Touch fallback
+                    bottomMenu.addEventListener('touchstart', onStart, optsPassive);
+                    window.addEventListener('touchmove', onMove, optsNonPassive);
+                    window.addEventListener('touchend', onEnd, optsPassive);
+                    window.addEventListener('touchcancel', onCancel, optsPassive);
+                    // Optional mouse fallback for desktop testing
+                    bottomMenu.addEventListener('mousedown', onStart);
+                    window.addEventListener('mousemove', onMove);
+                    window.addEventListener('mouseup', onEnd);
+                }
+
+                window.addEventListener('resize', onResize);
+                window.addEventListener('orientationchange', onResize);
+
+                // Initialize visual state
+                bottomMenu.style.transform = 'translate3d(-50%, 0, 0)';
+                if (overlay) overlay.style.opacity = '1';
+
+                return {
+                    destroy() {
+                        clearRender();
+                        restoreOverflow();
+
+                        if (state.usingPointer) {
+                            bottomMenu.removeEventListener('pointerdown', onStart);
+                            window.removeEventListener('pointermove', onMove);
+                            window.removeEventListener('pointerup', onEnd);
+                            window.removeEventListener('pointercancel', onCancel);
+                        } else {
+                            bottomMenu.removeEventListener('touchstart', onStart);
+                            window.removeEventListener('touchmove', onMove);
+                            window.removeEventListener('touchend', onEnd);
+                            window.removeEventListener('touchcancel', onCancel);
+                            bottomMenu.removeEventListener('mousedown', onStart);
+                            window.removeEventListener('mousemove', onMove);
+                            window.removeEventListener('mouseup', onEnd);
+                        }
+
+                        window.removeEventListener('resize', onResize);
+                        window.removeEventListener('orientationchange', onResize);
+                    },
+                };
+            }
+
             async function showDiscordUserProfileOverlay(userId) {
                 const { user, user_profile, badges } = await fetchCachedUserProfile(userId);
                 zycordInternals_setUserActivity.setActivity("Accessing user profile", 2);
@@ -2867,6 +3315,14 @@
 
                 details.appendChild(nickname);
                 details.appendChild(usernameContainer);
+                if (user_profile.pronouns !== "") {
+                    const MutedDotSpacer = document.createElement("div");
+                    MutedDotSpacer.className = "zycord-DotSpacer";
+                    const pronounsDiv = document.createElement("div");
+                    pronounsDiv.className = "profiles-username";
+                    pronounsDiv.textContent = user_profile.pronouns;
+                    usernameContainer.append(MutedDotSpacer, pronounsDiv)
+                }
 
                 // Badges
                 if (badges.length > 0) {
@@ -2929,87 +3385,53 @@
                 popout.appendChild(container);
                 overlay.appendChild(popout);
 
-                // Animate in
+                // Dismiss logic
+                overlay.addEventListener("click", e => {
+                    if (!popout.contains(e.target)) {
+                        bottomMenu.style.transition = "transform 0.3s ease";
+                        bottomMenu.style.transform = "translateY(100%) translateX(-50%)";
+                        overlay.style.transition = "opacity 0.3s ease";
+                        overlay.style.opacity = "0";
+                        setTimeout(() => {
+                            overlay.remove();
+
+                        }, 300);
+                    }
+                });
+
                 overlay.style.opacity = "0";
                 overlay.style.transform = "translateY(20px)";
                 overlay.style.transition = "opacity 0.4s ease, transform 0.4s ease";
 
-                const parent = document.querySelector(".zycord-FocusContainerList");
-                if (parent) {
-                    parent.appendChild(overlay);
+                const focusContainerList = document.querySelector(".zycord-FocusContainerList");
+                if (focusContainerList) {
+                    focusContainerList.appendChild(overlay);
                     requestAnimationFrame(() => {
                         overlay.style.opacity = "1";
                         overlay.style.transform = "translateY(0)";
                     });
                 }
 
-                // Dismiss logic
-                overlay.addEventListener("click", e => {
-                    if (!popout.contains(e.target)) {
-                        popout.style.transition = "transform 0.3s ease";
-                        popout.style.transform = "translateY(100%) translateX(-50%)";
-                        overlay.style.transition = "opacity 0.3s ease";
-                        overlay.style.opacity = "0";
-                        setTimeout(() => {
-                            zycordInternals_setUserActivity.clearActivity(1);
-                            overlay.remove();
-                        }, 300);
-                    }
+                let isDragging = false;
+                let gestureLocked = null;
+                let dragStartY = 0;
+                let dragDeltaY = 0;
+                let dragBuffer = 0;
+
+                const scrollContainer = popout;
+                const bottomMenu = popout; // ProfilePopout is the draggable target
+
+                const controller = createBottomSheetDrag({
+                    bottomMenu,
+                    scrollContainer, // the inner scrollable content; can be null
+                    overlay,         // optional overlay element; can be null
+                    thresholds: { lock: 10, dismissDistanceVH: 25, dismissVelocity: 0.75 },
+                    durations: { snap: 250, dismiss: 300 },
+                    easing: 'cubic-bezier(0.2, 0, 0, 1)',
                 });
 
-                // Touch gesture logic (unchanged)
-                let isDragging = false, dragStartY = 0, dragDelta = 0, dragOffset = 0, dragMode = null;
-                popout.addEventListener("touchstart", e => {
-                    if (e.touches.length === 1) {
-                        dragStartY = e.touches[0].clientY;
-                        dragDelta = dragOffset = 0;
-                        isDragging = true;
-                        dragMode = null;
-                        popout.style.transition = "none";
-                        popout.style.willChange = "transform";
-                    }
-                });
-
-                popout.addEventListener("touchmove", e => {
-                    if (!isDragging) return;
-                    const currentY = e.touches[0].clientY;
-                    dragDelta = currentY - dragStartY;
-                    if (dragMode === null && Math.abs(dragDelta) > 10) dragMode = "profileDrag";
-                    if (dragMode === "profileDrag") {
-                        if (popout.scrollTop > 0) {
-                            dragOffset += dragDelta;
-                            dragStartY = currentY;
-                            return;
-                        }
-                        const translateY = Math.min((dragDelta + dragOffset) / window.innerHeight * 100, 100);
-                        popout.style.transform = `translateY(${translateY}vh) translateX(-50%)`;
-                        popout.style.overflow = "hidden";
-                        e.preventDefault();
-                    }
-                });
-
-                popout.addEventListener("touchend", () => {
-                    if (!isDragging) return;
-                    isDragging = false;
-                    const totalDrag = dragDelta + dragOffset;
-                    popout.style.transition = "transform 0.25s ease";
-                    popout.style.willChange = "auto";
-                    if (dragMode === "profileDrag" && totalDrag > 0.25 * window.innerHeight) {
-                        popout.style.transition = "transform 0.3s ease";
-                        popout.style.transform = "translateY(100%) translateX(-50%)";
-                        overlay.style.transition = "opacity 0.3s ease";
-                        overlay.style.opacity = "0";
-                        setTimeout(() => {
-                            zycordInternals_setUserActivity.clearActivity(1);
-                            overlay.remove();
-                        }, 300);
-                    } else {
-                        popout.style.overflow = "auto";
-                        popout.style.transform = "translateY(0) translateX(-50%)";
-                    }
-                    dragMode = null;
-                    dragOffset = 0;
-                });
+                // When you need to remove behavior (e.g., teardown page)
+                // controller.destroy();
             }
 
             function createFocusConfirmMenu({ title, description, onConfirm, onCancel }) {
@@ -3388,7 +3810,8 @@
                 return cleanUrl.split('.').pop().toLowerCase();
             }
 
-            function createCustomAudioPlayer(filename, src) {
+            function createCustomAudioPlayer(filename = 'Audio', src) {
+                const STEP_SECONDS = 10;
                 const icons = {
                     play: 'https://cdn3.emoji.gg/emojis/5134-resume.png',
                     pause: 'https://cdn3.emoji.gg/emojis/6148-pause.png',
@@ -3396,96 +3819,352 @@
                     forward: 'https://cdn3.emoji.gg/emojis/5134-forward.png',
                     replay: 'https://cdn3.emoji.gg/emojis/8562-replay.png'
                 };
-
+                const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
+                const isFiniteNumber = (n) => Number.isFinite(n) && !Number.isNaN(n);
+                const fmt = (t) => {
+                    if (!isFiniteNumber(t)) return '0:00';
+                    const s = Math.floor(t % 60).toString().padStart(2, '0');
+                    const m = Math.floor((t / 60) % 60);
+                    const h = Math.floor(t / 3600);
+                    return h > 0 ? `${h}:${m.toString().padStart(2, '0')}:${s}` : `${m}:${s}`;
+                };
+                const setIcon = (el, url) => {
+                    const u = `url("${url}")`;
+                    el.style.maskImage = u;
+                    el.style.webkitMaskImage = u;
+                    el.style.backgroundImage = u;
+                };
                 const container = document.createElement('div');
                 container.className = 'zycord-CustomAudioAttachment';
-
+                container.setAttribute('data-state', 'loading');
                 const title = document.createElement('div');
                 title.className = 'zycord-CustomAudioTitle';
-                title.textContent = filename;
-
+                title.textContent = filename || 'Audio';
                 const audio = document.createElement('audio');
-                audio.src = src;
                 audio.preload = 'metadata';
-
+                if (src) audio.src = src;
+                audio.controls = false;
+                const status = document.createElement('div');
+                status.className = 'zycord-CustomAudioStatus';
+                status.textContent = 'Loading…';
+                status.setAttribute('aria-live', 'polite');
+                const timeWrap = document.createElement('div');
+                timeWrap.className = 'zycord-CustomAudioTime';
+                const currentTimeEl = document.createElement('span');
+                currentTimeEl.className = 'zycord-CustomAudioTimeCurrent';
+                currentTimeEl.textContent = '0:00';
+                const sep = document.createElement('span');
+                sep.textContent = ' / ';
+                const durationEl = document.createElement('span');
+                durationEl.className = 'zycord-CustomAudioTimeDuration';
+                durationEl.textContent = '0:00';
+                timeWrap.append(currentTimeEl, sep, durationEl);
                 const progressBar = document.createElement('div');
                 progressBar.className = 'zycord-CustomAudioBar';
-
+                progressBar.setAttribute('role', 'progressbar');
+                progressBar.setAttribute('aria-valuemin', '0');
+                progressBar.setAttribute('aria-valuenow', '0');
+                progressBar.setAttribute('aria-valuemax', '0');
+                progressBar.tabIndex = 0;
                 const progressFill = document.createElement('div');
                 progressFill.className = 'zycord-CustomAudioBarFill';
                 progressBar.appendChild(progressFill);
-
                 const btnContainer = document.createElement('div');
                 btnContainer.className = 'zycord-CustomAudioButtonsContainer';
-
-                // 🛠️ Helper to build icon buttons
-                function createIconBtn(type) {
-                    const btn = document.createElement('div');
+                function createIconBtn(type, label) {
+                    const btn = document.createElement('button');
                     btn.className = 'zycord-CustomAudioButton';
-
+                    btn.type = 'button';
+                    btn.setAttribute('aria-label', label || type);
+                    btn.tabIndex = 0;
                     const icon = document.createElement('div');
                     icon.className = 'zycord-CustomAudioIcon';
-                    icon.style.maskImage = `url("${icons[type]}")`;
-                    icon.style.webkitMaskImage = icon.style.maskImage;
-
+                    setIcon(icon, icons[type]);
                     btn.appendChild(icon);
                     return { btn, icon };
                 }
-
-                const { btn: backBtn } = createIconBtn('back');
-                const { btn: playBtn, icon: playIcon } = createIconBtn('play');
-                const { btn: forwardBtn } = createIconBtn('forward');
+                const { btn: backBtn } = createIconBtn('back', 'Rewind 10 seconds');
+                const { btn: playBtn, icon: playIcon } = createIconBtn('play', 'Play');
+                const { btn: forwardBtn } = createIconBtn('forward', 'Forward 10 seconds');
                 btnContainer.append(backBtn, playBtn, forwardBtn);
-
-                let isPlaying = false;
-                let isEnded = false;
-
-                // 🎧 Progress bar logic
-                function updateProgress() {
-                    const percent = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
-                    progressFill.style.width = `${percent}%`;
-                }
-
-                audio.addEventListener('loadedmetadata', updateProgress);
-                audio.addEventListener('timeupdate', updateProgress);
-
-                audio.addEventListener('ended', () => {
-                    isPlaying = false;
-                    isEnded = true;
-                    playIcon.style.maskImage = `url("${icons.replay}")`;
-                    playIcon.style.webkitMaskImage = playIcon.style.maskImage;
-                });
-
-                backBtn.addEventListener('click', () => {
-                    audio.currentTime = Math.max(0, audio.currentTime - 10);
-                });
-
-                forwardBtn.addEventListener('click', () => {
-                    audio.currentTime = Math.min(audio.duration, audio.currentTime + 10);
-                });
-
-                playBtn.addEventListener('click', () => {
-                    if (isEnded || audio.currentTime === audio.duration) {
-                        audio.currentTime = 0;
-                        isEnded = false;
-                    }
-
-                    if (audio.paused) {
-                        audio.play();
-                        isPlaying = true;
-                        playIcon.style.maskImage = `url("${icons.pause}")`;
-                        playIcon.style.webkitMaskImage = playIcon.style.maskImage;
+                const setControlsEnabled = (enabled) => {
+                    [backBtn, playBtn, forwardBtn, progressBar].forEach((el) => {
+                        el.disabled = !enabled;
+                        el.setAttribute('aria-disabled', String(!enabled));
+                    });
+                };
+                setControlsEnabled(false);
+                let isDragging = false;
+                let isUserInteracting = false;
+                let rafId = null;
+                let destroyed = false;
+                const updateProgress = () => {
+                    const dur = audio.duration;
+                    const cur = audio.currentTime;
+                    const haveDur = isFiniteNumber(dur) && dur > 0;
+                    if (haveDur) {
+                        const pct = clamp((cur / dur) * 100, 0, 100);
+                        progressFill.style.width = `${pct}%`;
+                        progressBar.setAttribute('aria-valuemax', String(Math.round(dur)));
+                        progressBar.setAttribute('aria-valuenow', String(Math.round(cur)));
                     } else {
-                        audio.pause();
-                        isPlaying = false;
-                        playIcon.style.maskImage = `url("${icons.play}")`;
-                        playIcon.style.webkitMaskImage = playIcon.style.maskImage;
+                        progressFill.style.width = '0%';
+                        progressBar.setAttribute('aria-valuemax', '0');
+                        progressBar.setAttribute('aria-valuenow', '0');
+                    }
+                    currentTimeEl.textContent = fmt(cur);
+                    durationEl.textContent = fmt(dur);
+                };
+                const startRaf = () => {
+                    if (rafId != null) return;
+                    const tick = () => {
+                        if (destroyed) return;
+                        if (!isDragging) updateProgress();
+                        rafId = requestAnimationFrame(tick);
+                    };
+                    rafId = requestAnimationFrame(tick);
+                };
+                const stopRaf = () => {
+                    if (rafId != null) cancelAnimationFrame(rafId);
+                    rafId = null;
+                };
+                const setState = (s, message) => {
+                    container.setAttribute('data-state', s);
+                    if (message) status.textContent = message;
+                    else if (s === 'buffering') status.textContent = 'Buffering…';
+                    else if (s === 'loading') status.textContent = 'Loading…';
+                    else if (s === 'error') status.textContent = 'Playback error';
+                    else status.textContent = '';
+                };
+                const toPlayIcon = () => {
+                    setIcon(playIcon, icons.play);
+                    playBtn.setAttribute('aria-label', 'Play');
+                };
+                const toPauseIcon = () => {
+                    setIcon(playIcon, icons.pause);
+                    playBtn.setAttribute('aria-label', 'Pause');
+                };
+                const toReplayIcon = () => {
+                    setIcon(playIcon, icons.replay);
+                    playBtn.setAttribute('aria-label', 'Replay');
+                };
+                const seekToFraction = (frac) => {
+                    const dur = audio.duration;
+                    if (!isFiniteNumber(dur) || dur <= 0) return;
+                    audio.currentTime = clamp(frac * dur, 0, dur);
+                };
+                const pointerFracFromEvent = (clientX) => {
+                    const rect = progressBar.getBoundingClientRect();
+                    const frac = (clientX - rect.left) / rect.width;
+                    return clamp(frac, 0, 1);
+                };
+                const onLoadedMetadata = () => {
+                    setControlsEnabled(true);
+                    updateProgress();
+                    setState('ready', '');
+                };
+                const onCanPlay = () => {
+                    if (container.getAttribute('data-state') === 'loading') setState('ready', '');
+                };
+                const onPlay = () => {
+                    toPauseIcon();
+                    setState('playing', '');
+                    startRaf();
+                };
+                const onPause = () => {
+                    stopRaf();
+                    if (audio.ended) return;
+                    toPlayIcon();
+                    setState('paused', '');
+                    updateProgress();
+                };
+                const onEnded = () => {
+                    stopRaf();
+                    toReplayIcon();
+                    setState('ended', '');
+                    updateProgress();
+                };
+                const onWaiting = () => {
+                    if (!audio.paused) setState('buffering', 'Buffering…');
+                };
+                const onStalled = () => {
+                    setState('buffering', 'Network stalled…');
+                };
+                const onError = () => {
+                    setControlsEnabled(false);
+                    setState('error', 'Playback error');
+                };
+                const onTimeUpdate = () => {
+                    if (!isDragging) updateProgress();
+                };
+                backBtn.addEventListener('click', () => {
+                    const dur = audio.duration;
+                    const step = STEP_SECONDS;
+                    if (isFiniteNumber(dur)) {
+                        audio.currentTime = clamp(audio.currentTime - step, 0, dur);
+                    } else {
+                        audio.currentTime = Math.max(0, audio.currentTime - step);
+                    }
+                    isUserInteracting = true;
+                    updateProgress();
+                });
+                forwardBtn.addEventListener('click', () => {
+                    const dur = audio.duration;
+                    const step = STEP_SECONDS;
+                    if (isFiniteNumber(dur)) {
+                        audio.currentTime = clamp(audio.currentTime + step, 0, dur);
+                    } else {
+                        audio.currentTime = audio.currentTime + step;
+                    }
+                    isUserInteracting = true;
+                    updateProgress();
+                });
+                playBtn.addEventListener('click', async () => {
+                    isUserInteracting = true;
+                    if (audio.ended || (isFiniteNumber(audio.duration) && audio.currentTime >= audio.duration)) {
+                        audio.currentTime = 0;
+                    }
+                    try {
+                        if (audio.paused) {
+                            await audio.play();
+                        } else {
+                            audio.pause();
+                        }
+                    } catch (e) {
+                        setState('error', 'Unable to start playback');
+                        toPlayIcon();
                     }
                 });
-
-                container.append(title, audio, progressBar, btnContainer);
+                const keyActivate = (e, action) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        action();
+                    }
+                };
+                playBtn.addEventListener('keydown', (e) => keyActivate(e, () => playBtn.click()));
+                backBtn.addEventListener('keydown', (e) => keyActivate(e, () => backBtn.click()));
+                forwardBtn.addEventListener('keydown', (e) => keyActivate(e, () => forwardBtn.click()));
+                progressBar.addEventListener('keydown', (e) => {
+                    const dur = audio.duration;
+                    if (!isFiniteNumber(dur) || dur <= 0) return;
+                    if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        audio.currentTime = clamp(audio.currentTime - STEP_SECONDS, 0, dur);
+                    } else if (e.key === 'ArrowRight') {
+                        e.preventDefault();
+                        audio.currentTime = clamp(audio.currentTime + STEP_SECONDS, 0, dur);
+                    } else if (e.key === 'Home') {
+                        e.preventDefault();
+                        audio.currentTime = 0;
+                    } else if (e.key === 'End') {
+                        e.preventDefault();
+                        audio.currentTime = dur;
+                    }
+                    updateProgress();
+                });
+                const onPointerDown = (clientX) => {
+                    isDragging = true;
+                    isUserInteracting = true;
+                    container.classList.add('is-seeking');
+                    seekToFraction(pointerFracFromEvent(clientX));
+                    updateProgress();
+                };
+                const onPointerMove = (clientX) => {
+                    if (!isDragging) return;
+                    seekToFraction(pointerFracFromEvent(clientX));
+                };
+                const onPointerUp = () => {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    container.classList.remove('is-seeking');
+                    updateProgress();
+                };
+                progressBar.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    onPointerDown(e.clientX);
+                    const move = (ev) => onPointerMove(ev.clientX);
+                    const up = () => {
+                        window.removeEventListener('mousemove', move);
+                        window.removeEventListener('mouseup', up);
+                        onPointerUp();
+                    };
+                    window.addEventListener('mousemove', move);
+                    window.addEventListener('mouseup', up);
+                });
+                progressBar.addEventListener(
+                    'touchstart',
+                    (e) => {
+                        if (!e.touches || e.touches.length === 0) return;
+                        e.preventDefault();
+                        onPointerDown(e.touches[0].clientX);
+                    },
+                    { passive: false }
+                );
+                progressBar.addEventListener(
+                    'touchmove',
+                    (e) => {
+                        if (!isDragging || !e.touches || e.touches.length === 0) return;
+                        e.preventDefault();
+                        onPointerMove(e.touches[0].clientX);
+                    },
+                    { passive: false }
+                );
+                progressBar.addEventListener(
+                    'touchend',
+                    () => {
+                        onPointerUp();
+                    },
+                    { passive: true }
+                );
+                audio.addEventListener('loadedmetadata', onLoadedMetadata);
+                audio.addEventListener('canplay', onCanPlay);
+                audio.addEventListener('play', onPlay);
+                audio.addEventListener('pause', onPause);
+                audio.addEventListener('ended', onEnded);
+                audio.addEventListener('waiting', onWaiting);
+                audio.addEventListener('stalled', onStalled);
+                audio.addEventListener('timeupdate', onTimeUpdate);
+                audio.addEventListener('error', onError);
+                audio.addEventListener('progress', () => {
+                });
+                const controlsWrap = document.createElement('div');
+                controlsWrap.className = 'zycord-CustomAudioControls';
+                controlsWrap.append(btnContainer, timeWrap);
+                container.append(title, audio, status, progressBar, controlsWrap);
+                container._api = {
+                    play: async () => {
+                        try {
+                            await audio.play();
+                        } catch (_) {
+                            setState('error', 'Unable to start playback');
+                        }
+                    },
+                    pause: () => audio.pause(),
+                    setSource: (newSrc) => {
+                        setControlsEnabled(false);
+                        setState('loading', 'Loading…');
+                        toPlayIcon();
+                        audio.src = newSrc;
+                        audio.load();
+                    },
+                    destroy: () => {
+                        destroyed = true;
+                        stopRaf();
+                        audio.pause();
+                        audio.removeAttribute('src');
+                        audio.load();
+                        audio.replaceWith(audio.cloneNode(true));
+                        container.replaceWith(container);
+                    }
+                };
+                if (audio.readyState >= 1) {
+                    onLoadedMetadata();
+                } else {
+                    setState('loading', 'Loading…');
+                }
                 return container;
             }
+
 
             function formatTime(seconds) {
                 const mins = Math.floor(seconds / 60);
