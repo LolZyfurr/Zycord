@@ -1180,40 +1180,8 @@
         }
 
         .ProfileBanner {
-            background: #ccc;
             width: 100%;
             height: 150px;
-        }
-
-        .ProfileAvatar {
-            position: absolute;
-            top: 100px;
-            left: 20px;
-            height: 80px;
-            width: 80px;
-            background: #ccc;
-            border-radius: 50%;
-            border: 4px solid #2f3136;
-            z-index: 2;
-        }
-
-        .ProfileStatus {
-            background-color: var(--bg-primary);
-            border: 4px solid var(--bg-primary);
-            position: absolute;
-            bottom: -2px;
-            right: -2px;
-            height: 20px;
-            width: 20px;
-            border-radius: 50%;
-        }
-
-        .ProfileContainer {
-            margin-top: 60px;
-            padding: 0px 20px 60px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
         }
 
         .ProfileDetails {
@@ -1223,25 +1191,6 @@
             padding: 0px;
             flex-direction: column;
             justify-content: center;
-        }
-
-        .ProfileName {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .ProfileUsername {
-            font-size: 14px;
-        }
-
-        .ProfileContent {
-            border-radius: 10px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background-color: var(--bg-secondary);
-            color: var(--text-main);
         }
 
         .ProfileActivityHeader {
@@ -1298,21 +1247,6 @@
         .ProfilePopout {
             background: var(--bg-primary);
             box-shadow: var(--shadow-soft);
-        }
-
-        .ProfileAvatar {
-            border: 4px solid var(--bg-primary);
-        }
-
-        .ProfileName {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--text-main);
-        }
-
-        .ProfileUsername {
-            font-size: 14px;
-            color: var(--text-muted);
         }
 
         .ProfileContentHeader {
@@ -1559,6 +1493,222 @@
             gap: 6px;
             font-size: 14px;
             color: var(--text-muted);
+        }
+
+        .activities-overflow-title {
+            overflow: hidden;
+            position: relative;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--text-main);
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .activities-content-image-small {
+            height: inherit;
+            width: inherit;
+        }
+
+        .activities-small-image-container {
+            right: -2px;
+            bottom: -2px;
+            position: absolute;
+            overflow: hidden;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+        }
+
+        .activities-content-image-main {
+            height: inherit;
+            width: inherit;
+            border-radius: 8px;
+        }
+
+        .activities-image-position {
+            filter: saturate(0) contrast(0.6) brightness(1.2);
+            height: 60px;
+            width: 60px;
+            position: relative;
+        }
+
+        .activities-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .activities-content {
+            gap: 8px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .activities-time-icon {
+            height: 14px;
+            width: 14px;
+            aspect-ratio: 1;
+            background-color:
+                color-mix(in srgb, var(--accent) 50%, var(--text-muted) 50%);
+            mask-repeat: no-repeat;
+            mask-position: center;
+            mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            -webkit-mask-size: contain;
+            mask-image: url(https://cdn3.emoji.gg/emojis/5093-game.png);
+            -webkit-mask-image: url(https://cdn3.emoji.gg/emojis/5093-game.png);
+        }
+
+        .activities-time {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            font-weight: 700;
+            font-size: 12px;
+            line-height: 1.3;
+            color: color-mix(in srgb, var(--accent) 50%, var(--text-muted) 50%);
+        }
+
+        .activities-badge {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .activities-overflow-description {
+            line-height: 1.3;
+            font-weight: 400;
+            font-size: 12px;
+            color: var(--text-main);
+            overflow: hidden;
+            position: relative;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .activities-overflow-heading {
+            color: var(--text-main);
+            overflow: hidden;
+            position: relative;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .activities-details {
+            gap: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .activities-spotlightMask {
+            width: inherit;
+            height: inherit;
+        }
+
+        .profiles-header-content {
+            color: var(--text-main);
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .profiles-text-content {
+            color: var(--text-main);
+            line-height: 1.3;
+            font-weight: 400;
+            font-size: 14px;
+        }
+
+        .profiles-container {
+            margin-top: 60px;
+            padding: 0px 20px 60px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .profiles-nickname {
+            color: var(--text-main);
+            line-height: 1;
+            font-weight: 600;
+            font-size: 24px;
+        }
+
+        .profiles-username {
+            color: var(--text-main);
+            font-weight: 400;
+            line-height: 18px;
+            font-size: 14px;
+        }
+
+        .profiles-banner-contentMask {
+            width: inherit;
+            height: inherit;
+        }
+
+        .profiles-banner-BannerDisplay {
+            object-fit: cover;
+            height: 100%;
+            width: 100%;
+        }
+
+        .profiles-banner-BannerColor {
+            object-fit: cover;
+            height: 100%;
+            width: 100%;
+            background-color: #000;
+        }
+
+        .profiles-avatar-mask {
+            width: inherit;
+            height: inherit;
+            border-radius: 50%;
+        }
+
+        .profiles-avatar-image {
+            width: inherit;
+            height: inherit;
+            object-fit: cover;
+        }
+
+        .profiles-avatar {
+            position: absolute;
+            top: 100px;
+            left: 20px;
+            height: 80px;
+            width: 80px;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        .profiles-content {
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background-color: var(--bg-secondary);
+            color: var(--text-main);
+        }
+
+        .ProfileStatus {
+            background-color: var(--bg-primary);
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
         }
     </style>
 </head>
@@ -2264,6 +2414,13 @@
 
                 return focusContainer;
             }
+
+            function getDiscordCreationDate(userId) {
+                const discordEpoch = 1420070400000; // Jan 1, 2015
+                const timestamp = (BigInt(userId) >> 22n) + BigInt(discordEpoch);
+                return new Date(Number(timestamp));
+            }
+
             async function fetchCachedUserProfile(userId, forceRefresh = false) {
                 const storeKey = `users-${userId}-profile`;
 
@@ -2311,13 +2468,21 @@
             function formatElapsedTime(timestamp) {
                 const now = Date.now();
                 const elapsedMs = Math.max(0, now - timestamp);
-                const seconds = Math.floor(elapsedMs / 1000);
-                const minutes = Math.floor(seconds / 60);
-                const hours = Math.floor(minutes / 60);
+                const totalSeconds = Math.floor(elapsedMs / 1000);
 
-                if (hours >= 1) return `${hours} hr${hours > 1 ? "s" : ""}`;
-                if (minutes >= 1) return `${minutes} min${minutes > 1 ? "s" : ""}`;
-                return `${seconds} sec${seconds !== 1 ? "s" : ""}`;
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+
+                const pad = (num) => String(num).padStart(2, "0");
+
+                if (hours > 0) {
+                    return `${hours}:${pad(minutes)}:${pad(seconds)}`;
+                } else if (minutes > 0) {
+                    return `${minutes}:${pad(seconds)}`;
+                } else {
+                    return `0:${pad(seconds)}`;
+                }
             }
 
             function resolveActivityTimestamp(act) {
@@ -2336,69 +2501,175 @@
                 return `https://cdn.discordapp.com/app-assets/${act.application_id}/${rawImage}`;
             }
 
+            function resolveActivityBadgeUrl(act) {
+                const rawImage = act?.assets?.small_image;
+                if (!rawImage) return "https://cdn.discordapp.com/embed/avatars/0.png";
+
+                if (rawImage.startsWith("mp:external/")) {
+                    const externalPath = rawImage.slice("mp:external/".length);
+                    return `https://media.discordapp.net/external/${externalPath}`;
+                }
+
+                return `https://cdn.discordapp.com/app-assets/${act.application_id}/${rawImage}`;
+            }
+
             function createActivityElement(act) {
                 const profileContent = document.createElement("div");
-                profileContent.className = "ProfileContent";
+                profileContent.className = "profiles-content";
                 profileContent.dataset.activityId = act.application_id;
 
-                const activityContainer = document.createElement("div");
-                activityContainer.className = "ProfileActivityContainer";
-                activityContainer.dataset.activityId = act.application_id;
+                const card = document.createElement("div");
+                card.className = "activities-card";
 
-                const activityType = document.createElement("div");
-                activityType.className = "ProfileActivityType";
-                activityType.textContent = `Playing ${act.name}`;
+                // Header
+                const header = document.createElement("div");
+                header.className = "activities-header";
 
-                const activityDetails = document.createElement("div");
-                activityDetails.className = "ProfileActivityDetails";
+                const headerText = document.createElement("div");
+                headerText.className = "activities-header-text";
 
-                const activityIcon = document.createElement("div");
-                activityIcon.className = "ProfileActivityIcon";
-                const activityImg = document.createElement("img");
-                activityImg.src = resolveActivityIconUrl(act);
-                activityImg.className = "ProfileActivityDisplay";
-                activityIcon.appendChild(activityImg);
+                const overflowTitle = document.createElement("div");
+                overflowTitle.className = "activities-overflow-title";
+                overflowTitle.textContent = "Playing";
 
-                const activityContent = document.createElement("div");
-                activityContent.className = "ProfileActivityContent";
+                headerText.appendChild(overflowTitle);
+                header.appendChild(headerText);
+                card.appendChild(header);
 
-                const activityHeader = document.createElement("div");
-                activityHeader.className = "ProfileActivityHeader";
-                activityHeader.textContent = act.name;
+                // Body
+                const body = document.createElement("div");
+                body.className = "activities-body";
+
+                const content = document.createElement("div");
+                content.className = "activities-content";
+
+                // Image Position
+                const imagePosition = document.createElement("div");
+                imagePosition.className = "activities-image-position";
+
+                const spotlightMask = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                spotlightMask.classList.add("activities-spotlightMask");
+
+                const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+                mask.setAttribute("id", "activities-mask-spotlight");
+
+                const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                rect.setAttribute("fill", "white");
+                rect.setAttribute("x", "0");
+                rect.setAttribute("y", "0");
+                rect.setAttribute("width", "100%");
+                rect.setAttribute("height", "100%");
+
+                mask.appendChild(rect);
+                if (act?.assets?.small_image) {
+                    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    circle.setAttribute("fill", "black");
+                    circle.setAttribute("cx", "50");
+                    circle.setAttribute("cy", "50");
+                    circle.setAttribute("r", "16");
+                    mask.appendChild(circle);
+                }
+                spotlightMask.appendChild(mask);
+
+                const foreignObject = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
+                foreignObject.setAttribute("x", "0");
+                foreignObject.setAttribute("y", "0");
+                foreignObject.setAttribute("width", "100%");
+                foreignObject.setAttribute("height", "100%");
+                foreignObject.setAttribute("overflow", "visible");
+                foreignObject.setAttribute("mask", "url(#activities-mask-spotlight)");
+
+                const mainImg = document.createElement("img");
+                mainImg.className = "activities-content-image-main";
+                mainImg.src = resolveActivityIconUrl(act);
+
+                foreignObject.appendChild(mainImg);
+                spotlightMask.appendChild(foreignObject);
+                imagePosition.appendChild(spotlightMask);
+
+                if (act?.assets?.small_image) {
+                    const smallImageContainer = document.createElement("div");
+                    smallImageContainer.className = "activities-small-image-container";
+                    const smallImg = document.createElement("img");
+                    smallImg.className = "activities-content-image-small";
+                    smallImg.src = resolveActivityBadgeUrl(act);
+                    smallImageContainer.appendChild(smallImg);
+                    imagePosition.appendChild(smallImageContainer);
+                }
+                content.appendChild(imagePosition);
+
+                // Details
+                const details = document.createElement("div");
+                details.className = "activities-details";
+
+                const detailsInner = document.createElement("div");
+
+                const heading = document.createElement("div");
+                heading.className = "activities-heading";
+
+                const overflowHeading = document.createElement("div");
+                overflowHeading.className = "activities-overflow-heading";
+                overflowHeading.textContent = act.name;
+
+                heading.appendChild(overflowHeading);
+                detailsInner.appendChild(heading);
+
+                if (act?.details?.trim()) {
+                    const line1 = document.createElement("div");
+                    line1.className = "activities-normal-line";
+
+                    const desc1 = document.createElement("div");
+                    desc1.className = "activities-overflow-description";
+                    desc1.textContent = act.details;
+
+                    line1.appendChild(desc1);
+                    detailsInner.appendChild(line1);
+                }
+
+                if (act?.state?.trim()) {
+                    const line2 = document.createElement("div");
+                    line2.className = "activities-normal-line";
+
+                    const desc2 = document.createElement("div");
+                    desc2.className = "activities-overflow-description";
+                    desc2.textContent = act.state;
+
+                    line2.appendChild(desc2);
+                    detailsInner.appendChild(line2);
+                }
+
+                details.appendChild(detailsInner);
+
+                // Badges
+                const badgesWrapper = document.createElement("div");
+                badgesWrapper.className = "activities-badges-wrapper";
+
+                const badge = document.createElement("div");
+                badge.className = "activities-badge";
+
+                const timeIcon = document.createElement("div");
+                timeIcon.className = "activities-time-icon";
+
+                const timeText = document.createElement("div");
+                timeText.className = "activities-time";
 
                 const activityStartTimestamp = resolveActivityTimestamp(act);
-                const activityTime = document.createElement("div");
-                activityTime.className = "ProfileActivityTime";
-
                 function updateActivityTime() {
-                    activityTime.textContent = formatElapsedTime(activityStartTimestamp);
+                    timeText.textContent = formatElapsedTime(activityStartTimestamp);
                 }
 
                 updateActivityTime();
                 setInterval(updateActivityTime, 1000);
 
-                activityContent.appendChild(activityHeader);
+                badge.appendChild(timeIcon);
+                badge.appendChild(timeText);
+                badgesWrapper.appendChild(badge);
+                details.appendChild(badgesWrapper);
 
-                if (act?.details?.trim()) {
-                    const activityState = document.createElement("div");
-                    activityState.className = "ProfileActivityInfoDetails";
-                    activityState.textContent = act.details;
-                    activityContent.appendChild(activityState);
-                }
-
-                if (act?.state?.trim()) {
-                    const activityState = document.createElement("div");
-                    activityState.className = "ProfileActivityState";
-                    activityState.textContent = act.state;
-                    activityContent.appendChild(activityState);
-                }
-
-                activityContent.appendChild(activityTime);
-                activityDetails.appendChild(activityIcon);
-                activityDetails.appendChild(activityContent);
-                activityContainer.appendChild(activityType);
-                activityContainer.appendChild(activityDetails);
-                profileContent.appendChild(activityContainer);
+                content.appendChild(details);
+                body.appendChild(content);
+                card.appendChild(body);
+                profileContent.appendChild(card);
 
                 return profileContent;
             }
@@ -2416,13 +2687,13 @@
             function upsertActivityElement(act) {
                 if (act?.application_id) {
                     const activityId = act.application_id;
-                    const container = document.querySelector(`.ProfileContent[data-activity-id="${activityId}"]`);
+                    const container = document.querySelector(`.profiles-content[data-activity-id="${activityId}"]`);
                     if (container) {
-                        const existing = container.querySelector(`.ProfileActivityContainer[data-activity-id="${activityId}"]`);
+                        const existing = container.querySelector(`.activities-card`);
                         const newElement = createActivityElement(act);
-                        const toReplace = newElement?.querySelector(`.ProfileActivityContainer[data-activity-id="${activityId}"]`);
+                        const toReplace = newElement?.querySelector(`.activities-card`);
 
-                        if (toReplace) {
+                        if (toReplace && existing) {
                             container.replaceChild(toReplace, existing);
                         } else {
                             container.appendChild(newElement);
@@ -2432,10 +2703,8 @@
             }
 
             async function showDiscordUserProfileOverlay(userId) {
-                const jsonResponse = await fetchCachedUserProfile(userId);
-                const user = jsonResponse.user
-
-                zycordInternals_setUserActivity.setActivity(`Accessing user profile`, 2);
+                const { user, user_profile, badges } = await fetchCachedUserProfile(userId);
+                zycordInternals_setUserActivity.setActivity("Accessing user profile", 2);
 
                 const avatarUrl = user.avatar
                     ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=2048`
@@ -2445,17 +2714,17 @@
                     ? `https://cdn.discordapp.com/banners/${user.id}/${user.banner}.png?size=2048`
                     : "";
 
-                const activity = zycordDataStore.get(`activities-${userId}`);
-                console.log(JSON.stringify(activity));
-                const status = activity?.status || "offline";
-                const statusClass = getStatusClassFromPresence(status);
+                const statusClass = getStatusClassFromPresence(
+                    zycordDataStore.get(`activities-${userId}`)?.status || "offline"
+                );
 
-                const focusContainer = document.createElement("div");
-                focusContainer.className = "zycord-FocusContainer";
+                const overlay = document.createElement("div");
+                overlay.className = "zycord-FocusContainer";
 
                 const popout = document.createElement("div");
                 popout.className = "ProfilePopout";
 
+                // Drag handle
                 const dragContainer = document.createElement("div");
                 dragContainer.className = "zycord-MenuDragContainer";
                 const dragIcon = document.createElement("div");
@@ -2463,234 +2732,283 @@
                 dragContainer.appendChild(dragIcon);
                 popout.appendChild(dragContainer);
 
+                // Header: Banner + Avatar + Status
+                const header = document.createElement("div");
+                header.className = "ProfileHeader";
+
                 const banner = document.createElement("div");
                 banner.className = "ProfileBanner";
-                banner.style.backgroundColor = user.banner_color;
 
+                // Create the SVG element
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.classList.add("profiles-banner-contentMask");
+
+                // Define the mask
+                const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+                mask.setAttribute("id", "profiles-banner-mask-content");
+
+                const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                rect.setAttribute("fill", "white");
+                rect.setAttribute("x", "0");
+                rect.setAttribute("y", "0");
+                rect.setAttribute("width", "100%");
+                rect.setAttribute("height", "100%");
+                mask.appendChild(rect);
+
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute("fill", "black");
+                circle.setAttribute("r", "44");
+                circle.setAttribute("cx", "60");
+                circle.setAttribute("cy", "140");
+                mask.appendChild(circle);
+
+                svg.appendChild(mask);
+
+                // Create the foreignObject
+                const foreignObject = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
+                foreignObject.setAttribute("x", "0");
+                foreignObject.setAttribute("y", "0");
+                foreignObject.setAttribute("width", "100%");
+                foreignObject.setAttribute("height", "100%");
+                foreignObject.setAttribute("mask", "url(#profiles-banner-mask-content)");
+
+                // Add banner image if available
                 if (bannerUrl) {
                     const bannerImg = document.createElement("img");
                     bannerImg.src = bannerUrl;
-                    bannerImg.className = "ProfileBannerDisplay";
-                    banner.appendChild(bannerImg);
+                    bannerImg.className = "profiles-banner-BannerDisplay";
+                    foreignObject.appendChild(bannerImg);
                 }
 
-                const avatarContainer = document.createElement("div");
-                avatarContainer.className = "ProfileAvatar";
+                // Add banner color overlay
+                const bannerColor = document.createElement("div");
+                bannerColor.className = "profiles-banner-BannerColor";
+                bannerColor.style.backgroundColor = user.banner_color || "#ccc";
+                foreignObject.appendChild(bannerColor);
 
-                const avatarImg = document.createElement("img");
-                avatarImg.src = avatarUrl;
-                avatarImg.className = "ProfileAvatarDisplay";
+                svg.appendChild(foreignObject);
+                banner.appendChild(svg);
 
-                const statusDiv = document.createElement("div");
-                statusDiv.className = "ProfileStatus";
+                const avatar = document.createElement("div");
+                avatar.className = "profiles-avatar";
 
-                const statusIcon = document.createElement("div");
-                statusIcon.className = `ProfileStatusDisplay ${statusClass}`;
-                statusDiv.appendChild(statusIcon);
+                // Create SVG mask structure
+                const avatarSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                avatarSvg.classList.add("profiles-avatar-mask");
 
-                avatarContainer.appendChild(avatarImg);
-                avatarContainer.appendChild(statusDiv);
+                // Define mask
+                const avatarMask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+                avatarMask.setAttribute("id", "profiles-avatar-mask-content");
 
-                const header = document.createElement("div");
-                header.className = "ProfileHeader";
+                const avatarMaskRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                avatarMaskRect.setAttribute("fill", "white");
+                avatarMaskRect.setAttribute("x", "0");
+                avatarMaskRect.setAttribute("y", "0");
+                avatarMaskRect.setAttribute("width", "100%");
+                avatarMaskRect.setAttribute("height", "100%");
+
+                const avatarMaskCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                avatarMaskCircle.setAttribute("fill", "black");
+                avatarMaskCircle.setAttribute("r", "14");
+                avatarMaskCircle.setAttribute("cx", "70");
+                avatarMaskCircle.setAttribute("cy", "70");
+
+                avatarMask.appendChild(avatarMaskRect);
+                avatarMask.appendChild(avatarMaskCircle);
+                avatarSvg.appendChild(avatarMask);
+
+                // Create foreignObject for avatar image
+                const avatarForeignObject = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
+                avatarForeignObject.setAttribute("x", "0");
+                avatarForeignObject.setAttribute("y", "0");
+                avatarForeignObject.setAttribute("width", "100%");
+                avatarForeignObject.setAttribute("height", "100%");
+                avatarForeignObject.setAttribute("mask", "url(#profiles-avatar-mask-content)");
+
+                const avatarImage = document.createElement("img");
+                avatarImage.src = avatarUrl;
+                avatarImage.className = "profiles-avatar-image";
+
+                avatarForeignObject.appendChild(avatarImage);
+                avatarSvg.appendChild(avatarForeignObject);
+                avatar.appendChild(avatarSvg);
+
+                // Status indicator
+                const avatarStatus = document.createElement("div");
+                avatarStatus.className = "ProfileStatus";
+
+                const avatarStatusDot = document.createElement("div");
+                avatarStatusDot.className = `ProfileStatusDisplay ${statusClass}`;
+
+                avatarStatus.appendChild(avatarStatusDot);
+                avatar.appendChild(avatarStatus);
+
                 header.appendChild(banner);
-                header.appendChild(avatarContainer);
+                header.appendChild(avatar);
+                popout.appendChild(header);
 
-                const nameDiv = document.createElement("div");
-                nameDiv.className = "ProfileName";
-                nameDiv.textContent = user.global_name || user.username;
+                // Profile Details
+                const container = document.createElement("div");
+                container.className = "profiles-container";
 
-                const UsernameContainer = document.createElement("div");
-                UsernameContainer.className = "zycord-UsernameContainer";
+                const details = document.createElement("div");
+                details.className = "ProfileDetails";
 
-                const usernameDiv = document.createElement("div");
-                usernameDiv.className = "ProfileUsername";
-                usernameDiv.textContent = `@${user.username}${user.discriminator !== "0" ? "#" + user.discriminator : ""}`;
+                const nickname = document.createElement("div");
+                nickname.className = "profiles-nickname";
+                nickname.textContent = user.global_name || user.username;
 
-                const detailsDiv = document.createElement("div");
-                detailsDiv.className = "ProfileDetails";
+                const usernameContainer = document.createElement("div");
+                usernameContainer.className = "zycord-UsernameContainer";
+                const username = document.createElement("div");
+                username.className = "profiles-username";
+                username.textContent = `${user.username}${user.discriminator !== "0" ? "#" + user.discriminator : ""}`;
+                usernameContainer.appendChild(username);
 
-                UsernameContainer.appendChild(usernameDiv);
-                detailsDiv.append(nameDiv, UsernameContainer);
+                details.appendChild(nickname);
+                details.appendChild(usernameContainer);
 
-                if (jsonResponse.user_profile.pronouns !== "") {
-                    const MutedDotSpacer = document.createElement("div");
-                    MutedDotSpacer.className = "zycord-MutedDotSpacer";
-
-                    const pronounsDiv = document.createElement("div");
-                    pronounsDiv.className = "ProfileUsername";
-                    pronounsDiv.textContent = jsonResponse.user_profile.pronouns;
-
-                    UsernameContainer.append(MutedDotSpacer, pronounsDiv)
-                }
-
-                if (jsonResponse.badges.length > 0) {
-                    const ProfileBadgeContainer = document.createElement("div");
-                    ProfileBadgeContainer.className = "zycord-ProfileBadgeContainer";
-
-                    jsonResponse.badges.forEach((badge) => {
-                        const ProfileBadgeImage = document.createElement("img");
-                        ProfileBadgeImage.className = "zycord-ProfileBadgeImage";
-                        ProfileBadgeImage.src = `https://cdn.discordapp.com/badge-icons/${badge.icon}.png`
-                        ProfileBadgeContainer.appendChild(ProfileBadgeImage);
+                // Badges
+                if (badges.length > 0) {
+                    const badgeContainer = document.createElement("div");
+                    badgeContainer.className = "zycord-ProfileBadgeContainer";
+                    badges.forEach(({ icon }) => {
+                        const badge = document.createElement("img");
+                        badge.className = "zycord-ProfileBadgeImage";
+                        badge.src = `https://cdn.discordapp.com/badge-icons/${icon}.png`;
+                        badgeContainer.appendChild(badge);
                     });
-
-                    detailsDiv.appendChild(ProfileBadgeContainer)
+                    details.appendChild(badgeContainer);
                 }
 
-                const bioContainer = document.createElement("div");
-                bioContainer.className = "ProfileContentContainer";
+                container.appendChild(details);
 
-                const bioHeader = document.createElement("div");
-                bioHeader.className = "ProfileContentHeader";
-                bioHeader.textContent = "About Me";
-
-                const bioText = document.createElement("div");
-                bioText.className = "ProfileContentText";
-
+                // About Me
+                const aboutContainer = document.createElement("div");
+                aboutContainer.className = "profiles-content-container";
+                const aboutHeader = document.createElement("div");
+                aboutHeader.className = "profiles-header-content";
+                aboutHeader.textContent = "About Me";
+                const aboutText = document.createElement("div");
+                aboutText.className = "profiles-text-content";
                 if (user.bio) {
                     user.bio.split("\n").forEach(line => {
                         const span = document.createElement("span");
                         span.textContent = line;
-                        bioText.appendChild(span);
-                        bioText.appendChild(document.createElement("br"));
+                        aboutText.appendChild(span);
+                        aboutText.appendChild(document.createElement("br"));
+                    });
+                }
+                aboutContainer.appendChild(aboutHeader);
+                aboutContainer.appendChild(aboutText);
+                container.appendChild(aboutContainer);
+
+                // Member Since
+                const memberContainer = document.createElement("div");
+                memberContainer.className = "profiles-content-container";
+                const memberHeader = document.createElement("div");
+                memberHeader.className = "profiles-header-content";
+                memberHeader.textContent = "Member Since";
+                const memberText = document.createElement("div");
+                memberText.className = "profiles-text-content";
+                memberText.textContent = getDiscordCreationDate(user.id).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric"
+                });
+                memberContainer.appendChild(memberHeader);
+                memberContainer.appendChild(memberText);
+                container.appendChild(memberContainer);
+
+                // Activities
+                const activityData = zycordDataStore.get(`activities-${userId}`);
+                if (activityData?.activities?.length > 0) {
+                    renderActivities(activityData, container);
+                }
+
+                popout.appendChild(container);
+                overlay.appendChild(popout);
+
+                // Animate in
+                overlay.style.opacity = "0";
+                overlay.style.transform = "translateY(20px)";
+                overlay.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+
+                const parent = document.querySelector(".zycord-FocusContainerList");
+                if (parent) {
+                    parent.appendChild(overlay);
+                    requestAnimationFrame(() => {
+                        overlay.style.opacity = "1";
+                        overlay.style.transform = "translateY(0)";
                     });
                 }
 
-                bioContainer.appendChild(bioHeader);
-                bioContainer.appendChild(bioText);
-
-                const dateContainer = document.createElement("div");
-                dateContainer.className = "ProfileContentContainer";
-
-                const dateHeader = document.createElement("div");
-                dateHeader.className = "ProfileContentHeader";
-                dateHeader.textContent = "Member Since";
-
-                const dateText = document.createElement("div");
-                dateText.className = "ProfileContentText";
-                dateText.textContent = new Date().toLocaleDateString(); // You could swap in `user.created_at` or similar
-
-                dateContainer.appendChild(dateHeader);
-                dateContainer.appendChild(dateText);
-
-                const content = document.createElement("div");
-                content.className = "ProfileContent";
-                content.appendChild(bioContainer);
-                content.appendChild(dateContainer);
-
-                const profileContainer = document.createElement("div");
-                profileContainer.className = "ProfileContainer";
-                profileContainer.appendChild(detailsDiv);
-                profileContainer.appendChild(content);
-
-                if (activity?.activities?.length > 0) {
-                    renderActivities(activity, profileContainer);
-                }
-
-                popout.appendChild(header);
-                popout.appendChild(profileContainer);
-
-                focusContainer.style.opacity = "0";
-                focusContainer.style.transform = "translateY(20px)";
-                focusContainer.style.transition = "opacity 0.4s ease, transform 0.4s ease";
-
-                focusContainer.appendChild(popout);
-                focusContainer.addEventListener("click", e => {
+                // Dismiss logic
+                overlay.addEventListener("click", e => {
                     if (!popout.contains(e.target)) {
-                        bottomMenu.style.transition = "transform 0.3s ease";
-                        bottomMenu.style.transform = "translateY(100%) translateX(-50%)";
-                        focusContainer.style.transition = "opacity 0.3s ease";
-                        focusContainer.style.opacity = "0";
+                        popout.style.transition = "transform 0.3s ease";
+                        popout.style.transform = "translateY(100%) translateX(-50%)";
+                        overlay.style.transition = "opacity 0.3s ease";
+                        overlay.style.opacity = "0";
                         setTimeout(() => {
                             zycordInternals_setUserActivity.clearActivity(1);
-                            focusContainer.remove();
+                            overlay.remove();
                         }, 300);
                     }
                 });
 
-                const focusContainerList = document.querySelector(".zycord-FocusContainerList");
-                if (focusContainerList) {
-                    focusContainerList.appendChild(focusContainer);
-                    requestAnimationFrame(() => {
-                        focusContainer.style.opacity = "1";
-                        focusContainer.style.transform = "translateY(0)";
-                    });
-                }
-
-                let isDragging = false;
-                let gestureLocked = null;
-                let dragStartY = 0;
-                let dragDeltaY = 0;
-                let dragBuffer = 0;
-
-                const scrollContainer = popout;
-                const bottomMenu = popout;
-
-                bottomMenu.addEventListener("touchstart", (e) => {
+                // Touch gesture logic (unchanged)
+                let isDragging = false, dragStartY = 0, dragDelta = 0, dragOffset = 0, dragMode = null;
+                popout.addEventListener("touchstart", e => {
                     if (e.touches.length === 1) {
                         dragStartY = e.touches[0].clientY;
-                        dragDeltaY = 0;
-                        dragBuffer = 0;
+                        dragDelta = dragOffset = 0;
                         isDragging = true;
-                        gestureLocked = null;
-                        bottomMenu.style.transition = "none";
-                        bottomMenu.style.willChange = "transform";
+                        dragMode = null;
+                        popout.style.transition = "none";
+                        popout.style.willChange = "transform";
                     }
                 });
 
-                bottomMenu.addEventListener("touchmove", (e) => {
+                popout.addEventListener("touchmove", e => {
                     if (!isDragging) return;
-                    const y = e.touches[0].clientY;
-                    dragDeltaY = y - dragStartY;
-
-                    if (gestureLocked === null && Math.abs(dragDeltaY) > 10) {
-                        gestureLocked = "profileDrag";
-                    }
-
-                    if (gestureLocked === "profileDrag") {
-                        const isAtTop = scrollContainer?.scrollTop <= 0;
-
-                        if (!isAtTop) {
-                            dragBuffer += dragDeltaY;
-                            dragStartY = y;
+                    const currentY = e.touches[0].clientY;
+                    dragDelta = currentY - dragStartY;
+                    if (dragMode === null && Math.abs(dragDelta) > 10) dragMode = "profileDrag";
+                    if (dragMode === "profileDrag") {
+                        if (popout.scrollTop > 0) {
+                            dragOffset += dragDelta;
+                            dragStartY = currentY;
                             return;
                         }
-
-                        const totalDrag = dragDeltaY + dragBuffer;
-                        if (totalDrag > 0) {
-                            const dragPercent = Math.min((totalDrag / window.innerHeight) * 100, 100);
-                            bottomMenu.style.transform = `translateY(${dragPercent}vh) translateX(-50%)`;
-                            scrollContainer.style.overflow = "hidden";
-                            e.preventDefault();
-                        }
+                        const translateY = Math.min((dragDelta + dragOffset) / window.innerHeight * 100, 100);
+                        popout.style.transform = `translateY(${translateY}vh) translateX(-50%)`;
+                        popout.style.overflow = "hidden";
+                        e.preventDefault();
                     }
                 });
 
-                bottomMenu.addEventListener("touchend", () => {
+                popout.addEventListener("touchend", () => {
                     if (!isDragging) return;
                     isDragging = false;
-
-                    const totalDrag = dragDeltaY + dragBuffer;
-                    bottomMenu.style.transition = "transform 0.25s ease";
-                    bottomMenu.style.willChange = "auto";
-
-                    if (gestureLocked === "profileDrag" && totalDrag > window.innerHeight * 0.25) {
-                        bottomMenu.style.transition = "transform 0.3s ease";
-                        bottomMenu.style.transform = "translateY(100%) translateX(-50%)";
-                        focusContainer.style.transition = "opacity 0.3s ease";
-                        focusContainer.style.opacity = "0";
+                    const totalDrag = dragDelta + dragOffset;
+                    popout.style.transition = "transform 0.25s ease";
+                    popout.style.willChange = "auto";
+                    if (dragMode === "profileDrag" && totalDrag > 0.25 * window.innerHeight) {
+                        popout.style.transition = "transform 0.3s ease";
+                        popout.style.transform = "translateY(100%) translateX(-50%)";
+                        overlay.style.transition = "opacity 0.3s ease";
+                        overlay.style.opacity = "0";
                         setTimeout(() => {
                             zycordInternals_setUserActivity.clearActivity(1);
-                            focusContainer.remove();
+                            overlay.remove();
                         }, 300);
                     } else {
-                        scrollContainer.style.overflow = "auto";
-                        bottomMenu.style.transform = "translateY(0) translateX(-50%)";
+                        popout.style.overflow = "auto";
+                        popout.style.transform = "translateY(0) translateX(-50%)";
                     }
-
-                    gestureLocked = null;
-                    dragBuffer = 0;
+                    dragMode = null;
+                    dragOffset = 0;
                 });
             }
 
