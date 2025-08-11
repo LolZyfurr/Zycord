@@ -33,16 +33,49 @@
     }
 
     class ChannelsManager {
-        constructor(client) { this.client = client; }
+        constructor(client) {
+            this.client = client;
+            this._dmIndexKey = 'dm:index';
+        }
         async fetch(id, { force = false } = {}) {
-            const key = `channel:${id}`;
-            if (!force && this.client._store.has(key)) {
-                return this.client._store.get(key);
+            if (id) {
+                const key = `channel:${id}`;
+                if (!force && this.client._store.has(key)) {
+                    return this.client._store.get(key);
+                }
+                await this._hydrateAllDMs({ force });
+                return this.client._store.get(key); // may be undefined if not a DM/Group DM
             }
-            const data = await this.client._api(`v9/channels/${id}`);
-            const channel = new TextLikeChannel(this.client, data);
-            this.client._store.set(key, channel);
-            return channel;
+            if (!force && this.client._store.has(this._dmIndexKey)) {
+                const ids = this.client._store.get(this._dmIndexKey);
+                return ids.map(cid => this.client._store.get(`channel:${cid}`)).filter(Boolean);
+            }
+
+            return this._hydrateAllDMs({ force });
+        }
+        async _hydrateAllDMs({ force = false } = {}) {
+            const list = await this.client._api('/users/@me/channels'); // array of DM + Group DM
+            const ids = [];
+
+            for (const data of list) {
+                // Keep only 1:1 DMs (type 1)
+                if (data.type !== 1) continue;
+
+                // Check if the recipient is a bot
+                const recipient = data.recipients?.[0];
+                if (!recipient || recipient.bot) continue;
+
+                const key = `channel:${data.id}`;
+                if (force || !this.client._store.has(key)) {
+                    const channel = new TextLikeChannel(this.client, data);
+                    this.client._store.set(key, channel);
+                }
+                ids.push(data.id);
+            }
+
+            this.client._store.set(this._dmIndexKey, ids);
+
+            return ids.map(cid => this.client._store.get(`channel:${cid}`)).filter(Boolean);
         }
     }
 
@@ -58,7 +91,7 @@
             if (before) query.before = String(before);
             if (after) query.after = String(after);
             if (around) query.around = String(around);
-            const messages = await this.client._api(`v9/channels/${this.channel.id}/messages`, { query });
+            const messages = await this.client._api(`/channels/${this.channel.id}/messages`, { query });
             return Array.isArray(messages) ? messages : [];
         }
     }
@@ -83,7 +116,7 @@
                 properties,
                 autoReconnect = true,
                 reconnectDelay = 5000,
-                apiBase = 'https://discord.com/api'
+                apiBase = 'https://discord.com/api/v10'
             } = options;
             this.properties = properties || this._defaultProperties();
             this.autoReconnect = !!autoReconnect;
