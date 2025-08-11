@@ -295,7 +295,7 @@ export class Client extends Emitter {
   _authHeader() {
     if (!this._token) throw new Error('No token set. Call client.login(token) first.');
     // Respect pre-prefixed tokens ("Bot " / "Bearer "), otherwise default to "Bot "
-    return /^(\s*Bot\s+|\s*Bearer\s+)/i.test(this._token) ? this._token : `Bot ${this._token}`;
+    return /^(\s*Bot\s+|\s*Bearer\s+)/i.test(this._token) ? this._token : `${this._token}`;
   }
 
   /**
