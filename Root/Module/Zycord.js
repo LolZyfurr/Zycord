@@ -4,7 +4,8 @@
 // - Familiar events: ready, message, raw, debug, error, reconnect
 // - Heartbeat (op 10 hello -> op 1 heartbeats), identify (op 2), ACK (op 11)
 // - Auto-reconnect with delay
-// - No undefined functions; all hooks are via events
+// - Adds: client.channels.fetch(id), channel.messages.fetch({ ... })
+// - Minimal REST with simple 429 retry, configurable apiBase
 
 // --- Minimal EventEmitter ---
 class Emitter {
@@ -38,6 +39,68 @@ class Emitter {
   }
 }
 
+// --- Channels + Messages managers (NEW) ---
+class ChannelsManager {
+  /** @param {Client} client */
+  constructor(client) { this.client = client; }
+
+  /**
+   * Fetch a channel by ID from REST (cached unless force=true).
+   * @param {string} id
+   * @param {{force?: boolean}} [options]
+   * @returns {Promise<TextLikeChannel>}
+   */
+  async fetch(id, { force = false } = {}) {
+    const key = `channel:${id}`;
+    if (!force && this.client._store.has(key)) {
+      return this.client._store.get(key);
+    }
+    const data = await this.client._api(`/channels/${id}`);
+    const channel = new TextLikeChannel(this.client, data);
+    this.client._store.set(key, channel);
+    return channel;
+  }
+}
+
+class MessageManager {
+  /** @param {Client} client @param {TextLikeChannel} channel */
+  constructor(client, channel) {
+    this.client = client;
+    this.channel = channel;
+  }
+
+  /**
+   * Fetch messages for channel.
+   * @param {{ limit?: number, before?: string, after?: string, around?: string }} [options]
+   * @returns {Promise<Array<object>>}
+   */
+  async fetch(options = {}) {
+    const { limit = 50, before, after, around } = options;
+    const query = {};
+    if (limit != null) query.limit = String(Math.max(1, Math.min(100, Number(limit))));
+    if (before) query.before = String(before);
+    if (after) query.after = String(after);
+    if (around) query.around = String(around);
+    const messages = await this.client._api(`/channels/${this.channel.id}/messages`, { query });
+    return Array.isArray(messages) ? messages : [];
+  }
+}
+
+class TextLikeChannel {
+  /** @param {Client} client @param {object} data */
+  constructor(client, data) {
+    this.client = client;
+    this.patch(data);
+    this.messages = new MessageManager(client, this);
+  }
+  patch(data) {
+    if (!data || typeof data !== 'object') return this;
+    // Shallow-assign the REST payload. You can pick fields if you prefer.
+    Object.assign(this, data);
+    return this;
+  }
+}
+
 // --- Client ---
 export class Client extends Emitter {
   /**
@@ -46,6 +109,7 @@ export class Client extends Emitter {
    * @param {Object} [options.properties] Identify properties { os, browser, device }
    * @param {boolean} [options.autoReconnect=true]
    * @param {number} [options.reconnectDelay=5000]
+   * @param {string} [options.apiBase='https://discord.com/api/v10'] REST base
    */
   constructor(options = {}) {
     super();
@@ -53,7 +117,8 @@ export class Client extends Emitter {
       wsEndpoint,
       properties,
       autoReconnect = true,
-      reconnectDelay = 5000
+      reconnectDelay = 5000,
+      apiBase = 'https://discord.com/api/v10' // NEW
     } = options;
 
     if (!wsEndpoint) {
@@ -64,6 +129,7 @@ export class Client extends Emitter {
     this.properties = properties || this._defaultProperties();
     this.autoReconnect = !!autoReconnect;
     this.reconnectDelay = Math.max(0, Number(reconnectDelay) || 0);
+    this.apiBase = apiBase;
 
     // Internal state
     this._token = null;
@@ -74,6 +140,9 @@ export class Client extends Emitter {
     this._sessionId = null;
     this._currentlyReconnecting = false;
     this._store = new Map();
+
+    // Managers (NEW)
+    this.channels = new ChannelsManager(this);
   }
 
   // Public API
@@ -229,6 +298,60 @@ export class Client extends Emitter {
   }
 
   _sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  // --- Minimal REST helpers (NEW) ---
+  _authHeader() {
+    if (!this._token) throw new Error('No token set. Call client.login(token) first.');
+    // Respect pre-prefixed tokens ("Bot " / "Bearer "), otherwise default to "Bot "
+    return /^(\s*Bot\s+|\s*Bearer\s+)/i.test(this._token) ? this._token : `Bot ${this._token}`;
+  }
+
+  /**
+   * Perform a REST call to apiBase + path with simple 429 retry.
+   * @param {string} path e.g. "/channels/123"
+   * @param {{ method?: string, query?: Record<string,string>, body?: any, headers?: Record<string,string> }} [opts]
+   */
+  async _api(path, opts = {}) {
+    const { method = 'GET', query, body, headers } = opts;
+    const url = new URL(path, this.apiBase);
+    if (query) for (const [k, v] of Object.entries(query)) url.searchParams.append(k, v);
+
+    const res = await fetch(url.toString(), {
+      method,
+      headers: {
+        'Authorization': this._authHeader(),
+        'Content-Type': 'application/json',
+        ...headers
+      },
+      body: body == null ? undefined : JSON.stringify(body)
+    });
+
+    // Handle 204 (no content)
+    if (res.status === 204) return null;
+
+    // Simple 429 handling with retry_after
+    if (res.status === 429) {
+      let retryAfterMs = 1000;
+      try {
+        const j = await res.json();
+        if (j?.retry_after != null) {
+          retryAfterMs = Number(j.retry_after) * 1000;
+        } else {
+          const ra = res.headers.get('Retry-After');
+          if (ra) retryAfterMs = Number(ra) * 1000;
+        }
+      } catch { /* ignore */ }
+      await this._sleep(retryAfterMs);
+      return this._api(path, opts);
+    }
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => String(res.status));
+      throw new Error(`API ${res.status} ${res.statusText}: ${text}`);
+    }
+
+    return res.json().catch(() => null);
+  }
 }
 
 // Optional factory if you prefer a function API
@@ -250,12 +373,29 @@ const client = new Client({
   wsEndpoint: 'wss://your-gateway.example/ws',
   properties: { os: 'Linux', browser: 'Chrome', device: 'web' },
   autoReconnect: true,
-  reconnectDelay: 5000
+  reconnectDelay: 5000,
+
+  // Optional: point to Discord REST (default shown)
+  apiBase: 'https://discord.com/api/v10'
 });
 
 client.on('ready', ({ sessionId, user }) => {
   console.log('Ready:', sessionId, user);
 });
+
+// REST usage (requires token set; gateway connection not required to be READY)
+(async () => {
+  await client.login('YOUR_BOT_TOKEN'); // Can be "Bot xxx" or plain "xxx"
+
+  // Fetch a channel
+  const channel = await client.channels.fetch('YOUR_CHANNEL_ID');
+
+  // Fetch last 10 messages
+  const messages = await channel.messages.fetch({ limit: 10 });
+  for (const m of messages) {
+    console.log(`[${m.author?.username ?? m.author?.id}]: ${m.content}`);
+  }
+})().catch(console.error);
 
 client.on('message', (payload) => {
   // payload = { op, t, s, d }
@@ -265,6 +405,4 @@ client.on('message', (payload) => {
 client.on('debug', (msg, ctx) => console.debug('[debug]', msg, ctx));
 client.on('error', (err) => console.error('[error]', err));
 client.on('reconnect', () => console.log('Reconnected'));
-
-client.login('YOUR_AUTH_TOKEN');
 */
