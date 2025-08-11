@@ -1,6 +1,5 @@
 (function (global) {
     'use strict';
-
     class Emitter {
         constructor() { this._events = new Map(); }
         on(event, listener) {
@@ -31,7 +30,6 @@
             return true;
         }
     }
-
     class ChannelsManager {
         constructor(client) {
             this.client = client;
@@ -44,27 +42,21 @@
                     return this.client._store.get(key);
                 }
                 await this._hydrateAllDMs({ force });
-                return this.client._store.get(key); // may be undefined if not a DM/Group DM
+                return this.client._store.get(key);
             }
             if (!force && this.client._store.has(this._dmIndexKey)) {
                 const ids = this.client._store.get(this._dmIndexKey);
                 return ids.map(cid => this.client._store.get(`channel:${cid}`)).filter(Boolean);
             }
-
             return this._hydrateAllDMs({ force });
         }
         async _hydrateAllDMs({ force = false } = {}) {
-            const list = await this.client._api('users/@me/channels'); // array of DM + Group DM
+            const list = await this.client._api('users/@me/channels');
             const ids = [];
-
             for (const data of list) {
-                // Keep only 1:1 DMs (type 1)
                 if (data.type !== 1) continue;
-
-                // Check if the recipient is a bot
                 const recipient = data.recipients?.[0];
                 if (!recipient || recipient.bot) continue;
-
                 const key = `channel:${data.id}`;
                 if (force || !this.client._store.has(key)) {
                     const channel = new TextLikeChannel(this.client, data);
@@ -72,13 +64,10 @@
                 }
                 ids.push(data.id);
             }
-
             this.client._store.set(this._dmIndexKey, ids);
-
             return ids.map(cid => this.client._store.get(`channel:${cid}`)).filter(Boolean);
         }
     }
-
     class MessageManager {
         constructor(client, channel) {
             this.client = client;
@@ -92,10 +81,15 @@
             if (after) query.after = String(after);
             if (around) query.around = String(around);
             const messages = await this.client._api(`channels/${this.channel.id}/messages`, { query });
-            return Array.isArray(messages) ? messages : [];
+            const list = Array.isArray(messages) ? messages : [];
+
+            // Attach presence helpers to authors
+            for (const m of list) {
+                if (m && m.author) this.client._attachPresenceHelpers(m.author);
+            }
+            return list;
         }
     }
-
     class TextLikeChannel {
         constructor(client, data) {
             this.client = client;
@@ -105,10 +99,25 @@
         patch(data) {
             if (!data || typeof data !== 'object') return this;
             Object.assign(this, data);
+
+            // Attach presence helpers to known user-bearing shapes
+            if (Array.isArray(this.recipients)) {
+                for (const r of this.recipients) this.client._attachPresenceHelpers(r);
+            }
+            // Also attach directly to channel.user getter target when accessed
             return this;
         }
-    }
 
+        // Convenience: the DM counterpart
+        get user() {
+            if (Array.isArray(this.recipients) && this.recipients.length) {
+                const u = this.recipients.find(r => !r?.bot) || this.recipients[0] || null;
+                if (u) this.client._attachPresenceHelpers(u);
+                return u || null;
+            }
+            return null;
+        }
+    }
     class Client extends Emitter {
         constructor(options = {}) {
             super();
@@ -118,10 +127,12 @@
                 reconnectDelay = 5000,
                 apiBase = 'https://discord.com/api/v9'
             } = options;
+
             this.properties = properties || this._defaultProperties();
             this.autoReconnect = !!autoReconnect;
             this.reconnectDelay = Math.max(0, Number(reconnectDelay) || 0);
             this.apiBase = apiBase;
+
             this._token = null;
             this._ws = null;
             this._heartbeatIntervalId = null;
@@ -129,7 +140,12 @@
             this._seq = null;
             this._sessionId = null;
             this._currentlyReconnecting = false;
+
             this._store = new Map();
+
+            // Bind helper so external modules can safely call it.
+            this._attachPresenceHelpers = this._attachPresenceHelpers.bind(this);
+
             this.channels = new ChannelsManager(this);
         }
 
@@ -159,6 +175,59 @@
                 device: 'web'
             };
         }
+
+        // ---------- Presence helpers ----------
+
+        _presenceKey(userId) { return `presences:${userId}`; }
+
+        _storePresence(presence) {
+            const uid = presence?.user?.id ?? presence?.user_id;
+            if (!uid) return;
+            this._store.set(this._presenceKey(uid), presence);
+            this.emit('presenceUpdate', { userId: uid, presence });
+        }
+
+        getPresence(userId) {
+            return this._store.get(this._presenceKey(userId)) || null;
+        }
+
+        // Attach non-enumerable getPrescence/getPresence to any user-bearing object
+        _attachPresenceHelpers(obj) {
+            if (!obj || typeof obj !== 'object') return;
+
+            const client = this;
+            const defineHelper = (target) => {
+                if (!target || typeof target !== 'object') return;
+
+                if (!Object.prototype.hasOwnProperty.call(target, 'getPrescence')) {
+                    Object.defineProperty(target, 'getPrescence', {
+                        value: function () {
+                            const id = this?.id ?? this?.user?.id ?? this?.author?.id ?? null;
+                            return id ? client.getPresence(id) : null;
+                        },
+                        enumerable: false,
+                        configurable: true,
+                        writable: false
+                    });
+                }
+                if (!Object.prototype.hasOwnProperty.call(target, 'getPresence')) {
+                    Object.defineProperty(target, 'getPresence', {
+                        value: target.getPrescence,
+                        enumerable: false,
+                        configurable: true,
+                        writable: false
+                    });
+                }
+            };
+
+            // Attach to the object itself
+            defineHelper(obj);
+            // And to common nested shapes
+            if (obj.user && typeof obj.user === 'object') defineHelper(obj.user);
+            if (obj.author && typeof obj.author === 'object') defineHelper(obj.author);
+        }
+
+        // ---------- Gateway / lifecycle ----------
 
         _connect() {
             this.emit('debug', 'Connecting');
@@ -196,7 +265,21 @@
 
                 if (type === 'READY') {
                     this._sessionId = data?.session_id || null;
+
+                    // Seed presence map from READY
+                    if (Array.isArray(data?.presences)) {
+                        for (const presence of data.presences) {
+                            this._storePresence(presence);
+                        }
+                    }
+
+                    // Optionally attach helpers to the self user shape
+                    if (data?.user) this._attachPresenceHelpers(data.user);
+
                     this.emit('ready', { sessionId: this._sessionId, user: data?.user || null });
+                } else if (type === 'PRESENCE_UPDATE') {
+                    // Upsert presence on updates
+                    if (data) this._storePresence(data);
                 } else if (type) {
                     this.emit('message', { op, t: type, s: seq, d: data });
                 }
@@ -264,7 +347,6 @@
 
             this.emit('debug', 'Reconnecting soon…', { delay: this.reconnectDelay, kind, detail });
             await this._sleep(this.reconnectDelay);
-
             try {
                 this._connect();
                 this.emit('debug', 'Reconnect attempted');
@@ -322,16 +404,11 @@
             return res.json().catch(() => null);
         }
     }
-
     function createClient(options) {
         return new Client(options);
     }
-
     const api = { Client, createClient };
-
     if (global) {
-        // Preserve existing namespace if present; otherwise, set ours.
         global.MiniDiscordish = global.MiniDiscordish || api;
     }
-
 })(typeof window !== 'undefined' ? window : (typeof globalThis !== 'undefined' ? globalThis : this));
