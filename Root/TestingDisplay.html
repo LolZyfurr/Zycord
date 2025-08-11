@@ -860,6 +860,12 @@
             opacity: 0;
             transform: translateY(-4px) scale(.985);
         }
+
+        *:not(.zc-scrollable) {
+            overflow: hidden;
+            overscroll-behavior: contain;
+            touch-action: none;
+        }
     </style>
 
 <body>
@@ -875,10 +881,10 @@
 
                         </div>
                     </div>
-                    <div class="zc-window-scroller" role="document">
+                    <div class="zc-window-scroller zc-scrollable" role="document">
 
-                        <div class="zc-accounts-management">
-                            <div class="zc-accounts-listing">
+                        <div class="zc-accounts-management zc-scrollable">
+                            <div class="zc-accounts-listing zc-scrollable">
                                 <div class="zc-accounts-left">
                                     <img class="zc-accounts-avatar" src="https://cdn.discordapp.com/avatars/1132521952238637117/d01e72ce81a4754ebe138ffa648067b8.png">
                                 </div>
@@ -892,7 +898,7 @@
                                 </div>
                             </div>
 
-                            <div class="zc-accounts-listing">
+                            <div class="zc-accounts-listing zc-scrollable">
                                 <div class="zc-accounts-left">
                                     <img class="zc-accounts-avatar" src="https://cdn.discordapp.com/avatars/1091921000666497136/dbeb7d06f8af3f64461fd013696202ee.png?size=2048">
                                 </div>
@@ -906,7 +912,7 @@
                                 </div>
                             </div>
 
-                            <div class="zc-accounts-listing manage">
+                            <div class="zc-accounts-listing manage zc-scrollable">
                                 <div class="zc-accounts-left">
                                     <div class="zc-accounts-avatar">
 
@@ -2384,30 +2390,127 @@
             ]
         });
 
-        let lastHeight = 0;
+        // Tunables — shape the rhythm
+        const IDLE_INTERVAL_MS = 500; // Low-FPS idle cadence (≈2fps)
+        const ACTIVE_HOLD_MS = 350; // How long to stay "hot" after last action
+
+        let lastHeight = -1; // Start unknown to force first sync
+        let rafId = null;
+        let idleId = null;
+        let activeUntil = 0;
+
+        function readViewportHeight() {
+            // Round to whole px to avoid jittery micro-changes from fractional values
+            const h = window.visualViewport?.height ?? window.innerHeight;
+            return Math.round(h);
+        }
 
         function setAppHeight() {
-            const vh = window.visualViewport?.height || window.innerHeight;
+            const vh = readViewportHeight();
             document.documentElement.style.setProperty('--app-height', `${vh}px`);
         }
 
-        function monitorViewportHeight() {
-            const currentHeight = window.visualViewport?.height || window.innerHeight;
+        function tick(now = performance.now()) {
+            // Sample
+            const currentHeight = readViewportHeight();
+
+            // Detect meaningful change
             if (currentHeight !== lastHeight) {
                 lastHeight = currentHeight;
                 setAppHeight();
+                // Any real change keeps us in "action" mode a touch longer
+                activeUntil = Math.max(activeUntil, now + ACTIVE_HOLD_MS);
             }
-            requestAnimationFrame(monitorViewportHeight);
+
+            // Schedule next frame based on current "heat"
+            if (now < activeUntil) {
+                rafId = requestAnimationFrame(tick);
+            } else {
+                // Cool off into idle; switch to a gentle timer
+                rafId = null;
+                idleId = setTimeout(() => {
+                    idleId = null;
+                    tick(performance.now());
+                }, IDLE_INTERVAL_MS);
+            }
         }
 
-        if (window.visualViewport) {
-            requestAnimationFrame(monitorViewportHeight);
-        } else {
-            // Fallback for environments without visualViewport
-            window.addEventListener('resize', setAppHeight);
+        // Nudge the loop into high-FPS mode for a short window
+        function markAction(extraMs = ACTIVE_HOLD_MS) {
+            const now = performance.now();
+            activeUntil = Math.max(activeUntil, now + extraMs);
+
+            // If we're idling, jump immediately into rAF
+            if (!rafId) {
+                if (idleId) {
+                    clearTimeout(idleId);
+                    idleId = null;
+                }
+                rafId = requestAnimationFrame(tick);
+            }
         }
 
+        // Wire “action” sources
+        function wireActionDetectors() {
+            const vv = window.visualViewport;
+
+            // Viewport dynamics (URL bar show/hide on mobile, zoom, etc.)
+            if (vv) {
+                vv.addEventListener('resize', () => markAction(600), {
+                    passive: true
+                });
+                vv.addEventListener('scroll', () => markAction(400), {
+                    passive: true
+                });
+            }
+
+            // Classic layout/rotation changes
+            window.addEventListener('resize', () => markAction(800), {
+                passive: true
+            });
+            window.addEventListener('orientationchange', () => markAction(1000), {
+                passive: true
+            });
+
+            // User intent — pointer, wheel, keys (keep it lightweight)
+            window.addEventListener('pointerdown', () => markAction(), {
+                passive: true
+            });
+            window.addEventListener('pointermove', () => markAction(200), {
+                passive: true
+            });
+            window.addEventListener('wheel', () => markAction(300), {
+                passive: true
+            });
+            window.addEventListener('keydown', () => markAction(300), {
+                passive: true
+            });
+
+            // Throttle way down when hidden; resume when visible
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden') {
+                    activeUntil = 0;
+                    if (rafId) {
+                        cancelAnimationFrame(rafId);
+                        rafId = null;
+                    }
+                    if (idleId) clearTimeout(idleId);
+                    idleId = setTimeout(() => {
+                        idleId = null;
+                        tick(performance.now());
+                    }, Math.max(IDLE_INTERVAL_MS, 1000));
+                } else {
+                    markAction(800);
+                }
+            }, {
+                passive: true
+            });
+        }
+
+        // Boot
         setAppHeight(); // Initial sync
+        wireActionDetectors();
+        tick(); // Start the scheduler
     </script>
 </body>
 
