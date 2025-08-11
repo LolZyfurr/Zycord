@@ -2384,6 +2384,19 @@
                 }
             ]
         });
+
+        function updateBodyHeight() {
+            const height = window.visualViewport?.height || window.innerHeight;
+            document.body.style.height = `${height}px`;
+        }
+
+        // Call on load and resize
+        window.addEventListener('resize', updateBodyHeight);
+        window.addEventListener('orientationchange', updateBodyHeight);
+        window.addEventListener('focusin', updateBodyHeight); // catches keyboard open
+        window.addEventListener('focusout', updateBodyHeight); // catches keyboard close
+
+        updateBodyHeight(); // initial call
     </script>
 </body>
 
