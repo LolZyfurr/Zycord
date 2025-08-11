@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/LolZyfurr/Zycord/refs/heads/main/Root/Logo/ZycordLogo192.png">
     <style>
         body {
-            background-color: var(--bg-primary);
+            background-color: #fff;
             font-family: 'Segoe UI', sans-serif;
             color: var(--text-main);
             margin: 0;
@@ -1178,7 +1178,7 @@
                 badgeIcon = 'fallback-badge.png',
                 badgeLabel = '',
                 statusText = '',
-                nameplateSrc = 'fallback-nameplate.png',
+                nameplateSrc = '',
                 activityType = '',
                 activityText = '', // <— added
                 userId,
@@ -1244,25 +1244,6 @@
 
                 const layout = document.createElement('div');
                 layout.classList.add('zc-dm-layout');
-
-                // Media (nameplate)
-                const mediaContainer = document.createElement('div');
-                mediaContainer.classList.add('zc-dm-media-container');
-
-                const videoFrame = document.createElement('div');
-                videoFrame.classList.add('zc-dm-video-frame');
-
-                const staticImage = configureImg(
-                    document.createElement('img'), {
-                        src: nameplateSrc,
-                        fallback: 'fallback-nameplate.png',
-                        alt: ''
-                    }
-                );
-                staticImage.classList.add('zc-dm-static-image');
-                staticImage.setAttribute('aria-hidden', 'true');
-                videoFrame.appendChild(staticImage);
-                mediaContainer.appendChild(videoFrame);
 
                 // Avatar zone with proper SVG mask
                 const avatarZone = document.createElement('div');
@@ -1426,7 +1407,27 @@
                 layout.appendChild(avatarZone);
                 layout.appendChild(contentZone);
                 link.appendChild(layout);
-                interactive.appendChild(mediaContainer);
+                // Media (nameplate)
+                if (nameplateSrc.trim() !== '') {
+                    const mediaContainer = document.createElement('div');
+                    mediaContainer.classList.add('zc-dm-media-container');
+
+                    const videoFrame = document.createElement('div');
+                    videoFrame.classList.add('zc-dm-video-frame');
+
+                    const staticImage = configureImg(
+                        document.createElement('img'), {
+                            src: nameplateSrc,
+                            fallback: 'fallback-nameplate.png',
+                            alt: ''
+                        }
+                    );
+                    staticImage.classList.add('zc-dm-static-image');
+                    staticImage.setAttribute('aria-hidden', 'true');
+                    videoFrame.appendChild(staticImage);
+                    mediaContainer.appendChild(videoFrame);
+                    interactive.appendChild(mediaContainer);
+                }
                 interactive.appendChild(link);
                 channel.appendChild(interactive);
                 frag.appendChild(channel);
