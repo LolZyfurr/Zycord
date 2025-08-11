@@ -2,7 +2,7 @@
 
 <head>
     <title>Zycord</title>
-    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="manifest" href="https://raw.githubusercontent.com/LolZyfurr/Zycord/refs/heads/main/Root/WebManifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,51 +17,19 @@
             overflow-x: hidden;
             box-sizing: border-box;
             position: fixed;
-            width: 100%;
+            width: 100dvw;
             overflow: hidden;
             touch-action: none;
+            height: 100dvh;
         }
-
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            background: #111;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        body>.frame {
-            aspect-ratio: 1179 / 2556;
-            width: min(100vw, 100vh * (1179 / 2556));
-            height: auto;
-            background: #222;
-            overflow: hidden;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
-        }
-
-        .tempimgjuhgbnhnbjjmhnbk {
-            position: absolute;
-            top: 0px;
-            pointer-events: none;
-            display: block;
-            width: inherit;
-            height: inherit;
-            object-fit: cover;
-            object-position: center;
-            filter: invert(1);
-        }
-
 
         :root {
             /* Layout & Spacing */
             --rail-h: 60px;
             --safe-t: env(safe-area-inset-top, 0px);
             --safe-b: env(safe-area-inset-bottom, 0px);
-            --device-inset-top: 68px;
-            --device-inset-bottom: 26px;
+            --device-inset-top: env(safe-area-inset-top, 0px);
+            --device-inset-bottom: env(safe-area-inset-bottom, 0px);
             --gap-xs: 4px;
             --gap-sm: 8px;
             --gap-md: 16px;
@@ -896,91 +864,85 @@
     </style>
 
 <body>
-    <div class="frame">
+    <div class="zc-app" data-app="zero-cosmos">
+        <div class="zc-overlays">
 
-        <div class="zc-app" data-app="zero-cosmos">
-            <div class="zc-overlays">
+        </div>
+        <div class="zc-main">
+            <div class="zc-windows" role="region" aria-label="App windows">
+                <div class="zc-window" id="zc-window-messages" data-window-id="messages" aria-labelledby="zc-window-title-messages">
+                    <div class="zc-window-topnav">
+                        <div class="zc-window-innernav">
 
-            </div>
-            <div class="zc-main">
-                <div class="zc-windows" role="region" aria-label="App windows">
-                    <div class="zc-window" id="zc-window-messages" data-window-id="messages" aria-labelledby="zc-window-title-messages">
-                        <div class="zc-window-topnav">
-                            <div class="zc-window-innernav">
-
-                            </div>
                         </div>
-                        <div class="zc-window-scroller" role="document">
+                    </div>
+                    <div class="zc-window-scroller" role="document">
 
-                            <div class="zc-accounts-management">
-                                <div class="zc-accounts-listing">
-                                    <div class="zc-accounts-left">
-                                        <img class="zc-accounts-avatar" src="https://cdn.discordapp.com/avatars/1132521952238637117/d01e72ce81a4754ebe138ffa648067b8.png">
-                                    </div>
-                                    <div class="zc-accounts-right">
-                                        <div class="zc-accounts-nickname">
-                                            Z
-                                        </div>
-                                        <div class="zc-accounts-username">
-                                            zbeats310
-                                        </div>
-                                    </div>
+                        <div class="zc-accounts-management">
+                            <div class="zc-accounts-listing">
+                                <div class="zc-accounts-left">
+                                    <img class="zc-accounts-avatar" src="https://cdn.discordapp.com/avatars/1132521952238637117/d01e72ce81a4754ebe138ffa648067b8.png">
                                 </div>
-
-                                <div class="zc-accounts-listing">
-                                    <div class="zc-accounts-left">
-                                        <img class="zc-accounts-avatar" src="https://cdn.discordapp.com/avatars/1091921000666497136/dbeb7d06f8af3f64461fd013696202ee.png?size=2048">
+                                <div class="zc-accounts-right">
+                                    <div class="zc-accounts-nickname">
+                                        Z
                                     </div>
-                                    <div class="zc-accounts-right">
-                                        <div class="zc-accounts-nickname">
-                                            Kaedes
-                                        </div>
-                                        <div class="zc-accounts-username">
-                                            8dev
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="zc-accounts-listing manage">
-                                    <div class="zc-accounts-left">
-                                        <div class="zc-accounts-avatar">
-
-                                        </div>
-                                    </div>
-                                    <div class="zc-accounts-right">
-                                        <div class="zc-accounts-nickname">
-                                            Manage
-                                        </div>
-                                        <div class="zc-accounts-username">
-                                            Manage Accounts
-                                        </div>
+                                    <div class="zc-accounts-username">
+                                        zbeats310
                                     </div>
                                 </div>
                             </div>
 
+                            <div class="zc-accounts-listing">
+                                <div class="zc-accounts-left">
+                                    <img class="zc-accounts-avatar" src="https://cdn.discordapp.com/avatars/1091921000666497136/dbeb7d06f8af3f64461fd013696202ee.png?size=2048">
+                                </div>
+                                <div class="zc-accounts-right">
+                                    <div class="zc-accounts-nickname">
+                                        Kaedes
+                                    </div>
+                                    <div class="zc-accounts-username">
+                                        8dev
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="zc-accounts-listing manage">
+                                <div class="zc-accounts-left">
+                                    <div class="zc-accounts-avatar">
+
+                                    </div>
+                                </div>
+                                <div class="zc-accounts-right">
+                                    <div class="zc-accounts-nickname">
+                                        Manage
+                                    </div>
+                                    <div class="zc-accounts-username">
+                                        Manage Accounts
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="zc-window" id="zc-window-notifications" data-window-id="notifications" aria-labelledby="zc-window-title-notifications" hidden>
-
-                    </div>
-                    <div class="zc-window" id="zc-window-profile" data-window-id="profile" aria-labelledby="zc-window-title-profile" hidden>
-
-                    </div>
-                    <div class="zc-window" id="zc-window-settings" data-window-id="settings" aria-labelledby="zc-window-title-settings" hidden>
 
                     </div>
                 </div>
+                <div class="zc-window" id="zc-window-notifications" data-window-id="notifications" aria-labelledby="zc-window-title-notifications" hidden>
 
-                <div class="zc-app-nav" aria-label="Primary">
-                    <div class="zc-app-nav-inner">
+                </div>
+                <div class="zc-window" id="zc-window-profile" data-window-id="profile" aria-labelledby="zc-window-title-profile" hidden>
 
-                    </div>
+                </div>
+                <div class="zc-window" id="zc-window-settings" data-window-id="settings" aria-labelledby="zc-window-title-settings" hidden>
+
+                </div>
+            </div>
+
+            <div class="zc-app-nav" aria-label="Primary">
+                <div class="zc-app-nav-inner">
+
                 </div>
             </div>
         </div>
-
-
-        <img class="tempimgjuhgbnhnbjjmhnbk" src="https://media.discordapp.net/attachments/1154122414112911451/1403813365620543548/Untitled1221_20250809114851.png?ex=689a3c13&is=6898ea93&hm=215a04654350b99e15d76ecd8a989eb74210b7b2b9a0455c445d5cf3a7d88d4a&=">
     </div>
 
     <script>
