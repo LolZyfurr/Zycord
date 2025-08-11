@@ -1,0 +1,2428 @@
+<html lang="en">
+
+<head>
+    <title>Zycord</title>
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="https://raw.githubusercontent.com/LolZyfurr/Zycord/refs/heads/main/Root/WebManifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Zycord">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/LolZyfurr/Zycord/refs/heads/main/Root/Logo/ZycordLogo192.png">
+    <style>
+        body {
+            background-color: var(--bg-primary);
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--text-main);
+            margin: 0;
+            overflow-x: hidden;
+            box-sizing: border-box;
+            position: fixed;
+            width: 100%;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: #111;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        body>.frame {
+            aspect-ratio: 1179 / 2556;
+            width: min(100vw, 100vh * (1179 / 2556));
+            height: auto;
+            background: #222;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .tempimgjuhgbnhnbjjmhnbk {
+            position: absolute;
+            top: 0px;
+            pointer-events: none;
+            display: block;
+            width: inherit;
+            height: inherit;
+            object-fit: cover;
+            object-position: center;
+            filter: invert(1);
+        }
+
+
+        :root {
+            /* Layout & Spacing */
+            --rail-h: 60px;
+            --safe-t: env(safe-area-inset-top, 0px);
+            --safe-b: env(safe-area-inset-bottom, 0px);
+            --device-inset-top: 68px;
+            --device-inset-bottom: 26px;
+            --gap-xs: 4px;
+            --gap-sm: 8px;
+            --gap-md: 16px;
+            --gap-lg: 24px;
+            --gap-xl: 32px;
+
+            /* Typography */
+            --font-main: 'Inter', sans-serif;
+            --font-size-sm: 12px;
+            --font-size-md: 14px;
+            --font-size-lg: 18px;
+            --line-height: var(--line-height);
+
+            /* Border & Radius */
+            --border-width: 1px;
+            --border-radius-sm: 6px;
+            --border-radius-md: 12px;
+            --border-radius-full: 1000px;
+
+            /* Shadows */
+            --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.3);
+            --shadow-hard: 0 4px 24px rgba(0, 0, 0, 0.5);
+            --shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+
+            /* Glassmorphism */
+            --glass-blur: blur(10px);
+            --glass-alpha: rgba(255, 255, 255, 0.04);
+
+            /* Transitions */
+            --transition-fast: 0.2s ease;
+            --transition-slow: 0.4s ease;
+
+            /* Dark Theme Colors */
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #121212;
+            --bg-hover: #1b1b1b;
+            --bg-glass: rgba(255, 255, 255, 0.04);
+            --text-main: #e0e0e0;
+            --text-muted: #888;
+            --text-inverse: #000;
+            --accent: #ff0051;
+            --accent-hover: #b20039;
+            --accent-soft: #ff80a1;
+            --error-bg: #2d0000;
+            --error-border: #ff5c5c;
+            --border-color: var(--bg-hover);
+        }
+
+        /* Light Theme Overrides */
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-primary: #ffffff;
+                --bg-secondary: #f5f5f5;
+                --bg-hover: #e0e0e0;
+                --bg-glass: rgba(0, 0, 0, 0.04);
+                --text-main: #1a1a1a;
+                --text-muted: #666;
+                --text-inverse: #fff;
+                --accent: #d0003a;
+                --accent-hover: #a0002f;
+                --accent-soft: #ff99bb;
+                --error-bg: #ffe5e5;
+                --error-border: #cc0000;
+                --border-color: #ccc;
+            }
+        }
+
+        .zc-app {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .zc-main {
+            display: grid;
+            grid-template-rows: 1fr auto;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .zc-app-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            height: var(--rail-h);
+            padding-bottom: var(--device-inset-bottom);
+            background-color: var(--bg-primary);
+            border-top: 1px solid var(--bg-hover);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .zc-window-topnav {
+            padding-top: var(--device-inset-top);
+            height: var(--rail-h);
+            flex: 0 0 auto;
+            background-color: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--bg-hover);
+        }
+
+        .zc-nav-button {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            font-size: var(--font-size-sm);
+            transition: background var(--transition-fast);
+        }
+
+        .zc-nav-icon {
+            aspect-ratio: 1 / 1;
+            height: 60%;
+            background-color: var(--text-muted);
+            mask-repeat: no-repeat;
+            mask-size: cover;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-size: cover;
+        }
+
+        .zc-window {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .zc-window-scroller {
+            flex: 1 1 auto;
+            min-height: 0;
+            width: 100%;
+            background-color: var(--bg-primary);
+
+            overflow-y: auto;
+            scrollbar-width: none;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-gutter: stable both-edges;
+            touch-action: pan-y;
+        }
+
+        .zc-nav-button-inner {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .zc-app-nav-inner {
+            padding: 0px var(--gap-md);
+            display: flex;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .zc-round-button {
+            display: flex;
+            box-sizing: border-box;
+            background: var(--bg-secondary);
+            height: 100%;
+            border-radius: 1000px;
+            border: 1px solid var(--bg-hover);
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+            flex-direction: row;
+            gap: 6px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .zc-round-button.zc-button-fit {
+            aspect-ratio: 1 / 1;
+            flex-shrink: 0;
+            width: 44px;
+        }
+
+        .zc-round-button.zc-button-cover {
+            width: 100%;
+        }
+
+        .zc-round-button .zc-button-text {
+            line-height: var(--line-height);
+            font-size: var(--font-size-md);
+            color: var(--text-main);
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .zc-round-button.zc-button-fit .zc-button-text {
+            display: none;
+        }
+
+        .zc-round-button input.zc-button-text {
+            box-sizing: border-box;
+            width: calc(100% - 32px - 16px);
+            border: none;
+            background: none;
+            outline: none;
+        }
+
+        .zc-round-button .zc-button-icon {
+            width: 16px;
+            height: 16px;
+            background-color: var(--text-main);
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-size: cover;
+            mask-size: cover;
+            flex-shrink: 0;
+        }
+
+        .zc-window-innernav {
+            gap: var(--gap-xs);
+            display: flex;
+            height: var(--rail-h);
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+            flex-direction: row;
+            box-sizing: border-box;
+            padding: var(--gap-sm);
+        }
+
+        .zc-nav-button.active .zc-nav-icon {
+            background-color: var(--text-main);
+        }
+
+        .zc-windows {
+            height: 100%;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        .visually-hidden {
+            position: absolute !important;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .zc-dm-channel {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            container-type: inline-size;
+        }
+
+        .zc-dm-channel,
+        .zc-dm-channel * {
+            box-sizing: border-box;
+        }
+
+        .zc-dm-interactive {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding-block: 8px;
+            padding-inline: 12px;
+            min-height: 44px;
+
+            border-radius: 12px;
+            background-color: transparent;
+            transition: background 0.3s ease;
+            justify-content: center;
+            align-items: stretch;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+
+        .zc-dm-media-container {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .zc-dm-video-frame {
+            position: relative;
+            display: flex;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 12px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .zc-dm-static-image {
+            filter: saturate(0);
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .zc-dm-link {
+            display: block;
+            height: 100%;
+            width: 100%;
+            text-decoration: none;
+            color: inherit;
+            border-radius: 12px;
+        }
+
+        .zc-dm-layout {
+            display: flex;
+            flex-direction: row;
+            gap: var(--gap-sm, 8px);
+            align-items: center;
+        }
+
+        .zc-dm-avatar-zone {
+            flex-shrink: 0;
+            box-sizing: border-box;
+            height: 40px;
+            width: 40px;
+        }
+
+        .zc-dm-avatar-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .zc-dm-avatar-mask,
+        .zc-dm-avatar-stack,
+        .zc-dm-avatar-image {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .zc-dm-content-zone {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-width: 0;
+        }
+
+        .zc-dm-user-meta {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-wrap: nowrap;
+            min-width: 0;
+        }
+
+        .zc-dm-username-wrapper {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .zc-dm-tooltip-container {
+            line-height: var(--line-height);
+            font-weight: 500;
+            font-size: var(--font-size-md);
+            color: var(--text-main, #e6e6e6);
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            flex-direction: row;
+            gap: var(--gap-xs, 4px);
+            min-width: 0;
+        }
+
+        .zc-dm-badge-wrapper {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-inline-start: 8px;
+        }
+
+        .zc-dm-line-clamp {
+            border-radius: 4px;
+            background-color: var(--bg-primary, #0a0a0a);
+            padding: 2px 4px;
+            gap: var(--gap-xs, 4px);
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            flex-direction: row;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .zc-dm-badge-icon {
+            filter: saturate(0);
+            width: 14px;
+            height: 14px;
+            flex: 0 0 auto;
+        }
+
+        .zc-dm-badge-label {
+            font-size: var(--font-size-sm);
+            line-height: var(--line-height);
+        }
+
+        .zc-dm-status-text {
+            line-height: var(--line-height);
+            font-size: var(--font-size-sm);
+            color: var(--text-muted, #9aa0a6);
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            flex-direction: row;
+            gap: var(--gap-xs);
+        }
+
+        .zc-dm-status-overflow {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .zc-dm-status-icon {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 14px;
+            height: 14px;
+            color: var(--text-main);
+            background-color: currentColor;
+            border-radius: 50%;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-size: 100% 100%;
+            mask-size: 100% 100%;
+            -webkit-mask-position: center;
+            mask-position: center;
+        }
+
+        .zc-dm-status-icon.dnd {
+            -webkit-mask-image: url('https://cdn3.emoji.gg/emojis/4431-dnd-blank.png');
+            mask-image: url('https://cdn3.emoji.gg/emojis/4431-dnd-blank.png');
+        }
+
+        .zc-dm-status-icon.idle {
+            -webkit-mask-image: url('https://cdn3.emoji.gg/emojis/5204-idle-blank.png');
+            mask-image: url('https://cdn3.emoji.gg/emojis/5204-idle-blank.png');
+        }
+
+        .zc-dm-status-icon.online {
+            -webkit-mask-image: url('https://cdn3.emoji.gg/emojis/1514-online-blank.png');
+            mask-image: url('https://cdn3.emoji.gg/emojis/1514-online-blank.png');
+        }
+
+        .zc-dm-status-icon.offline {
+            -webkit-mask-image: url('https://cdn3.emoji.gg/emojis/6610-invisible-offline-blank.png');
+            mask-image: url('https://cdn3.emoji.gg/emojis/6610-invisible-offline-blank.png');
+        }
+
+        @keyframes unreadPulse {
+            0% {
+                background-color: color-mix(in srgb, var(--accent) 20%, transparent);
+            }
+
+            50% {
+                background-color: color-mix(in srgb, var(--accent) 40%, transparent);
+            }
+
+            100% {
+                background-color: color-mix(in srgb, var(--accent) 20%, transparent);
+            }
+        }
+
+        .zc-dm-channel[data-unread="true"] .zc-dm-interactive {
+            animation: unreadPulse 4s infinite ease-in-out;
+            background-blend-mode: lighten;
+            will-change: background-color;
+        }
+
+        .zc-dm-channel[data-active="true"] .zc-dm-interactive {
+            background-color: var(--bg-secondary);
+        }
+
+        .zc-dm-status-activity {
+            width: 12px;
+            height: 12px;
+            color: var(--text-main);
+            background-color: currentColor;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-size: 100% 100%;
+            mask-size: 100% 100%;
+            -webkit-mask-position: center;
+            mask-position: center;
+        }
+
+        .zc-dm-status-activity.music {
+            -webkit-mask-image: url('https://cdn3.emoji.gg/emojis/1161-music.png');
+            mask-image: url('https://cdn3.emoji.gg/emojis/1161-music.png');
+        }
+
+        .zc-dm-status-activity.game {
+            -webkit-mask-image: url('https://cdn3.emoji.gg/emojis/5093-game.png');
+            mask-image: url('https://cdn3.emoji.gg/emojis/5093-game.png');
+        }
+
+        .zc-dm-status-activity.stream {
+            -webkit-mask-image: url('https://cdn3.emoji.gg/emojis/2619-activities.png');
+            mask-image: url('https://cdn3.emoji.gg/emojis/2619-activities.png');
+        }
+
+        .zc-dm-status-activity.watch {
+            -webkit-mask-image: url('https://cdn3.emoji.gg/emojis/2878-entertainments.png');
+            mask-image: url('https://cdn3.emoji.gg/emojis/2878-entertainments.png');
+        }
+
+        .zc-dot-spacer {
+            border-radius: 50%;
+            height: 2px;
+            width: 2px;
+        }
+
+        .zc-suggest-pop {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 6px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--bg-hover);
+            border-radius: 8px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+            overflow: hidden;
+            z-index: 999;
+        }
+
+        .zc-suggest-list {
+            list-style: none;
+            padding: 4px;
+            margin: 0;
+            max-height: 220px;
+            overflow: auto;
+        }
+
+        .zc-suggest-opt {
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            user-select: none;
+            line-height: var(--line-height);
+        }
+
+        .zc-suggest-opt[aria-selected="true"],
+        .zc-suggest-opt:hover {
+            background: var(--bg-hover, #242424);
+        }
+
+        .zc-sr-only {
+            position: absolute;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+
+        .zc-accounts-management {
+            scrollbar-width: none;
+            overflow-x: auto;
+            gap: var(--gap-xs);
+            display: flex;
+            padding: var(--gap-sm);
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .zc-accounts-listing {
+            border: 1px var(--bg-hover) solid;
+            border-radius: 12px;
+            background-color: var(--bg-secondary);
+            padding: var(--gap-lg);
+            width: fit-content;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: var(--gap-sm);
+        }
+
+        .zc-accounts-avatar {
+            border-radius: 1000px;
+            height: 40px;
+            width: 40px;
+        }
+
+        .zc-accounts-left {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+        }
+
+        .zc-accounts-nickname {
+            white-space: nowrap;
+            max-width: 100px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            color: var(--text-main);
+            font-size: var(--font-size-md);
+            line-height: var(--line-height);
+            font-weight: 500;
+        }
+
+        .zc-accounts-username {
+            white-space: nowrap;
+            max-width: 100px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            line-height: var(--line-height);
+            color: var(--text-main);
+            font-size: var(--font-size-sm);
+        }
+
+        .zc-accounts-listing.manage .zc-accounts-avatar {
+            color: var(--text-main);
+            background-color: currentColor;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-size: 100% 100%;
+            mask-size: 100% 100%;
+            -webkit-mask-position: center;
+            mask-position: center;
+            -webkit-mask-image: url('https://cdn3.emoji.gg/emojis/4765-add.png');
+            mask-image: url('https://cdn3.emoji.gg/emojis/4765-add.png');
+        }
+
+        .zc-overlays {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .zc-screen-overlay {
+            display: flex;
+            background: linear-gradient(color-mix(in srgb, var(--accent) 20%, rgba(0, 0, 0, 0.2)), color-mix(in srgb, var(--accent) 60%, rgba(0, 0, 0, 0.8)));
+            pointer-events: all;
+            position: absolute;
+            width: 100%;
+            height: 100dvh;
+            overflow: hidden;
+            z-index: 10;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+            backdrop-filter: blur(8px);
+        }
+
+        .zc-prompt {
+            border-radius: 12px;
+            padding: var(--gap-lg);
+            background: var(--bg-primary);
+            width: 80%;
+            max-height: 60%;
+        }
+
+        .zc-prompt .title {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            font-weight: 500;
+            color: var(--text-main);
+            line-height: var(--line-height);
+            font-size: var(--font-size-md);
+        }
+
+        .zc-prompt .description {
+            overflow-wrap: anywhere;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            color: var(--text-main);
+            line-height: var(--line-height);
+            font-size: var(--font-size-sm);
+        }
+
+        .zc-prompt .input {
+            box-sizing: border-box;
+            border-radius: 1000px;
+            background-color: var(--bg-secondary);
+            border: 1px var(--bg-hover) solid;
+            outline: none;
+            padding: var(--gap-sm) var(--gap-md);
+            margin-top: var(--gap-sm);
+            width: 100%;
+            text-overflow: ellipsis;
+            line-height: var(--line-height);
+            font-size: var(--font-size-md);
+            color: var(--text-main);
+        }
+
+        .zc-prompt-button-list {
+            gap: var(--gap-xs);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: nowrap;
+            flex-direction: row;
+            margin-top: var(--gap-sm);
+        }
+
+        .zc-prompt-button-list .button {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            border-radius: 1000px;
+            border: 1px var(--bg-hover) solid;
+            background-color: var(--bg-secondary);
+            padding: var(--gap-sm);
+            text-align: center;
+            width: 100%;
+            line-height: var(--line-height);
+            font-size: var(--font-size-md);
+            font-weight: 500;
+        }
+
+        @keyframes overlayFadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes overlayFadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+
+        .zc-screen-overlay {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            animation-fill-mode: forwards;
+        }
+
+        .zc-screen-overlay.open {
+            animation: overlayFadeIn 0.4s ease forwards;
+        }
+
+        .zc-screen-overlay.close {
+            animation: overlayFadeOut 0.3s ease forwards;
+            pointer-events: none;
+        }
+
+        .zc-overlay-details-screen {
+            display: flex;
+            box-sizing: border-box;
+            padding-bottom: var(--device-inset-bottom);
+            padding-top: var(--device-inset-top);
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            flex-wrap: nowrap;
+            position: absolute;
+        }
+
+        .zc-overlay-details-message {
+            line-height: var(--line-height);
+            text-overflow: ellipsis;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            border-radius: 1000px;
+            background-color: var(--accent);
+            padding: var(--gap-xs) var(--gap-md);
+            height: fit-content;
+            font-size: var(--font-size-md);
+            max-width: 80%;
+        }
+
+        .zc-overlay-details-message {
+            opacity: 0;
+            transform: translateY(6px) scale(.98);
+            transition: opacity .2s ease, transform .2s ease;
+        }
+
+        .zc-overlay-details-message.is-enter {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .zc-overlay-details-message.is-exit {
+            opacity: 0;
+            transform: translateY(-4px) scale(.985);
+        }
+    </style>
+
+<body>
+    <div class="frame">
+
+        <div class="zc-app" data-app="zero-cosmos">
+            <div class="zc-overlays">
+
+            </div>
+            <div class="zc-main">
+                <div class="zc-windows" role="region" aria-label="App windows">
+                    <div class="zc-window" id="zc-window-messages" data-window-id="messages" aria-labelledby="zc-window-title-messages">
+                        <div class="zc-window-topnav">
+                            <div class="zc-window-innernav">
+
+                            </div>
+                        </div>
+                        <div class="zc-window-scroller" role="document">
+
+                            <div class="zc-accounts-management">
+                                <div class="zc-accounts-listing">
+                                    <div class="zc-accounts-left">
+                                        <img class="zc-accounts-avatar" src="https://cdn.discordapp.com/avatars/1132521952238637117/d01e72ce81a4754ebe138ffa648067b8.png">
+                                    </div>
+                                    <div class="zc-accounts-right">
+                                        <div class="zc-accounts-nickname">
+                                            Z
+                                        </div>
+                                        <div class="zc-accounts-username">
+                                            zbeats310
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="zc-accounts-listing">
+                                    <div class="zc-accounts-left">
+                                        <img class="zc-accounts-avatar" src="https://cdn.discordapp.com/avatars/1091921000666497136/dbeb7d06f8af3f64461fd013696202ee.png?size=2048">
+                                    </div>
+                                    <div class="zc-accounts-right">
+                                        <div class="zc-accounts-nickname">
+                                            Kaedes
+                                        </div>
+                                        <div class="zc-accounts-username">
+                                            8dev
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="zc-accounts-listing manage">
+                                    <div class="zc-accounts-left">
+                                        <div class="zc-accounts-avatar">
+
+                                        </div>
+                                    </div>
+                                    <div class="zc-accounts-right">
+                                        <div class="zc-accounts-nickname">
+                                            Manage
+                                        </div>
+                                        <div class="zc-accounts-username">
+                                            Manage Accounts
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="zc-window" id="zc-window-notifications" data-window-id="notifications" aria-labelledby="zc-window-title-notifications" hidden>
+
+                    </div>
+                    <div class="zc-window" id="zc-window-profile" data-window-id="profile" aria-labelledby="zc-window-title-profile" hidden>
+
+                    </div>
+                    <div class="zc-window" id="zc-window-settings" data-window-id="settings" aria-labelledby="zc-window-title-settings" hidden>
+
+                    </div>
+                </div>
+
+                <div class="zc-app-nav" aria-label="Primary">
+                    <div class="zc-app-nav-inner">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <img class="tempimgjuhgbnhnbjjmhnbk" src="https://media.discordapp.net/attachments/1154122414112911451/1403813365620543548/Untitled1221_20250809114851.png?ex=689a3c13&is=6898ea93&hm=215a04654350b99e15d76ecd8a989eb74210b7b2b9a0455c445d5cf3a7d88d4a&=">
+    </div>
+
+    <script>
+        const zycordInternals = (() => {
+            const Enum = {
+                ActivityType: {
+                    Music: {
+                        id: 'act-music',
+                        className: 'music',
+                        label: 'Listening to'
+                    },
+                    Game: {
+                        id: 'act-game',
+                        className: 'game',
+                        label: 'Playing'
+                    },
+                    Stream: {
+                        id: 'act-stream',
+                        className: 'stream',
+                        label: 'Streaming'
+                    },
+                    Watch: {
+                        id: 'act-watch',
+                        className: 'watch',
+                        label: 'Watching'
+                    }
+                },
+                StatusType: {
+                    online: {
+                        className: 'online'
+                    },
+                    idle: {
+                        className: 'idle'
+                    },
+                    dnd: {
+                        className: 'dnd'
+                    },
+                    offline: {
+                        className: 'offline'
+                    }
+                }
+            };
+
+
+            function dateToSnowflake(date) {
+                const DISCORD_EPOCH = 1420070400000;
+                const ms = BigInt(date.getTime() - DISCORD_EPOCH);
+                return (ms << 22n).toString();
+            }
+
+            function buildSearchUrl({
+                channelId,
+                userId,
+                startDate,
+                endDate
+            }) {
+                const min_id = dateToSnowflake(startDate);
+                const max_id = dateToSnowflake(endDate);
+                const params = new URLSearchParams({
+                    author_id: String(userId),
+                    min_id,
+                    max_id,
+                    sort_by: 'timestamp',
+                    sort_order: 'desc',
+                    offset: '0'
+                });
+                return `https://discord.com/api/v9/channels/${channelId}/messages/search?${params.toString()}`;
+            }
+            async function getTotalResultsForUser({
+                channelId,
+                userId,
+                startDate,
+                endDate,
+                authToken
+            }) {
+                const url = buildSearchUrl({
+                    channelId,
+                    userId,
+                    startDate,
+                    endDate
+                });
+                const res = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'authorization': authToken,
+                        'accept': 'application/json'
+                    }
+                });
+
+                if (!res.ok) {
+                    const text = await res.text().catch(() => '');
+                    throw new Error(`Search request failed (${res.status}): ${text || res.statusText}`);
+                }
+
+                const data = await res.json();
+                return typeof data?.total_results === 'number' ? data.total_results : 0;
+            }
+
+            function getDayBounds(dateLike = new Date()) {
+                const d = new Date(dateLike);
+                const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+                const end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+                return {
+                    start,
+                    end
+                };
+            }
+            async function getDailyAverageForUsers({
+                channelId,
+                userIdA,
+                userIdB,
+                date = new Date(),
+                authToken
+            }) {
+                const {
+                    start,
+                    end
+                } = getDayBounds(date);
+
+                const [countA, countB] = await Promise.all([
+                    getTotalResultsForUser({
+                        channelId,
+                        userId: userIdA,
+                        startDate: start,
+                        endDate: end,
+                        authToken
+                    }),
+                    getTotalResultsForUser({
+                        channelId,
+                        userId: userIdB,
+                        startDate: start,
+                        endDate: end,
+                        authToken
+                    })
+                ]);
+
+                const total = countA + countB;
+                const average = total / 2;
+                return {
+                    countA,
+                    countB,
+                    total,
+                    average
+                };
+            }
+
+            /* Example usage:
+
+            (async () => {
+              const result = await getDailyAverageForUsers({
+                channelId: '1252837586230050879',
+                userIdA: '827356967688339458',
+                userIdB: '123456789012345678',
+                date: new Date(), // today (local timezone)
+                authToken: 'YOUR_DISCORD_AUTH_TOKEN' // do NOT hardcode; load from secure storage
+              });
+
+              console.log(result);
+            })();
+
+            */
+
+            function el(tag, attrs = {}, children = []) {
+                const node = document.createElement(tag);
+                for (const [k, v] of Object.entries(attrs)) {
+                    if (v === false || v === null || v === undefined) continue;
+                    if (k === 'style' && typeof v === 'object') {
+                        for (const [prop, val] of Object.entries(v)) {
+                            node.style.setProperty(prop, val);
+                        }
+                    } else if (k === 'class' || k === 'className') {
+                        node.className = v;
+                    } else if (typeof v === 'boolean') {
+                        if (v) node.setAttribute(k, '');
+                    } else {
+                        node.setAttribute(k, v);
+                    }
+                }
+                for (const child of (Array.isArray(children) ? children : [children])) {
+                    if (child == null) continue;
+                    node.appendChild(typeof child === 'string' ? document.createTextNode(child) : child);
+                }
+                return node;
+            }
+
+            function resolveEnum(input, dict) {
+                if (!input) return null;
+                if (typeof input === 'object' && input.className) return input;
+                if (typeof input === 'string') {
+                    const key = Object.keys(dict).find(k => k.toLowerCase() === input.toLowerCase());
+                    return key ? dict[key] : null;
+                }
+                return null;
+            }
+
+            function uid(prefix = 'id') {
+                if (typeof crypto !== 'undefined' && crypto.randomUUID) return `${prefix}-${crypto.randomUUID()}`;
+                return `${prefix}-${Math.random().toString(36).slice(2, 10)}`;
+            }
+
+            function configureImg(img, {
+                src,
+                alt = '',
+                fallback,
+                width,
+                height
+            }) {
+                if (width) img.setAttribute('width', String(width));
+                if (height) img.setAttribute('height', String(height));
+                img.loading = 'lazy';
+                img.decoding = 'async';
+                img.referrerPolicy = 'no-referrer';
+                img.alt = alt;
+                img.src = src || fallback || '';
+                if (fallback) {
+                    img.onerror = () => {
+                        if (img.src !== fallback) img.src = fallback;
+                    };
+                }
+                return img;
+            }
+
+            function createDMChannel({
+                parent,
+                avatarSrc = 'fallback-avatar.png',
+                statusType = '',
+                username = 'Unknown User',
+                badgeIcon = 'fallback-badge.png',
+                badgeLabel = '',
+                statusText = '',
+                nameplateSrc = 'fallback-nameplate.png',
+                activityType = '',
+                activityText = '', // <— added
+                userId,
+                onClick = null
+            } = {}) {
+                if (!parent || !(parent instanceof Element)) {
+                    throw new Error('Invalid parent element provided.');
+                }
+                const resolvedStatus = resolveEnum(statusType, Enum.StatusType);
+                const resolvedActivity = resolveEnum(activityType, Enum.ActivityType);
+                const frag = document.createDocumentFragment();
+                const channel = document.createElement('div');
+                const instanceId = uid('zc-dm');
+                const usernameId = `${instanceId}-username`;
+                const maskId = `${instanceId}-mask`;
+
+                channel.classList.add('zc-dm-channel');
+                channel.dataset.unread = 'false';
+                channel.dataset.active = 'false';
+                channel.dataset.instanceId = instanceId;
+                channel.setAttribute('role', 'listitem');
+                channel.setAttribute('data-gesture-target', 'dm-channel');
+
+                // After you have resolvedStatus, resolvedActivity, etc.
+                channel.dataset.searchUserId = (userId || '').trim();
+                channel.dataset.searchUsername = (username || '').trim();
+                channel.dataset.searchStatus = (resolvedStatus?.className || '').trim();
+                channel.dataset.searchActivity = (resolvedActivity?.label || '').trim();
+                channel.dataset.searchActivityText = (activityText || '').trim();
+                channel.dataset.searchBadge = (badgeLabel || '').trim();
+
+                // Presence flags for has:
+                channel.dataset.hasAvatar = avatarSrc ? '1' : '';
+                channel.dataset.hasBadge = (badgeLabel || badgeIcon) ? '1' : '';
+                channel.dataset.hasNameplate = nameplateSrc ? '1' : '';
+                channel.dataset.hasActivity = (resolvedActivity || activityText) ? '1' : '';
+                channel.dataset.hasStatus = resolvedStatus ? '1' : '';
+                channel.dataset.hasText = (statusText || '').trim() ? '1' : '';
+
+                // Keep your broad catch‑all if you like:
+                channel.dataset.searchName = ([
+                    userId, username, avatarSrc, badgeIcon, badgeLabel,
+                    statusText, nameplateSrc, activityText
+                ].filter(s => typeof s === 'string' && s.trim()).join(' '));
+
+
+                const interactive = document.createElement('div');
+                interactive.classList.add('zc-dm-interactive');
+
+                // Use a real anchor so it's keyboard-focusable out of the box
+                const link = document.createElement('a');
+                link.classList.add('zc-dm-link');
+                link.setAttribute('aria-labelledby', usernameId);
+                link.setAttribute('aria-describedby', `${instanceId}-status`);
+                link.setAttribute('aria-label', `${username}${statusText ? ` — ${statusText}` : ''}`);
+
+                if (typeof onClick === 'function') {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault(); // Prevent default anchor behavior
+                        onClick(e); // Call the provided click handler
+                    });
+                }
+
+                const layout = document.createElement('div');
+                layout.classList.add('zc-dm-layout');
+
+                // Media (nameplate)
+                const mediaContainer = document.createElement('div');
+                mediaContainer.classList.add('zc-dm-media-container');
+
+                const videoFrame = document.createElement('div');
+                videoFrame.classList.add('zc-dm-video-frame');
+
+                const staticImage = configureImg(
+                    document.createElement('img'), {
+                        src: nameplateSrc,
+                        fallback: 'fallback-nameplate.png',
+                        alt: ''
+                    }
+                );
+                staticImage.classList.add('zc-dm-static-image');
+                staticImage.setAttribute('aria-hidden', 'true');
+                videoFrame.appendChild(staticImage);
+                mediaContainer.appendChild(videoFrame);
+
+                // Avatar zone with proper SVG mask
+                const avatarZone = document.createElement('div');
+                avatarZone.classList.add('zc-dm-avatar-zone');
+
+                const avatarWrapper = document.createElement('div');
+                avatarWrapper.classList.add('zc-dm-avatar-wrapper');
+
+                const svgNS = 'http://www.w3.org/2000/svg';
+                const xlinkNS = 'http://www.w3.org/1999/xlink';
+                const svg = document.createElementNS(svgNS, 'svg');
+                svg.setAttribute('width', '40');
+                svg.setAttribute('height', '40');
+                svg.setAttribute('viewBox', '0 0 40 40');
+                svg.classList.add('zc-dm-avatar-mask');
+
+                const defs = document.createElementNS(svgNS, 'defs');
+                const mask = document.createElementNS(svgNS, 'mask');
+                mask.setAttribute('id', maskId);
+                mask.setAttribute('maskUnits', 'userSpaceOnUse');
+
+                const rect = document.createElementNS(svgNS, 'rect');
+                rect.setAttribute('x', '0');
+                rect.setAttribute('y', '0');
+                rect.setAttribute('width', '40');
+                rect.setAttribute('height', '40');
+                rect.setAttribute('fill', 'white');
+
+                const circle = document.createElementNS(svgNS, 'circle');
+                circle.setAttribute('cx', '33');
+                circle.setAttribute('cy', '33');
+                circle.setAttribute('r', '10');
+                // Black in masks = hidden; white = shown
+                circle.setAttribute('fill', 'black');
+
+                mask.appendChild(rect);
+                mask.appendChild(circle);
+                defs.appendChild(mask);
+                svg.appendChild(defs);
+
+                // Use <image> for the avatar, masked
+                const g = document.createElementNS(svgNS, 'g');
+                g.setAttribute('mask', `url(#${maskId})`);
+                const avatarImg = document.createElementNS(svgNS, 'image');
+                // Support href across browsers
+                if (avatarImg.href) {
+                    avatarImg.href.baseVal = avatarSrc;
+                } else {
+                    avatarImg.setAttributeNS(xlinkNS, 'xlink:href', avatarSrc);
+                }
+                avatarImg.setAttribute('x', '0');
+                avatarImg.setAttribute('y', '0');
+                avatarImg.setAttribute('width', '40');
+                avatarImg.setAttribute('height', '40');
+                avatarImg.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+                // Fallback handling for avatar (mirror via HTML img if needed)
+                // Optional: you can overlay an HTML <img> behind this SVG as a second fallback.
+
+                g.appendChild(avatarImg);
+                svg.appendChild(g);
+
+                // Status icon (decorative, conveys state via class)
+                const statusIcon = document.createElement('div');
+                statusIcon.classList.add('zc-dm-status-icon');
+                statusIcon.setAttribute('aria-hidden', 'true');
+                if (resolvedStatus) {
+                    statusIcon.classList.add(resolvedStatus.className);
+                }
+
+                avatarWrapper.appendChild(svg);
+                avatarWrapper.appendChild(statusIcon);
+                avatarZone.appendChild(avatarWrapper);
+
+                // Content zone
+                const contentZone = document.createElement('div');
+                contentZone.classList.add('zc-dm-content-zone');
+
+                const userMeta = document.createElement('div');
+                userMeta.classList.add('zc-dm-user-meta');
+
+                const usernameWrapper = document.createElement('div');
+                usernameWrapper.classList.add('zc-dm-username-wrapper');
+
+                const tooltipContainer = document.createElement('div');
+                tooltipContainer.classList.add('zc-dm-tooltip-container');
+                // Username text node; add id for aria-labelledby
+                tooltipContainer.id = usernameId;
+                tooltipContainer.textContent = username;
+
+                if (badgeIcon.trim() !== '' && badgeLabel.trim !== '') {
+                    const badgeWrapper = document.createElement('span');
+                    badgeWrapper.classList.add('zc-dm-badge-wrapper');
+
+                    const lineClamp = document.createElement('span');
+                    lineClamp.classList.add('zc-dm-line-clamp');
+
+                    const badgeIconImg = configureImg(
+                        document.createElement('img'), {
+                            src: badgeIcon,
+                            fallback: 'fallback-badge.png',
+                            alt: ''
+                        }
+                    );
+                    badgeIconImg.classList.add('zc-dm-badge-icon');
+                    badgeIconImg.setAttribute('aria-hidden', 'true');
+
+                    const badgeLabelSpan = document.createElement('span');
+                    badgeLabelSpan.classList.add('zc-dm-badge-label');
+                    badgeLabelSpan.textContent = badgeLabel;
+
+                    lineClamp.appendChild(badgeIconImg);
+                    lineClamp.appendChild(badgeLabelSpan);
+                    badgeWrapper.appendChild(lineClamp);
+                    tooltipContainer.appendChild(badgeWrapper);
+                }
+
+                usernameWrapper.appendChild(tooltipContainer);
+                userMeta.appendChild(usernameWrapper);
+
+                // Status line
+                const trimmedStatus = (statusText || '').trim();
+                const trimmedActivityText = (activityText || '').trim();
+                const hasResolvedActivity = !!resolvedActivity;
+                const useActivityAsText = !trimmedStatus && hasResolvedActivity && trimmedActivityText;
+
+                if (trimmedStatus !== '' || hasResolvedActivity) {
+                    const statusTextDiv = document.createElement('div');
+                    statusTextDiv.classList.add('zc-dm-status-text');
+                    statusTextDiv.id = `${instanceId}-status`;
+
+                    if (hasResolvedActivity) {
+                        const statusActivity = document.createElement('div');
+                        statusActivity.classList.add('zc-dm-status-activity', resolvedActivity.className);
+                        statusActivity.dataset.activityId = resolvedActivity.id;
+                        statusActivity.setAttribute('aria-label', resolvedActivity.label);
+                        statusTextDiv.appendChild(statusActivity);
+
+                        // Only include the spacer when we're showing separate status text
+                        if (!useActivityAsText) {
+                            const statusSpacer = document.createElement('div');
+                            statusSpacer.classList.add('zc-dot-spacer');
+                            statusSpacer.style.backgroundColor = 'var(--text-muted)';
+                            statusTextDiv.appendChild(statusSpacer);
+                        }
+                    }
+
+                    const statusOverflow = document.createElement('div');
+                    statusOverflow.classList.add('zc-dm-status-overflow');
+                    statusOverflow.textContent = useActivityAsText ?
+                        (`${resolvedActivity.label} ${trimmedActivityText}`) // per your request: no extra space
+                        :
+                        trimmedStatus;
+
+                    statusTextDiv.appendChild(statusOverflow);
+                    userMeta.appendChild(statusTextDiv);
+                }
+
+                contentZone.appendChild(userMeta);
+
+                // Compose
+                layout.appendChild(avatarZone);
+                layout.appendChild(contentZone);
+                link.appendChild(layout);
+                interactive.appendChild(mediaContainer);
+                interactive.appendChild(link);
+                channel.appendChild(interactive);
+                frag.appendChild(channel);
+                parent.appendChild(frag);
+
+                return channel;
+            }
+
+            function createNavButtons(container, items, windowsRoot = '.zc-windows') {
+                const parent = typeof container === 'string' ? document.querySelector(container) : container;
+                if (!parent) return;
+
+                const frag = document.createDocumentFragment();
+
+                for (const item of items) {
+                    const btn = el('div', {
+                        class: `zc-nav-button${item.active ? ' active' : ''}`,
+                        role: 'button',
+                        tabindex: 0,
+                        'data-target': item.target,
+                        'aria-controls': item.target,
+                        'aria-selected': String(!!item.active)
+                    }, el('div', {
+                        class: 'zc-nav-button-inner'
+                    }, [
+                        el('div', {
+                            class: 'zc-nav-icon',
+                            style: {
+                                '-webkit-mask-image': `url('${item.icon}')`,
+                                'mask-image': `url('${item.icon}')`
+                            }
+                        }),
+                        el('div', {
+                            class: 'zc-nav-label',
+                            hidden: true
+                        }, item.label)
+                    ]));
+                    const activate = () => {
+                        const root = document.querySelector(windowsRoot);
+                        if (!root) return;
+
+                        const targetKey = btn.dataset.target;
+                        const targetWin =
+                            document.getElementById(targetKey) ||
+                            root.querySelector(`.zc-window[data-window-id="${targetKey}"]`);
+
+                        if (!targetWin) return;
+                        root.querySelectorAll('.zc-window').forEach(w => {
+                            w.hidden = true;
+                            w.setAttribute('aria-hidden', 'true');
+                        });
+                        targetWin.hidden = false;
+                        targetWin.setAttribute('aria-hidden', 'false');
+                        parent.querySelectorAll('.zc-nav-button').forEach(b => {
+                            const isActive = b === btn;
+                            b.classList.toggle('active', isActive);
+                            b.setAttribute('aria-selected', String(isActive));
+                        });
+                        targetWin.dispatchEvent(new CustomEvent('zc:window:activated', {
+                            bubbles: true,
+                            detail: {
+                                target: targetKey
+                            }
+                        }));
+                    };
+                    btn.addEventListener('click', activate);
+                    btn.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            activate();
+                        }
+                    });
+                    frag.appendChild(btn);
+                }
+                parent.appendChild(frag);
+                const initial = parent.querySelector('.zc-nav-button.active') || parent.querySelector('.zc-nav-button');
+                if (initial) initial.click();
+            }
+            createNavButtons('.zc-app-nav-inner', [{
+                    target: 'zc-window-messages',
+                    icon: 'https://cdn3.emoji.gg/emojis/8312-active-threads.png',
+                    label: 'Messages',
+                    active: true
+                },
+                {
+                    target: 'zc-window-notifications',
+                    icon: 'https://cdn3.emoji.gg/emojis/7238-notification-settings.png',
+                    label: 'Notifications'
+                },
+                {
+                    target: 'zc-window-settings',
+                    icon: 'https://cdn3.emoji.gg/emojis/2888-settings.png',
+                    label: 'Settings'
+                },
+                {
+                    target: 'zc-window-profile',
+                    icon: 'https://cdn3.emoji.gg/emojis/8982-member.png',
+                    label: 'Profile'
+                }
+            ]);
+
+            function createInteractiveButtons({
+                containerSelector,
+                buttonsData,
+                inputSelector,
+                onButtonCreate,
+                onReady,
+                onClick
+            }) {
+                const container = document.querySelector(containerSelector);
+                if (!container) {
+                    throw new Error(`Container not found for selector: ${containerSelector}`);
+                }
+                const buttons = [];
+                let currentPrimary = null;
+
+                function setPrimary(button) {
+                    container.querySelectorAll('.zc-round-button').forEach(btn => {
+                        btn.classList.replace('zc-button-cover', 'zc-button-fit');
+                        btn.setAttribute('aria-pressed', 'false');
+                    });
+                    button.classList.replace('zc-button-fit', 'zc-button-cover');
+                    button.setAttribute('aria-pressed', 'true');
+                    currentPrimary = button;
+                }
+                buttonsData.forEach((btn, index) => {
+                    const isPrimary = index === buttonsData.length - 1;
+                    let inputElement = null;
+
+                    const button = el('div', {
+                        class: `zc-round-button ${isPrimary ? 'zc-button-cover' : 'zc-button-fit'}`,
+                        role: 'button',
+                        tabindex: 0,
+                        'aria-pressed': isPrimary ? 'true' : 'false',
+                        'data-index': index,
+                        'data-type': btn.type || 'button'
+                    }, [
+                        el('div', {
+                            class: 'zc-button-icon',
+                            style: {
+                                '-webkit-mask-image': `url('${btn.icon}')`,
+                                'mask-image': `url('${btn.icon}')`
+                            }
+                        }),
+                        btn.type === 'input' ?
+                        (inputElement = el('input', {
+                            class: 'zc-button-text',
+                            type: 'text',
+                            placeholder: btn.label
+                        })) :
+                        el('div', {
+                            class: 'zc-button-text'
+                        }, btn.label)
+                    ]);
+                    if (btn.type === 'input') {
+                        button.addEventListener('click', () => {
+                            const wasPrimary = currentPrimary;
+                            setPrimary(button);
+                            inputElement.focus();
+                            const onBlur = () => {
+                                const hasContent = inputElement.value.trim();
+                                if (!hasContent && wasPrimary) {
+                                    setPrimary(wasPrimary);
+                                } else {
+                                    setPrimary(button);
+                                }
+                                inputElement.removeEventListener('blur', onBlur);
+                            };
+                            inputElement.addEventListener('blur', onBlur);
+                        });
+                    } else if (typeof btn.onClick === 'function') {
+                        button.addEventListener('click', (e) => {
+                            btn.onClick(e, {
+                                button,
+                                index,
+                                isPrimary,
+                                container
+                            });
+                        });
+                    }
+                    container.appendChild(button);
+                    buttons.push(button);
+                    if (isPrimary) currentPrimary = button;
+                    if (typeof btn.onCreate === 'function') {
+                        btn.onCreate(button, {
+                            index,
+                            isPrimary,
+                            container
+                        });
+                    }
+                    if (typeof onButtonCreate === 'function') {
+                        onButtonCreate(button, btn, {
+                            index,
+                            isPrimary,
+                            container
+                        });
+                    }
+                });
+                if (typeof onReady === 'function') {
+                    onReady({
+                        container,
+                        buttons,
+                        currentPrimary,
+                        setPrimary
+                    });
+                }
+                return {
+                    container,
+                    buttons,
+                    get currentPrimary() {
+                        return currentPrimary;
+                    },
+                    setPrimary
+                };
+            }
+
+            function applySearchLogic(el) {
+                const target = document.querySelector('.zc-window-scroller');
+                if (!target) return;
+                if (getComputedStyle(el).position === 'static') {
+                    el.style.position = 'relative';
+                }
+                const getControl = (root) => {
+                    if (root.matches('input, textarea, [contenteditable="true"]')) return root;
+                    return root.querySelector('input, textarea, [contenteditable="true"]');
+                };
+                const control = getControl(el);
+                if (!control) return;
+                const getValue = () =>
+                    control.matches('[contenteditable="true"]') ? (control.textContent || '') : (control.value || '');
+                const setValue = (s) => {
+                    if (control.matches('[contenteditable="true"]')) {
+                        control.textContent = s;
+                    } else {
+                        control.value = s;
+                    }
+                };
+                const placeCaretEnd = () => {
+                    if (!control.matches('[contenteditable="true"]')) {
+                        const len = control.value.length;
+                        control.setSelectionRange(len, len);
+                        return;
+                    }
+                    const range = document.createRange();
+                    range.selectNodeContents(control);
+                    range.collapse(false);
+                    const sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                };
+                const normalize = (s) =>
+                    (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+                const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+                const nameKey = 'search-name';
+                let items = Array.from(target.querySelectorAll(`[data-${nameKey}]`));
+                if (items.length === 0) {
+                    items = Array.from(target.children).filter((n) => n.nodeType === 1);
+                }
+                items.forEach((child) => {
+                    if (!child.dataset.prevDisplay) {
+                        const computed = getComputedStyle(child).display;
+                        child.dataset.prevDisplay = computed === 'none' ? '' : computed;
+                    }
+                });
+                const validPrefixes = [
+                    'has:',
+                    'status:',
+                    'activity:',
+                    'badge:',
+                    'text:',
+                    'user:',
+                    'nameplate:',
+                    'username:'
+                ];
+                const explicitMap = {
+                    status: 'searchStatus',
+                    activity: 'searchActivity',
+                    badge: 'searchBadge',
+                    text: 'searchActivityText',
+                    user: 'searchUserId',
+                    nameplate: 'hasNameplate',
+                    username: 'searchUsername'
+                };
+                const datasetValueForKey = (child, keyNoColon) => {
+                    const mapped = explicitMap[keyNoColon];
+                    if (mapped && child.dataset[mapped] != null) {
+                        return normalize(child.dataset[mapped]);
+                    }
+                    const cap = capitalize(keyNoColon);
+                    const a = child.dataset[`search${cap}`];
+                    const b = child.dataset[`has${cap}`];
+                    return normalize(a || b || '');
+                };
+                const levenshtein = (a, b) => {
+                    const m = a.length;
+                    const n = b.length;
+                    const dp = Array.from({
+                        length: m + 1
+                    }, () => new Array(n + 1).fill(0));
+                    for (let i = 0; i <= m; i++) dp[i][0] = i;
+                    for (let j = 0; j <= n; j++) dp[0][j] = j;
+                    for (let i = 1; i <= m; i++) {
+                        for (let j = 1; j <= n; j++) {
+                            if (a[i - 1] === b[j - 1]) dp[i][j] = dp[i - 1][j - 1];
+                            else dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+                        }
+                    }
+                    return dp[m][n];
+                };
+                const getClosestPrefixes = (inputPrefix) => {
+                    const norm = normalize(inputPrefix);
+                    return validPrefixes
+                        .map((p) => ({
+                            prefix: p,
+                            score: p.startsWith(norm) ? 0 : levenshtein(norm, p)
+                        }))
+                        .sort((a, b) => a.score - b.score)
+                        .slice(0, 5)
+                        .map((x) => x.prefix);
+                };
+                let suggestEl = null;
+                let activeIndex = -1;
+                let currentOptions = [];
+                const ensureSuggestEl = () => {
+                    if (suggestEl) return suggestEl;
+                    suggestEl = document.createElement('div');
+                    suggestEl.className = 'zc-suggest-pop';
+                    suggestEl.setAttribute('role', 'listbox');
+                    suggestEl.id = `zc-suggest-${Math.random().toString(36).slice(2)}`;
+                    const ul = document.createElement('ul');
+                    ul.className = 'zc-suggest-list';
+                    suggestEl.appendChild(ul);
+                    el.appendChild(suggestEl);
+                    control.setAttribute('aria-controls', suggestEl.id);
+                    control.setAttribute('aria-expanded', 'false');
+                    control.setAttribute('aria-autocomplete', 'list');
+                    return suggestEl;
+                };
+                const hideSuggestions = () => {
+                    if (suggestEl) {
+                        suggestEl.remove();
+                        suggestEl = null;
+                    }
+                    control.setAttribute('aria-expanded', 'false');
+                    activeIndex = -1;
+                    currentOptions = [];
+                    control.removeAttribute('aria-activedescendant');
+                };
+                const renderSuggestions = (list) => {
+                    const host = ensureSuggestEl();
+                    const ul = host.querySelector('.zc-suggest-list');
+                    ul.innerHTML = '';
+                    currentOptions = list.slice();
+                    list.forEach((p, i) => {
+                        const li = document.createElement('li');
+                        li.className = 'zc-suggest-opt';
+                        li.setAttribute('role', 'option');
+                        li.id = `${host.id}-opt-${i}`;
+                        li.textContent = p;
+                        li.setAttribute('aria-selected', i === activeIndex ? 'true' : 'false');
+                        li.addEventListener('mousedown', (e) => {
+                            e.preventDefault();
+                            applySuggestion(p);
+                        });
+                        ul.appendChild(li);
+                    });
+                    control.setAttribute('aria-expanded', 'true');
+                };
+                const updateActive = (nextIndex) => {
+                    if (!suggestEl) return;
+                    const ul = suggestEl.querySelector('.zc-suggest-list');
+                    const opts = Array.from(ul.children);
+                    activeIndex = Math.max(0, Math.min(nextIndex, opts.length - 1));
+                    opts.forEach((li, i) => li.setAttribute('aria-selected', i === activeIndex ? 'true' : 'false'));
+                    const activeId = opts[activeIndex]?.id;
+                    if (activeId) control.setAttribute('aria-activedescendant', activeId);
+                    opts[activeIndex]?.scrollIntoView({
+                        block: 'nearest'
+                    });
+                };
+                const showSuggestions = (suggestions) => {
+                    if (!suggestions.length) {
+                        hideSuggestions();
+                        return;
+                    }
+                    if (activeIndex >= suggestions.length) activeIndex = -1;
+                    renderSuggestions(suggestions);
+                };
+                const applySuggestion = (chosenPrefix) => {
+                    const raw = getValue();
+                    const rest = raw.replace(/^\s*\w*:?\s*/, '');
+                    const next = `${chosenPrefix}${rest ? rest : ''}`;
+                    setValue(next);
+                    placeCaretEnd();
+                    hideSuggestions();
+                    applyFilter();
+                };
+                const applyFilter = () => {
+                    const rawQuery = getValue();
+                    const query = normalize(rawQuery);
+                    const showAll = query === '';
+                    let prefix = '';
+                    let value = query;
+                    const prefixMatch = query.match(/^(\w+):\s*(.*)$/);
+                    if (prefixMatch) {
+                        prefix = normalize(prefixMatch[1]) + ':';
+                        value = normalize(prefixMatch[2] || '');
+                    }
+                    if (prefix && !validPrefixes.includes(prefix)) {
+                        const suggestions = getClosestPrefixes(prefix);
+                        showSuggestions(suggestions);
+                    } else {
+                        hideSuggestions();
+                    }
+                    items.forEach((child) => {
+                        let match = false;
+                        if (showAll) {
+                            match = true;
+                        } else if (prefix && validPrefixes.includes(prefix)) {
+                            const keyNoColon = prefix.slice(0, -1);
+                            const dataVal = datasetValueForKey(child, keyNoColon);
+                            match = value ? dataVal.includes(value) : dataVal !== '';
+                        } else {
+                            const username = normalize(child.dataset.searchUsername || '');
+                            match = username.includes(query);
+                        }
+                        child.style.display = match ? child.dataset.prevDisplay : 'none';
+                        child.setAttribute('aria-hidden', match ? 'false' : 'true');
+                    });
+                };
+                const onKeyDown = (e) => {
+                    if (!suggestEl) return;
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        updateActive(activeIndex < 0 ? 0 : activeIndex + 1);
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        updateActive(activeIndex <= 0 ? 0 : activeIndex - 1);
+                    } else if (e.key === 'Enter' || e.key === 'Tab') {
+                        if (activeIndex >= 0 && currentOptions[activeIndex]) {
+                            e.preventDefault();
+                            applySuggestion(currentOptions[activeIndex]);
+                        }
+                    } else if (e.key === 'Escape') {
+                        hideSuggestions();
+                    }
+                };
+                const onOutsidePointerDown = (e) => {
+                    if (!suggestEl) return;
+                    if (!el.contains(e.target)) hideSuggestions();
+                };
+                ['input', 'change', 'keyup', 'compositionend'].forEach((evt) =>
+                    control.addEventListener(evt, applyFilter)
+                );
+                control.addEventListener('keydown', onKeyDown);
+                document.addEventListener('pointerdown', onOutsidePointerDown);
+                const cleanup = () => {
+                    control.removeEventListener('keydown', onKeyDown);
+                    document.removeEventListener('pointerdown', onOutsidePointerDown);
+                    hideSuggestions();
+                };
+                el.addEventListener('DOMNodeRemoved', cleanup, {
+                    once: true
+                });
+                applyFilter();
+            }
+            /**
+             * createZcPrompt
+             * - Builds and mounts a zc-prompt overlay inside a given parent (default: document.body).
+             * - Optional input field.
+             * - Up to 2 buttons, each with its own handler.
+             * - Any button press closes the prompt (handlers run first, then close).
+             * - Accessible dialog semantics and keyboard support.
+             *
+             * @param {Object} opts
+             * @param {HTMLElement} [opts.parent=document.body] - Container to attach the overlay to.
+             * @param {string} [opts.title="Title"]
+             * @param {string} [opts.description="Description"]
+             * @param {boolean} [opts.includeInput=false]
+             * @param {Object} [opts.inputProps] - { placeholder, value, type, name, id, ariaLabel }
+             * @param {Array} [opts.buttons] - Up to 2 items: [{ label, onClick, ariaLabel }]
+             * @param {boolean} [opts.closeOnBackdrop=true] - Close when clicking outside the prompt.
+             * @param {boolean} [opts.closeOnEscape=true]
+             * @param {string} [opts.idPrefix="zc-prompt"]
+             *
+             * @returns {{
+             *   root: HTMLElement,
+             *   prompt: HTMLElement,
+             *   input: (HTMLInputElement|null),
+             *   buttons: HTMLElement[],
+             *   open: () => void,
+             *   close: () => void,
+             *   destroy: () => void
+             * }}
+             */
+
+            /*
+            const p2 = zycordInternals.createZcPrompt({
+                parent: document.querySelector(".zc-overlays"),
+                title: "Rename channel",
+                description: "Enter a new name.",
+                includeInput: true,
+                inputProps: {
+                    placeholder: "New channel name…"
+                },
+                buttons: [{
+                    label: "Save",
+                    onClick: ({
+                        value
+                    }) => {
+                        console.log("Saving:", value);
+                    },
+                }, ],
+            });
+            p2.open();
+            
+            const p3 = zycordInternals.createZcPrompt({
+                parent: document.querySelector(".zc-overlays"),
+                title: "Are you sure?",
+                description: "You must choose an option.",
+                closeOnBackdrop: false,
+                closeOnEscape: false,
+                buttons: [{
+                    label: "OK"
+                }],
+            });
+            p3.open();
+            */
+            function createZcPrompt(opts = {}) {
+                const {
+                    parent = document.body,
+                        title = "Title",
+                        description = "Description",
+                        includeInput = false,
+                        inputProps = {},
+                        buttons = [],
+                        closeOnBackdrop = true,
+                        closeOnEscape = true,
+                        idPrefix = "zc-prompt",
+                } = opts;
+                const el = (tag, {
+                    className,
+                    attrs = {},
+                    props = {},
+                    text
+                } = {}) => {
+                    const node = document.createElement(tag);
+                    if (className) node.className = className;
+                    Object.entries(attrs).forEach(([k, v]) => node.setAttribute(k, v));
+                    Object.assign(node, props);
+                    if (text != null) node.textContent = text;
+                    return node;
+                };
+                const uid = Math.random().toString(36).slice(2);
+                const titleId = `${idPrefix}-title-${uid}`;
+                const descId = `${idPrefix}-desc-${uid}`;
+                const overlay = el("div", {
+                    className: "zc-screen-overlay",
+                    attrs: {
+                        "data-component": "zc-prompt",
+                        "data-state": "closed",
+                    },
+                });
+                const prompt = el("div", {
+                    className: "zc-prompt",
+                    attrs: {
+                        role: "dialog",
+                        "aria-modal": "true",
+                        "aria-labelledby": titleId,
+                        "aria-describedby": descId,
+                        "data-gesture-scope": "prompt",
+                    },
+                });
+                const titleNode = el("div", {
+                    className: "title",
+                    attrs: {
+                        id: titleId
+                    },
+                    text: title,
+                });
+                const descNode = el("div", {
+                    className: "description",
+                    attrs: {
+                        id: descId
+                    },
+                    text: description,
+                });
+                let inputNode = null;
+                if (includeInput) {
+                    const {
+                        placeholder = "Input",
+                            value = "",
+                            type = "text",
+                            name,
+                            id,
+                            ariaLabel,
+                    } = inputProps || {};
+                    inputNode = el("input", {
+                        className: "input",
+                        attrs: {
+                            placeholder,
+                            type,
+                            ...(name ? {
+                                name
+                            } : {}),
+                            ...(id ? {
+                                id
+                            } : {}),
+                            ...(ariaLabel ? {
+                                "aria-label": ariaLabel
+                            } : {}),
+                        },
+                        props: {
+                            value
+                        },
+                    });
+                }
+                const listNode = el("div", {
+                    className: "zc-prompt-button-list"
+                });
+                const btnDefs = (Array.isArray(buttons) ? buttons : []).slice(0, 2);
+                if (btnDefs.length === 0) {
+                    btnDefs.push({
+                        label: "Close"
+                    });
+                }
+                let isClosing = false;
+                const close = () => {
+                    if (isClosing) return;
+                    isClosing = true;
+                    overlay.setAttribute("data-state", "closing");
+                    overlay.dispatchEvent(new CustomEvent("zc:prompt:close", {
+                        bubbles: true
+                    }));
+                    requestAnimationFrame(() => {
+                        overlay.classList.remove('open');
+                        overlay.classList.add('close');
+                        overlay.setAttribute("data-state", "closing");
+                        setTimeout(() => {
+                            overlay.remove();
+                            overlay.setAttribute("data-state", "closed");
+                        }, 400);
+                    });
+                    detachGlobal();
+                };
+                const attachButtonA11y = (node, activate) => {
+                    node.setAttribute("role", "button");
+                    node.setAttribute("tabindex", "0");
+                    node.addEventListener("keydown", (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            activate(e);
+                        }
+                    });
+                };
+                const buttonNodes = btnDefs.map(({
+                    label,
+                    onClick,
+                    ariaLabel
+                }, idx) => {
+                    const node = el("div", {
+                        className: "button",
+                        attrs: ariaLabel ? {
+                            "aria-label": ariaLabel
+                        } : {},
+                        text: label ?? `Button ${idx + 1}`,
+                    });
+                    const activate = (evt) => {
+                        try {
+                            onClick && onClick({
+                                event: evt,
+                                close,
+                                input: inputNode,
+                                value: inputNode ? inputNode.value : undefined,
+                                index: idx,
+                            });
+                        } finally {
+                            close();
+                        }
+                    };
+                    node.addEventListener("click", activate);
+                    attachButtonA11y(node, activate);
+                    return node;
+                });
+                buttonNodes.forEach((btn) => listNode.appendChild(btn));
+                prompt.appendChild(titleNode);
+                prompt.appendChild(descNode);
+                if (inputNode) prompt.appendChild(inputNode);
+                prompt.appendChild(listNode);
+                overlay.appendChild(prompt);
+                if (closeOnBackdrop) {
+                    overlay.addEventListener("pointerdown", (e) => {
+                        if (e.target === overlay) close();
+                    });
+                }
+                const onKeydown = (e) => {
+                    if (closeOnEscape && e.key === "Escape") {
+                        e.preventDefault();
+                        close();
+                    }
+                };
+                const attachGlobal = () => document.addEventListener("keydown", onKeydown);
+                const detachGlobal = () => document.removeEventListener("keydown", onKeydown);
+                const focusFirst = () => {
+                    if (inputNode) {
+                        inputNode.focus();
+                        inputNode.select?.();
+                    } else {
+                        buttonNodes[0]?.focus();
+                    }
+                };
+                const open = () => {
+                    parent.appendChild(overlay);
+                    overlay.setAttribute("data-state", "open");
+                    overlay.dispatchEvent(new CustomEvent("zc:prompt:open", {
+                        bubbles: true
+                    }));
+                    attachGlobal();
+                    requestAnimationFrame(() => {
+                        focusFirst()
+                        overlay.classList.remove('close');
+                        overlay.classList.add('open');
+                    });
+                };
+                const destroy = () => {
+                    detachGlobal();
+                    overlay.remove();
+                };
+                return {
+                    root: overlay,
+                    prompt,
+                    input: inputNode,
+                    buttons: buttonNodes,
+                    open,
+                    close,
+                    destroy,
+                };
+            }
+
+            /**
+             * Show a transient overlay message inside a specified parent.
+             *
+             * @param {Element|string} parent - Element or selector to append into.
+             * @param {string} text - Message text to display.
+             * @param {Object} [opts]
+             * @param {number} [opts.duration=2500] - Time visible (ms) before exit anim.
+             * @param {'info'|'success'|'warning'|'error'} [opts.variant='info'] - Styling hook.
+             * @param {'polite'|'assertive'} [opts.live='polite'] - aria-live politeness.
+             * @param {string[]} [opts.extraClasses=[]] - Extra classes on message node.
+             * @returns {{dismiss: () => void, element: HTMLElement}}
+             */
+            function showEphemeralMessage(parent, text, opts = {}) {
+                const {
+                    duration = 2500,
+                        variant = 'info',
+                        live = 'polite',
+                        extraClasses = []
+                } = opts;
+
+                const root = typeof parent === 'string' ? document.querySelector(parent) : parent;
+                if (!root) throw new Error('showEphemeralMessage: parent not found');
+
+                // If one is already active in this parent, remove it first (no stacking).
+                const existing = root.querySelector(':scope > .zc-overlay-details-screen');
+                if (existing) existing.remove();
+
+                // Build structure
+                const screen = document.createElement('div');
+                screen.className = 'zc-overlay-details-screen';
+                screen.setAttribute('aria-hidden', 'true'); // visual container only
+
+                const msg = document.createElement('div');
+                msg.className = 'zc-overlay-details-message';
+                msg.textContent = text;
+
+                // Accessibility: live region on the actual message node
+                msg.setAttribute('role', live === 'assertive' ? 'alert' : 'status');
+                msg.setAttribute('aria-live', live);
+                msg.setAttribute('aria-atomic', 'true');
+
+                // Variant and state hooks
+                msg.dataset.state = variant; // e.g., [data-state="warning"]
+
+                // Append message first
+                screen.appendChild(msg);
+                root.appendChild(screen);
+
+                // Give browser a tick to register initial styles
+                requestAnimationFrame(() => {
+                    msg.classList.add('is-enter');
+                });
+
+
+                // Force reflow so the enter -> transition applies
+                // eslint-disable-next-line no-unused-expressions
+                msg.offsetWidth;
+
+                // Enter animation done implicitly by CSS with .is-enter
+                let removed = false;
+                let exitTimer = setTimeout(beginExit, duration);
+
+                function beginExit() {
+                    if (removed) return;
+                    msg.classList.remove('is-enter');
+                    msg.classList.add('is-exit');
+                    // Remove after the transition; include a safety timeout fallback
+                    const onEnd = () => cleanup();
+                    msg.addEventListener('transitionend', onEnd, {
+                        once: true
+                    });
+                    // Fallback in case transitionend doesn't fire
+                    setTimeout(() => cleanup(), 400);
+                }
+
+                function cleanup() {
+                    if (removed) return;
+                    removed = true;
+                    clearTimeout(exitTimer);
+                    screen.remove();
+                }
+
+                return {
+                    dismiss: beginExit,
+                    element: msg
+                };
+            }
+
+
+            const debouncedFunction = () => {};
+
+            debouncedFunction.System = debouncedFunction.System || {};
+            debouncedFunction.System.EnumTypes = Enum;
+            debouncedFunction.System.executeSearchFlow = applySearchLogic;
+            debouncedFunction.System.calculateUserDailyAverages = getDailyAverageForUsers;
+
+            debouncedFunction.UI = debouncedFunction.UI || {};
+            debouncedFunction.UI.renderZcOverlayPrompt = createZcPrompt;
+            debouncedFunction.UI.buildDMChannelComponent = createDMChannel;
+            debouncedFunction.UI.generateInteractiveButtonSet = createInteractiveButtons;
+            debouncedFunction.UI.showEphemeralMessage = showEphemeralMessage;
+
+            return debouncedFunction;
+        })();
+
+        const container = document.querySelector('.zc-window-scroller');
+        if (container) {
+            zycordInternals.UI.buildDMChannelComponent({
+                parent: container,
+                avatarSrc: 'https://cdn.discordapp.com/avatars/1338796362707501097/608ba854fa55f80f56d73ce41e8c7f37.png',
+                statusType: zycordInternals.System.EnumTypes.StatusType.dnd,
+                nameplateSrc: 'https://cdn.discordapp.com/assets/collectibles/nameplates/nameplates_v2/spirit_moon/static.png',
+                username: 'Luna >w<',
+                badgeIcon: 'https://cdn.discordapp.com/clan-badges/1135093604218589204/4e377c9abb0be025fec29dd09d1ad01c.png',
+                badgeLabel: 'FOX',
+                statusText: 'hiding my emotions',
+                activityType: zycordInternals.System.EnumTypes.ActivityType.Music,
+                userId: '1338796362707501097',
+                onClick: (e, ctx) => {
+                    // Gesture hook point: open DM, animate, etc.
+                    // console.log('Open DM for', ctx.username, ctx.instanceId);
+                }
+            });
+            zycordInternals.UI.buildDMChannelComponent({
+                parent: container,
+                avatarSrc: 'https://cdn.discordapp.com/avatars/1132521952238637117/d01e72ce81a4754ebe138ffa648067b8.png',
+                statusType: zycordInternals.System.EnumTypes.StatusType.offline,
+                nameplateSrc: '',
+                username: 'Z',
+                badgeIcon: '',
+                badgeLabel: '',
+                statusText: '',
+                activityType: null,
+                userId: '1132521952238637117',
+                onClick: (e, ctx) => {
+                    // Gesture hook point: open DM, animate, etc.
+                    // console.log('Open DM for', ctx.username, ctx.instanceId);
+                }
+            });
+            zycordInternals.UI.buildDMChannelComponent({
+                parent: container,
+                avatarSrc: 'https://cdn.discordapp.com/avatars/1178193013760082003/0aecf69d139e6f4d7aa9593351dc4415.png',
+                statusType: zycordInternals.System.EnumTypes.StatusType.idle,
+                nameplateSrc: '',
+                username: 'The Freak Stealth',
+                badgeIcon: '',
+                badgeLabel: '',
+                statusText: '',
+                activityText: 'Minecraft',
+                activityType: zycordInternals.System.EnumTypes.ActivityType.Game,
+                userId: '1178193013760082003',
+                onClick: (e, ctx) => {
+                    // Gesture hook point: open DM, animate, etc.
+                    // console.log('Open DM for', ctx.username, ctx.instanceId);
+                }
+            });
+        }
+
+        zycordInternals.UI.generateInteractiveButtonSet({
+            containerSelector: '.zc-window-innernav',
+            buttonsData: [{
+                    type: 'input',
+                    label: 'Search',
+                    icon: 'https://cdn3.emoji.gg/emojis/9670-discord-search.png',
+                    onCreate: (el) => {
+                        zycordInternals.System.executeSearchFlow(el);
+                    }
+                },
+                {
+                    type: 'button',
+                    label: 'Leaderboard',
+                    icon: 'https://cdn3.emoji.gg/emojis/3514-the-best-server-emojis.png',
+                    onClick: (e, ctx) => {
+                        zycordInternals.UI.showEphemeralMessage(
+                            document.querySelector(".zc-overlays"),
+                            "Leaderboard is coming soon!", {
+                                duration: 3000,
+                                variant: 'info',
+                                live: 'polite'
+                            }
+                        );
+                        const handle = showEphemeralMessage('.app-shell', 'Saved!', {
+                            variant: 'success'
+                        });
+                        setTimeout(() => handle.dismiss(), 1200);
+                    }
+                },
+                {
+                    type: 'button',
+                    label: 'Add Friend',
+                    icon: 'https://cdn3.emoji.gg/emojis/9437-invite.png',
+                    onClick: (e, ctx) => {
+                        const p1 = zycordInternals.UI.renderZcOverlayPrompt({
+                            parent: document.querySelector(".zc-overlays"),
+                            title: "Add by Username",
+                            description: "Who would you like to add as a friend?",
+                            includeInput: true,
+                            inputProps: {
+                                placeholder: "Enter a username"
+                            },
+                            buttons: [{
+                                label: "Send Friend Request",
+                                onClick: () => {
+                                    zycordInternals.UI.showEphemeralMessage(
+                                        document.querySelector(".zc-overlays"),
+                                        "You're already friends with that user!", {
+                                            duration: 3000,
+                                            variant: 'info',
+                                            live: 'polite'
+                                        }
+                                    );
+                                    const handle = showEphemeralMessage('.app-shell', 'Saved!', {
+                                        variant: 'success'
+                                    });
+                                    setTimeout(() => handle.dismiss(), 1200);
+                                }
+                            }, ],
+                        });
+                        p1.open();
+                    }
+                }
+            ]
+        });
+    </script>
+</body>
+
+</html>
