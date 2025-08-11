@@ -39,7 +39,7 @@
             if (!force && this.client._store.has(key)) {
                 return this.client._store.get(key);
             }
-            const data = await this.client._api(`/channels/${id}`);
+            const data = await this.client._api(`v9/channels/${id}`);
             const channel = new TextLikeChannel(this.client, data);
             this.client._store.set(key, channel);
             return channel;
@@ -58,7 +58,7 @@
             if (before) query.before = String(before);
             if (after) query.after = String(after);
             if (around) query.around = String(around);
-            const messages = await this.client._api(`/channels/${this.channel.id}/messages`, { query });
+            const messages = await this.client._api(`v9/channels/${this.channel.id}/messages`, { query });
             return Array.isArray(messages) ? messages : [];
         }
     }
@@ -83,7 +83,7 @@
                 properties,
                 autoReconnect = true,
                 reconnectDelay = 5000,
-                apiBase = 'https://discord.com/api/v10'
+                apiBase = 'https://discord.com/api'
             } = options;
             this.properties = properties || this._defaultProperties();
             this.autoReconnect = !!autoReconnect;
