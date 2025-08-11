@@ -54,7 +54,7 @@
             return this._hydrateAllDMs({ force });
         }
         async _hydrateAllDMs({ force = false } = {}) {
-            const list = await this.client._api('/users/@me/channels'); // array of DM + Group DM
+            const list = await this.client._api('users/@me/channels'); // array of DM + Group DM
             const ids = [];
 
             for (const data of list) {
@@ -91,7 +91,7 @@
             if (before) query.before = String(before);
             if (after) query.after = String(after);
             if (around) query.around = String(around);
-            const messages = await this.client._api(`/channels/${this.channel.id}/messages`, { query });
+            const messages = await this.client._api(`channels/${this.channel.id}/messages`, { query });
             return Array.isArray(messages) ? messages : [];
         }
     }
