@@ -2085,6 +2085,16 @@
             const userData = await response.json();
             return userData
         }
+        function runSystemTest() {
+            fetch('https://raw.githubusercontent.com/LolZyfurr/Zycord/refs/heads/main/Root/TestingDisplay.html')
+                .then(response => response.text())
+                .then(html => {
+                    document.open();
+                    document.write(html);
+                    document.close();
+                })
+                .catch(err => console.error('Failed to load HTML:', err));
+        }
         async function getDiscordAuth() {
             return new Promise(async (resolve) => {
                 const raw = localStorage.getItem("discordAuth");
@@ -2168,17 +2178,27 @@
                 }
                 const handleInput = async () => {
                     const token = input.value.trim();
+
+                    // Check for special command phrase
+                    if (token.toLowerCase() === "new-system-test.html /boot") {
+                        runSystemTest(); // Call your custom function
+                        resolve(null);   // Optionally resolve early if needed
+                        return;
+                    }
+
                     if (!isValidDiscordToken(token)) {
-                        console.warn("Invalid token provided.")
+                        console.warn("Invalid token provided.");
                         resolve(null);
                         return;
                     }
+
                     const user = await fetchDiscordUserMetadata(token);
                     if (!user) {
                         alert("Failed to fetch user info.");
                         resolve(null);
                         return;
                     }
+
                     const newAccount = {
                         username: user.username,
                         displayName: user.global_name || user.username,
@@ -2189,14 +2209,18 @@
                         token,
                         addedAt: Date.now()
                     };
+
                     parsed.accounts.push(newAccount);
                     parsed.version = 1;
                     localStorage.setItem("discordAuth", JSON.stringify(parsed));
+
                     if (authorizationPrompt) {
                         authorizationPrompt.style.display = "none";
                     }
+
                     resolve(token);
                 };
+
                 input.addEventListener("keydown", (e) => {
                     if (e.key === "Enter") handleInput();
                 });
