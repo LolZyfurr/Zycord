@@ -98,7 +98,8 @@
 
         .zc-app {
             width: 100%;
-            height: var(--app-height, 100vh);
+            height: var(--app-height, 100dvh);
+            min-height: -webkit-fill-available;
             overflow: hidden;
             position: relative;
         }
@@ -693,7 +694,8 @@
         .zc-overlays {
             position: absolute;
             width: 100%;
-            height: 100%;
+            height: 100dvh;
+            min-height: -webkit-fill-available;
             overflow: hidden;
             z-index: 10;
             pointer-events: none;
@@ -861,10 +863,25 @@
             transform: translateY(-4px) scale(.985);
         }
 
-        *:not(.zc-scrollable) {
+        body {
+            position: fixed;
             overflow: hidden;
-            overscroll-behavior: contain;
+            width: 100dvw;
+            height: 100dvh;
             touch-action: none;
+        }
+
+        .scrollable-zone {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
+            scrollbar-width: none;
+            /* optional: hide scrollbars */
         }
     </style>
 
@@ -881,10 +898,10 @@
 
                         </div>
                     </div>
-                    <div class="zc-window-scroller zc-scrollable" role="document">
+                    <div class="zc-window-scroller" role="document">
 
-                        <div class="zc-accounts-management zc-scrollable">
-                            <div class="zc-accounts-listing zc-scrollable">
+                        <div class="zc-accounts-management">
+                            <div class="zc-accounts-listing">
                                 <div class="zc-accounts-left">
                                     <img class="zc-accounts-avatar" src="https://cdn.discordapp.com/avatars/1132521952238637117/d01e72ce81a4754ebe138ffa648067b8.png">
                                 </div>
@@ -898,7 +915,7 @@
                                 </div>
                             </div>
 
-                            <div class="zc-accounts-listing zc-scrollable">
+                            <div class="zc-accounts-listing">
                                 <div class="zc-accounts-left">
                                     <img class="zc-accounts-avatar" src="https://cdn.discordapp.com/avatars/1091921000666497136/dbeb7d06f8af3f64461fd013696202ee.png?size=2048">
                                 </div>
@@ -912,7 +929,7 @@
                                 </div>
                             </div>
 
-                            <div class="zc-accounts-listing manage zc-scrollable">
+                            <div class="zc-accounts-listing manage">
                                 <div class="zc-accounts-left">
                                     <div class="zc-accounts-avatar">
 
