@@ -105,7 +105,6 @@ class TextLikeChannel {
 export class Client extends Emitter {
   /**
    * @param {Object} options
-   * @param {string} options.wsEndpoint Gateway URL (wss://…)
    * @param {Object} [options.properties] Identify properties { os, browser, device }
    * @param {boolean} [options.autoReconnect=true]
    * @param {number} [options.reconnectDelay=5000]
@@ -114,18 +113,11 @@ export class Client extends Emitter {
   constructor(options = {}) {
     super();
     const {
-      wsEndpoint,
       properties,
       autoReconnect = true,
       reconnectDelay = 5000,
       apiBase = 'https://discord.com/api/v10' // NEW
     } = options;
-
-    if (!wsEndpoint) {
-      throw new Error('wsEndpoint is required (e.g., wss://gateway.example/ws)');
-    }
-
-    this.wsEndpoint = wsEndpoint;
     this.properties = properties || this._defaultProperties();
     this.autoReconnect = !!autoReconnect;
     this.reconnectDelay = Math.max(0, Number(reconnectDelay) || 0);
@@ -176,8 +168,8 @@ export class Client extends Emitter {
   }
 
   _connect() {
-    this.emit('debug', 'Connecting', { endpoint: this.wsEndpoint });
-    const ws = new WebSocket(this.wsEndpoint);
+    this.emit('debug', 'Connecting');
+    const ws = new WebSocket('wss://gateway.discord.gg/?v=10&encoding=json');
     this._ws = ws;
 
     ws.addEventListener('open', () => {
@@ -370,7 +362,6 @@ Usage example:
 import { Client } from './mini-discordish-client.js';
 
 const client = new Client({
-  wsEndpoint: 'wss://your-gateway.example/ws',
   properties: { os: 'Linux', browser: 'Chrome', device: 'web' },
   autoReconnect: true,
   reconnectDelay: 5000,
