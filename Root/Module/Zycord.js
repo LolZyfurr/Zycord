@@ -116,7 +116,7 @@
                 properties,
                 autoReconnect = true,
                 reconnectDelay = 5000,
-                apiBase = 'https://discord.com/api/v10'
+                apiBase = 'https://discord.com/api/v9'
             } = options;
             this.properties = properties || this._defaultProperties();
             this.autoReconnect = !!autoReconnect;
