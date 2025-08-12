@@ -188,10 +188,10 @@
         _presenceKey(userId) { return `presences:${userId}`; }
 
         _storePresence(presence) {
-            const uid = presence?.user?.id ?? presence?.user_id;
-            if (!uid) return;
-            this._store.set(this._presenceKey(uid), presence);
-            this.emit('presenceUpdate', { userId: uid, presence });
+            const user = presence?.user;
+            if (!user || !user.id) return null;
+            this._store.set(this._presenceKey(user.id), presence);
+            this.emit('presenceUpdate', { user, presence });
         }
 
         getPresence(userId) {
