@@ -402,15 +402,19 @@
                     if (data) this._storePresence(data);
                 } else if (type === 'SESSIONS_REPLACE') {
                     this.emit('debug', 'Session replace called', data);
-                    if (data?.d && Array.isArray(data.d)) {
-                        const allSession = data.d.find(session => session?.session_id === "all");
+
+                    // data is an array for SESSIONS_REPLACE
+                    if (Array.isArray(data)) {
+                        const allSession = data.find(session => session?.session_id === 'all');
                         if (allSession) {
                             const sessionWithUser = {
                                 ...allSession,
                                 user: this.user
                             };
                             this.emit('debug', 'Session replace data', sessionWithUser);
-                            this._storePresence({d: sessionWithUser});
+
+                            // If _storePresence expects a presence-like shape, adapt here:
+                            this._storePresence(sessionWithUser);
                         }
                     }
                 } else if (type) {
