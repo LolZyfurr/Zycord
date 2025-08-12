@@ -410,10 +410,7 @@
                                 user: this.user
                             };
                             this.emit('debug', 'Session replace data', sessionWithUser);
-                            this._storePresence({
-                                ...data,
-                                d: [sessionWithUser]
-                            });
+                            this._storePresence({d: sessionWithUser});
                         }
                     }
                 } else if (type) {
