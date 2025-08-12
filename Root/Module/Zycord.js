@@ -351,24 +351,29 @@
                     if (data?.user) this._attachPresenceHelpers(data.user);
 
                     if (data?.user_settings && this.user) {
-                        let activity = {};
-                        if (data?.user_settings?.custom_status) {
-                            activity = {
-                                type: 4, // CUSTOM
-                                name: 'Custom Status',
-                                state: data?.user_settings?.custom_status?.text || '',
-                                emoji: data?.user_settings?.custom_status?.text
-                                    ? { name: data?.user_settings?.custom_status?.emoji_name, id: data?.user_settings?.custom_status?.emoji_id || null, animated: false }
-                                    : null
-                            };
-                        }
-
-                        this.user.setPresence({
-                            status: data?.user_settings?.status || 'online',
-                            activities: [activity],
+                        const { custom_status, status } = data.user_settings;
+                        const presence = {
+                            status: status || 'online',
                             since: null,
                             afk: false
-                        });
+                        };
+
+                        if (custom_status?.text || custom_status?.emoji_name) {
+                            const activity = {
+                                type: 4, // CUSTOM
+                                name: 'Custom Status',
+                                state: custom_status.text || '',
+                                emoji: custom_status.emoji_name
+                                    ? {
+                                        name: custom_status.emoji_name,
+                                        ...(custom_status.emoji_id && { id: custom_status.emoji_id }),
+                                        animated: false // Consider checking for actual animation flag
+                                    }
+                                    : null
+                            };
+                            presence.activities = [activity];
+                        }
+                        this.user.setPresence(presence);
                     }
 
                     this.emit('ready', { sessionId: this._sessionId, user: data?.user || null });
