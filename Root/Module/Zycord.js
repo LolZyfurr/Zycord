@@ -237,13 +237,34 @@
         // ---------- Presence: self update (gateway OP 3) ----------
 
         _normalizeActivity(a = {}) {
-            const typeMap = { PLAYING: 0, STREAMING: 1, LISTENING: 2, WATCHING: 3, CUSTOM: 4, COMPETING: 5 };
+            const typeMap = {
+                PLAYING: 0,
+                STREAMING: 1,
+                LISTENING: 2,
+                WATCHING: 3,
+                CUSTOM: 4,
+                COMPETING: 5
+            };
+
             let type = a.type;
             if (typeof type === 'string') type = typeMap[type.toUpperCase()] ?? 0;
             if (typeof type !== 'number') type = 0;
 
-            const out = { name: String(a.name || ''), type };
-            if (type === 1 && a.url) out.url = String(a.url); // STREAMING needs a URL
+            const out = {
+                name: String(a.name || ''),
+                type
+            };
+
+            // STREAMING requires a URL
+            if (type === 1 && a.url) {
+                out.url = String(a.url);
+            }
+
+            // CUSTOM status may include a state field
+            if (type === 4 && typeof a.state === 'string') {
+                out.state = a.state;
+            }
+
             return out;
         }
 
