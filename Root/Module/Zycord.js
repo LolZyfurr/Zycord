@@ -360,6 +360,7 @@
 
                         if (custom_status?.text || custom_status?.emoji_name) {
                             const activity = {
+                                id: 'custom',
                                 type: 4, // CUSTOM
                                 name: 'Custom Status',
                                 state: custom_status.text || '',
