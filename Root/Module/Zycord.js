@@ -392,33 +392,26 @@
                     }
 
                     this.emit('ready', { sessionId: this._sessionId, user: data?.user || null });
-
-                    // Flush queued presence post-READY
                     if (this._presence && this._ws && this._ws.readyState === WebSocket.OPEN) {
                         try {
                             this._ws.send(JSON.stringify({ op: 3, d: this._presence }));
                             this.emit('debug', 'Presence flushed post-READY', this._presence);
                         } catch { /* ignore */ }
                     }
-
                 } else if (type === 'PRESENCE_UPDATE') {
                     if (data) this._storePresence(data);
                 } else if (type === 'SESSIONS_REPLACE') {
-                    if (data && Array.isArray(data.d)) {
-                        // Find the session with session_id === "all"
-                        const allSession = data.d.find(session => session.session_id === "all");
-
+                    if (data?.d && Array.isArray(data.d)) {
+                        const allSession = data.d.find(session => session?.session_id === "all");
                         if (allSession) {
-                            // Attach the current user to the session
                             const sessionWithUser = {
                                 ...allSession,
-                                user: this.user // Add user info like a presence update
+                                user: this.user
                             };
-
-                            // Store only that session
+                            this.emit('debug', 'Session replace', this.sessionWithUser);
                             this._storePresence({
                                 ...data,
-                                d: [sessionWithUser] // Replace full array with just the modified "all" session
+                                d: [sessionWithUser]
                             });
                         }
                     }
