@@ -358,19 +358,12 @@
                             afk: false
                         };
 
-                        if (custom_status?.text || custom_status?.emoji_name) {
+                        if (custom_status?.text) {
                             const activity = {
                                 id: 'custom',
                                 type: 4, // CUSTOM
                                 name: 'Custom Status',
-                                state: custom_status.text || '',
-                                emoji: custom_status.emoji_name
-                                    ? {
-                                        name: custom_status.emoji_name,
-                                        ...(custom_status.emoji_id && { id: custom_status.emoji_id }),
-                                        animated: false // Consider checking for actual animation flag
-                                    }
-                                    : null
+                                state: custom_status.text || ''
                             };
                             presence.activities = [activity];
                         }
