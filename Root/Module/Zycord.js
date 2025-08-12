@@ -401,6 +401,7 @@
                 } else if (type === 'PRESENCE_UPDATE') {
                     if (data) this._storePresence(data);
                 } else if (type === 'SESSIONS_REPLACE') {
+                    this.emit('debug', 'Session replace called', data);
                     if (data?.d && Array.isArray(data.d)) {
                         const allSession = data.d.find(session => session?.session_id === "all");
                         if (allSession) {
@@ -408,7 +409,7 @@
                                 ...allSession,
                                 user: this.user
                             };
-                            this.emit('debug', 'Session replace', this.sessionWithUser);
+                            this.emit('debug', 'Session replace data', sessionWithUser);
                             this._storePresence({
                                 ...data,
                                 d: [sessionWithUser]
