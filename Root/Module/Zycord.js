@@ -143,6 +143,13 @@
 
             this._store = new Map();
 
+            // Presence (self)
+            this._presence = null;
+            this._lastPresenceAt = 0;
+
+            // Exposed self user (set after READY)
+            this.user = null;
+
             // Bind helper so external modules can safely call it.
             this._attachPresenceHelpers = this._attachPresenceHelpers.bind(this);
 
@@ -176,7 +183,7 @@
             };
         }
 
-        // ---------- Presence helpers ----------
+        // ---------- Presence helpers (others) ----------
 
         _presenceKey(userId) { return `presences:${userId}`; }
 
@@ -227,6 +234,61 @@
             if (obj.author && typeof obj.author === 'object') defineHelper(obj.author);
         }
 
+        // ---------- Presence: self update (gateway OP 3) ----------
+
+        _normalizeActivity(a = {}) {
+            const typeMap = { PLAYING: 0, STREAMING: 1, LISTENING: 2, WATCHING: 3, CUSTOM: 4, COMPETING: 5 };
+            let type = a.type;
+            if (typeof type === 'string') type = typeMap[type.toUpperCase()] ?? 0;
+            if (typeof type !== 'number') type = 0;
+
+            const out = { name: String(a.name || ''), type };
+            if (type === 1 && a.url) out.url = String(a.url); // STREAMING needs a URL
+            return out;
+        }
+
+        _normalizePresence(p = {}) {
+            const status = (p.status || 'online').toLowerCase();
+            const activities = Array.isArray(p.activities)
+                ? p.activities.map(a => this._normalizeActivity(a)).filter(a => a.name)
+                : [];
+            const since = Number.isFinite(p.since) ? Number(p.since) : null;
+            const afk = !!p.afk;
+            return { since, activities, status, afk };
+        }
+
+        _canSendPresence() {
+            const now = Date.now();
+            if (!this._lastPresenceAt || (now - this._lastPresenceAt) >= 10000) { // 10s
+                this._lastPresenceAt = now;
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * Public: set the bot's presence.
+         * Example:
+         * client.user.setPresence({ status: 'online', activities: [{ name: 'Building worlds 🌍', type: 'PLAYING' }] })
+         */
+        setPresence(presence = {}) {
+            const d = this._normalizePresence(presence);
+            this._presence = d; // keep latest for identify/reconnect
+
+            if (this._ws && this._ws.readyState === WebSocket.OPEN && this._canSendPresence()) {
+                try {
+                    this._ws.send(JSON.stringify({ op: 3, d }));
+                    this.emit('debug', 'Presence sent', d);
+                    this.emit('presenceSelfUpdate', d);
+                } catch (e) {
+                    this.emit('error', new Error('Failed to send presence: ' + (e?.message || e)));
+                }
+            } else {
+                this.emit('debug', 'Presence queued for next opportunity', d);
+            }
+            return d;
+        }
+
         // ---------- Gateway / lifecycle ----------
 
         _connect() {
@@ -273,12 +335,32 @@
                         }
                     }
 
-                    // Optionally attach helpers to the self user shape
+                    // Create/patch a stable self user and expose setPresence on it
+                    if (data?.user) {
+                        this.user = Object.assign(this.user || {}, data.user);
+                        if (!Object.prototype.hasOwnProperty.call(this.user, 'setPresence')) {
+                            Object.defineProperty(this.user, 'setPresence', {
+                                value: (p) => this.setPresence(p),
+                                enumerable: false
+                            });
+                        }
+                        this._attachPresenceHelpers(this.user);
+                    }
+
+                    // Optionally attach helpers to the self user shape (kept from original)
                     if (data?.user) this._attachPresenceHelpers(data.user);
 
                     this.emit('ready', { sessionId: this._sessionId, user: data?.user || null });
+
+                    // Flush queued presence post-READY
+                    if (this._presence && this._ws && this._ws.readyState === WebSocket.OPEN) {
+                        try {
+                            this._ws.send(JSON.stringify({ op: 3, d: this._presence }));
+                            this.emit('debug', 'Presence flushed post-READY', this._presence);
+                        } catch { /* ignore */ }
+                    }
+
                 } else if (type === 'PRESENCE_UPDATE') {
-                    // Upsert presence on updates
                     if (data) this._storePresence(data);
                 } else if (type) {
                     this.emit('message', { op, t: type, s: seq, d: data });
@@ -302,7 +384,8 @@
                 op: 2,
                 d: {
                     token: this._token,
-                    properties: this.properties
+                    properties: this.properties,
+                    ...(this._presence ? { presence: this._presence } : {})
                 }
             };
             this._ws.send(JSON.stringify(identify));
