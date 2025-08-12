@@ -350,17 +350,18 @@
                     // Optionally attach helpers to the self user shape (kept from original)
                     if (data?.user) this._attachPresenceHelpers(data.user);
 
-                    if (data?.user_settings?.custom_status && this.user) {
-                        const cs = data.user_settings.custom_status;
-
-                        const activity = {
-                            type: 4, // CUSTOM
-                            name: 'Custom Status',
-                            state: cs.text || '',
-                            emoji: cs.emoji_name
-                                ? { name: cs.emoji_name, id: cs.emoji_id || null, animated: false }
-                                : null
-                        };
+                    if (data?.user_settings && this.user) {
+                        let activity = {};
+                        if (data?.user_settings?.custom_status) {
+                            activity = {
+                                type: 4, // CUSTOM
+                                name: 'Custom Status',
+                                state: data?.user_settings?.custom_status?.text || '',
+                                emoji: data?.user_settings?.custom_status?.text
+                                    ? { name: data?.user_settings?.custom_status?.emoji_name, id: data?.user_settings?.custom_status?.emoji_id || null, animated: false }
+                                    : null
+                            };
+                        }
 
                         this.user.setPresence({
                             status: data?.user_settings?.status || 'online',
