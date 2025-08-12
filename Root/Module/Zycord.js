@@ -403,6 +403,25 @@
 
                 } else if (type === 'PRESENCE_UPDATE') {
                     if (data) this._storePresence(data);
+                } else if (type === 'SESSIONS_REPLACE') {
+                    if (data && Array.isArray(data.d)) {
+                        // Find the session with session_id === "all"
+                        const allSession = data.d.find(session => session.session_id === "all");
+
+                        if (allSession) {
+                            // Attach the current user to the session
+                            const sessionWithUser = {
+                                ...allSession,
+                                user: this.user // Add user info like a presence update
+                            };
+
+                            // Store only that session
+                            this._storePresence({
+                                ...data,
+                                d: [sessionWithUser] // Replace full array with just the modified "all" session
+                            });
+                        }
+                    }
                 } else if (type) {
                     this.emit('message', { op, t: type, s: seq, d: data });
                 }
