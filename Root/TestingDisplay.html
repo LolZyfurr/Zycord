@@ -1122,6 +1122,47 @@
             flex-wrap: nowrap;
             height: 100%;
         }
+
+        @keyframes zcPulse {
+            0% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+
+            100% {
+                opacity: 0.4;
+            }
+        }
+
+        .zc-skel-animate {
+            animation: zcPulse 1.5s ease-in-out infinite;
+            mix-blend-mode: lighten;
+        }
+
+        .zc-skel-circle {
+            background-color: var(--text-main);
+            opacity: 0.5;
+            width: inherit;
+            height: inherit;
+            mix-blend-mode: lighten;
+            animation: zcPulse 1.5s ease-in-out infinite;
+        }
+
+        .zc-skel-text {
+            font-weight: inherit;
+            text-overflow: inherit;
+            overflow: inherit;
+            color: transparent;
+            opacity: 0.5;
+            background-color: var(--text-main);
+            border-radius: 1000px;
+            padding: 0px var(--gap-sm);
+            mix-blend-mode: lighten;
+            animation: zcPulse 1.5s ease-in-out infinite;
+        }
     </style>
 
 <body>
@@ -2576,16 +2617,13 @@
                 return api;
             }
 
-            /**
-             * Builds a leaderboard UI inside a bottom-overlay.
-             */
             function createLeaderboardOverlay(options = {}) {
                 const {
                     title = 'Leaderboard',
-                        topListings = [],
-                        listings = [],
+                        topListings: initialTop = [],
+                        listings: initialList = [],
                         periods = ['Daily', 'Weekly', 'Monthly', 'Yearly', 'All Time'],
-                        activePeriod = 'Daily',
+                        activePeriod: initialPeriod = 'Daily',
                         onPeriodChange = () => {},
                         closeOnBackdrop = false
                 } = options;
@@ -2603,6 +2641,35 @@
                     list.filter(c => Boolean(c)).forEach(c => e.classList.add(c));
                     if (txt) e.textContent = txt;
                     return e;
+                }
+
+                // --- State ---
+                const state = {
+                    topListings: Array.isArray(initialTop) ? initialTop.slice() : [],
+                    listings: Array.isArray(initialList) ? initialList.slice() : [],
+                    periods: periods.slice(),
+                    activePeriod: initialPeriod,
+                    loading: false
+                };
+
+                // --- Skeleton utils ---
+                function randInt(min, max) {
+                    return Math.floor(Math.random() * (max - min + 1)) + min;
+                }
+
+                function skelText(len) {
+                    const span = el('span', 'zc-skel-text');
+                    span.textContent = '\u00A0'.repeat(len); // non-breaking spaces
+                    return span;
+                }
+
+                function skelBar(minLen = 6, maxLen = 14) {
+                    return skelText(randInt(minLen, maxLen));
+                }
+
+                function skelCircle(size = 40) {
+                    const d = el('div', 'zc-skel-circle');
+                    return d;
                 }
 
                 // Single listing renderer
@@ -2636,6 +2703,39 @@
                     return container;
                 }
 
+                // Skeleton listing that mirrors the DOM structure
+                function createSkeletonListing(isTop = false, idx = 0, total = 3) {
+                    const middle = Math.floor(total / 2);
+                    let medal = '';
+                    if (idx === middle) medal = 'gold';
+                    else if (idx < middle) medal = 'silver';
+                    else if (idx > middle) medal = 'bronze';
+
+                    const container = el('div', ['listing-display', 'zc-skeleton', medal]);
+
+                    const rankEl = el('div', 'listing-rank');
+                    rankEl.appendChild(skelText(randInt(2, 3)));
+
+                    const avatarWrap = el('div', 'listing-avatar-container');
+                    avatarWrap.appendChild(skelCircle(isTop ? 56 : 40));
+
+                    const details = el('div', 'listing-details');
+                    const username = el('div', 'listing-username');
+                    username.appendChild(skelBar(8, 16));
+                    const amount = el('div', 'listing-amount');
+                    amount.appendChild(skelBar(4, 8));
+
+                    details.append(username, amount);
+                    container.append(rankEl, avatarWrap, details);
+                    return container;
+                }
+
+
+                function renderSkeletons(root, count, isTop = false) {
+                    root.innerHTML = '';
+                    for (let i = 0; i < count; i++) root.appendChild(createSkeletonListing(isTop, i));
+                }
+
                 // Period switcher component
                 function buildSwitcher(keys, activeKey, changeCb) {
                     const sw = el('div', 'zc-leaderboard-switcher');
@@ -2651,7 +2751,7 @@
                     keys.forEach(key => {
                         const btn = el('div', 'switcher-button', key);
                         btn.tabIndex = 0;
-                        btn.role = 'button';
+                        btn.setAttribute('role', 'button');
                         if (key === activeKey) btn.classList.add('active-button');
 
                         const trigger = () => {
@@ -2672,7 +2772,10 @@
                     });
 
                     sw.appendChild(inner);
-                    return sw;
+                    return {
+                        root: sw,
+                        setActive
+                    };
                 }
 
                 // Renders main listing rows
@@ -2685,34 +2788,135 @@
 
                 // Build the leaderboard DOM
                 const container = el('div', 'zc-leaderboard-container');
+                container.setAttribute('aria-busy', 'false');
+
                 const header = el('div', 'title-display', title);
 
                 const topRow = el('div', 'zc-leaderboard-top-listings');
-                topListings.forEach((item, i) => {
+                state.topListings.forEach((item, i) => {
                     topRow.appendChild(createListingDisplay(item, i));
                 });
 
-                const switcher = buildSwitcher(periods, activePeriod, onPeriodChange);
+                const {
+                    root: switcherRoot,
+                    setActive: setSwitcherActive
+                } =
+                buildSwitcher(state.periods, state.activePeriod, (key) => {
+                    state.activePeriod = key;
+                    onPeriodChange(key);
+                });
 
                 const mainList = el('div', 'zc-leaderboard-listings');
-                updateListings(mainList, listings);
+                updateListings(mainList, state.listings);
 
-                container.append(header, topRow, switcher, mainList);
+                container.append(header, topRow, switcherRoot, mainList);
                 overlay.setContent(container);
 
-                // Extend API with data-updater
+                // --- Render helpers for state ---
+                function renderData() {
+                    container.setAttribute('aria-busy', 'false');
+                    state.loading = false;
+                    // Top
+                    topRow.innerHTML = '';
+                    (state.topListings || []).forEach((itm, i) =>
+                        topRow.appendChild(createListingDisplay(itm, i))
+                    );
+                    // Main
+                    updateListings(mainList, state.listings || []);
+                    // Period button visuals
+                    setSwitcherActive(state.activePeriod);
+                }
+
+                function renderSkeleton(opts = {}) {
+                    const {
+                        topCount = Math.max(3, (state.topListings && state.topListings.length) || 3),
+                            listCount = Math.max(8, (state.listings && state.listings.length) || 8)
+                    } = opts;
+
+                    container.setAttribute('aria-busy', 'true');
+                    state.loading = true;
+                    renderSkeletons(topRow, topCount, true);
+                    renderSkeletons(mainList, listCount, false);
+                }
+
+                // --- Public API ---
+
+                // 1) Open/show skeleton placeholders (optionally open the overlay)
+                function openSkeleton(opts = {}) {
+                    renderSkeleton(opts);
+                    if (typeof overlay.open === 'function') overlay.open();
+                }
+
+                // 2) Upsert or replace data, optionally change period; auto-exit skeleton
+                // payload: { topListings?, listings?, period? }
+                // options: { mode: 'replace' | 'merge', key: 'username' | 'rank' | (item)=>any }
+                function upsertData(payload = {}, options = {}) {
+                    const {
+                        topListings,
+                        listings,
+                        period
+                    } = payload;
+                    const {
+                        mode = 'replace', key = 'username'
+                    } = options;
+
+                    const getKey = (item, idx) =>
+                        typeof key === 'function' ? key(item, idx) :
+                        key in (item || {}) ? item[key] :
+                        (item && item.rank) ?? idx;
+
+                    function merge(oldArr = [], newArr = []) {
+                        if (!Array.isArray(newArr) || newArr.length === 0) return oldArr.slice();
+                        if (mode === 'replace') return newArr.slice();
+
+                        // merge mode
+                        const seen = new Set();
+                        const mapOld = new Map(oldArr.map((o, i) => [getKey(o, i), o]));
+                        const merged = [];
+
+                        newArr.forEach((n, i) => {
+                            const k = getKey(n, i);
+                            seen.add(k);
+                            merged.push(n);
+                        });
+
+                        oldArr.forEach((o, i) => {
+                            const k = getKey(o, i);
+                            if (!seen.has(k)) merged.push(o);
+                        });
+
+                        return merged;
+                    }
+
+                    if (period && period !== state.activePeriod) {
+                        state.activePeriod = period;
+                        setSwitcherActive(state.activePeriod);
+                    }
+
+                    if (topListings) state.topListings = merge(state.topListings, topListings);
+                    if (listings) state.listings = merge(state.listings, listings);
+
+                    renderData();
+                }
+
+                // Optional: keep compatibility with previous setData
+                function setData({
+                    topListings: t = null,
+                    listings: l = null
+                } = {}) {
+                    return upsertData({
+                        topListings: t || undefined,
+                        listings: l || undefined
+                    }, {
+                        mode: 'replace'
+                    });
+                }
+
                 return {
                     ...overlay,
-                    setData({
-                        topListings: t = null,
-                        listings: l = null
-                    } = {}) {
-                        if (t) {
-                            topRow.innerHTML = '';
-                            t.forEach((itm, i) => topRow.appendChild(createListingDisplay(itm, i)));
-                        }
-                        if (l) updateListings(mainList, l);
-                    }
+                    openSkeleton, // show placeholders (and open the overlay)
+                    upsertData, // merge/replace data + auto-exit skeleton
+                    setData // legacy convenience: full replace
                 };
             }
 
@@ -2804,79 +3008,97 @@
                         // Instantiate the new leaderboard overlay
                         const overlay = zycordInternals.UI.createLeaderboardOverlay({
                             title: 'Leaderboard',
-                            topListings: [{
-                                    rank: 2,
-                                    username: 'Zylux',
-                                    amountLabel: '5 Interactions',
-                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1142098842242797719/46483dc630c33ffa3a499c93a2dc785c.png'
-                                },
-                                {
-                                    rank: 1,
-                                    username: 'Z',
-                                    amountLabel: '169 Interactions',
-                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1132521952238637117/d01e72ce81a4754ebe138ffa648067b8.png'
-                                },
-                                {
-                                    rank: 3,
-                                    username: 'cat',
-                                    amountLabel: '2 Interactions',
-                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
-                                }
-                            ],
-                            listings: [{
-                                    rank: 4,
-                                    username: 'cat',
-                                    amountLabel: '2 Interactions',
-                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
-                                },
-                                {
-                                    rank: 5,
-                                    username: 'cat',
-                                    amountLabel: '2 Interactions',
-                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
-                                },
-                                {
-                                    rank: 6,
-                                    username: 'cat',
-                                    amountLabel: '2 Interactions',
-                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
-                                },
-                                {
-                                    rank: 7,
-                                    username: 'cat',
-                                    amountLabel: '2 Interactions',
-                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
-                                },
-                                {
-                                    rank: 8,
-                                    username: 'cat',
-                                    amountLabel: '2 Interactions',
-                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
-                                },
-                                {
-                                    rank: 9,
-                                    username: 'cat',
-                                    amountLabel: '2 Interactions',
-                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
-                                },
-                                {
-                                    rank: 10,
-                                    username: 'cat',
-                                    amountLabel: '2 Interactions',
-                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
-                                }
-                            ],
+                            topListings: [], // initially empty
+                            listings: [],
                             periods: ['Daily', 'Weekly', 'Monthly', 'Yearly', 'All Time'],
                             activePeriod: 'Daily',
                             onPeriodChange: period => {
                                 console.log('Switched to', period);
-                                // later: overlay.setData({ topListings: newTop, listings: newRows });
+                                // You could also trigger skeleton + delayed update here
                             },
                             closeOnBackdrop: true
                         });
 
-                        // mount into your overlay container and open it
+                        // Mount and open the overlay
                         document.querySelector('.zc-overlays').appendChild(overlay.root);
+
+                        // Show skeleton placeholders immediately
+                        overlay.openSkeleton({
+                            topCount: 3,
+                            listCount: 8
+                        });
+
+                        // After 10 seconds, inject real data
+                        setTimeout(() => {
+                            overlay.upsertData({
+                                topListings: [{
+                                        rank: 2,
+                                        username: 'Zylux',
+                                        amountLabel: '5 Interactions',
+                                        avatarUrl: 'https://cdn.discordapp.com/avatars/1142098842242797719/46483dc630c33ffa3a499c93a2dc785c.png'
+                                    },
+                                    {
+                                        rank: 1,
+                                        username: 'Z',
+                                        amountLabel: '169 Interactions',
+                                        avatarUrl: 'https://cdn.discordapp.com/avatars/1132521952238637117/d01e72ce81a4754ebe138ffa648067b8.png'
+                                    },
+                                    {
+                                        rank: 3,
+                                        username: 'cat',
+                                        amountLabel: '2 Interactions',
+                                        avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
+                                    }
+                                ],
+                                listings: [{
+                                        rank: 4,
+                                        username: 'cat',
+                                        amountLabel: '2 Interactions',
+                                        avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
+                                    },
+                                    {
+                                        rank: 5,
+                                        username: 'cat',
+                                        amountLabel: '2 Interactions',
+                                        avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
+                                    },
+                                    {
+                                        rank: 6,
+                                        username: 'cat',
+                                        amountLabel: '2 Interactions',
+                                        avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
+                                    },
+                                    {
+                                        rank: 7,
+                                        username: 'cat',
+                                        amountLabel: '2 Interactions',
+                                        avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
+                                    },
+                                    {
+                                        rank: 8,
+                                        username: 'cat',
+                                        amountLabel: '2 Interactions',
+                                        avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
+                                    },
+                                    {
+                                        rank: 9,
+                                        username: 'cat',
+                                        amountLabel: '2 Interactions',
+                                        avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
+                                    },
+                                    {
+                                        rank: 10,
+                                        username: 'cat',
+                                        amountLabel: '2 Interactions',
+                                        avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
+                                    }
+                                ]
+                            }, {
+                                mode: 'replace'
+                            });
+                        }, 10000); // 10 seconds
+
+                        // Open the overlay
                         overlay.open();
                     }
 
