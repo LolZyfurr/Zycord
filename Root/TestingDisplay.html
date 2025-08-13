@@ -14,19 +14,26 @@
             font-family: 'Segoe UI', sans-serif;
             color: var(--text-main);
             margin: 0;
-            overflow: hidden;
             box-sizing: border-box;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
             width: 100dvw;
             height: 100dvh;
-            overflow: hidden;
             touch-action: none;
             inset: 0;
+            position: relative;
+            overflow: hidden;
         }
+
+        html,
+        body {
+            overscroll-behavior: none;
+            /* Prevents scroll chaining */
+            overflow: hidden;
+            /* Optional: disables scrolling entirely */
+            touch-action: none;
+            /* Prevents touch gestures like pull-to-refresh */
+        }
+
+
 
         :root {
             /* Layout & Spacing */
@@ -46,7 +53,7 @@
             --font-size-sm: 12px;
             --font-size-md: 14px;
             --font-size-lg: 18px;
-            --line-height: var(--line-height);
+            --line-height: 1.2;
 
             /* Border & Radius */
             --border-width: 1px;
@@ -867,6 +874,253 @@
         .zc-overlay-details-message.is-exit {
             opacity: 0;
             transform: translateY(-4px) scale(.985);
+        }
+
+        .zc-bottom-overlay-window {
+            border-radius: 12px 12px 0px 0px;
+            background-color: var(--bg-primary);
+            width: 100%;
+            height: 80%;
+            position: absolute;
+            bottom: 0px;
+        }
+
+        .zc-leaderboard-top-listings {
+            gap: var(--gap-sm);
+            box-sizing: border-box;
+            padding: var(--gap-sm) var(--gap-lg);
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-evenly;
+            flex-wrap: nowrap;
+            flex-direction: row;
+            width: 100%;
+        }
+
+        .zc-leaderboard-top-listings .listing-display {
+            border-radius: 8px;
+            gap: var(--gap-sm);
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            flex-wrap: nowrap;
+            overflow: hidden;
+        }
+
+        .zc-leaderboard-top-listings .listing-avatar-container {
+            box-sizing: border-box;
+            height: 80px;
+            width: 80px;
+            max-width: 100%;
+            max-height: fit-content;
+            aspect-ratio: 1 / 1;
+            border-radius: 1000px;
+            overflow: hidden;
+        }
+
+        .zc-leaderboard-top-listings .listing-avatar {
+            box-sizing: border-box;
+            object-fit: cover;
+            height: 100%;
+            width: 100%;
+            filter: saturate(0);
+        }
+
+        .zc-leaderboard-top-listings .listing-display.gold .listing-avatar-container {
+            border: 4px var(--accent) solid;
+        }
+
+        .zc-leaderboard-top-listings .listing-display.gold {
+            background: linear-gradient(transparent, var(--accent));
+            padding-bottom: calc(var(--gap-lg) + var(--gap-lg));
+            filter: saturate(1.2);
+        }
+
+        .zc-leaderboard-top-listings .listing-display.bronze .listing-avatar-container {
+            border: 4px var(--accent) solid;
+        }
+
+        .zc-leaderboard-top-listings .listing-display.bronze {
+            background: linear-gradient(transparent, var(--accent));
+            filter: saturate(0.4);
+            padding-bottom: var(--gap-lg);
+        }
+
+        .zc-leaderboard-top-listings .listing-display.silver .listing-avatar-container {
+            border: 4px var(--accent) solid;
+        }
+
+        .zc-leaderboard-top-listings .listing-display.silver {
+            background: linear-gradient(transparent, var(--accent));
+            filter: saturate(0.6);
+            padding-bottom: var(--gap-lg);
+        }
+
+        .zc-leaderboard-top-listings .listing-username {
+            font-weight: 500;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            color: var(--text-main);
+            font-size: var(--font-size-lg);
+            line-height: var(----line-height);
+        }
+
+        .zc-leaderboard-top-listings .listing-amount {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            color: var(--text-main);
+            font-size: var(--font-size-sm);
+            line-height: var(----line-height);
+            white-space: nowrap;
+        }
+
+        .zc-leaderboard-top-listings .listing-rank {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            color: var(--text-main);
+            font-size: var(--font-size-sm);
+            line-height: var(----line-height);
+        }
+
+        .zc-leaderboard-top-listings .listing-details {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .zc-leaderboard-container .title-display {
+            padding: var(--gap-lg);
+            font-weight: 500;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            color: var(--text-main);
+            font-size: var(--font-size-lg);
+            line-height: var(----line-height);
+            text-align: center;
+        }
+
+        .zc-leaderboard-switcher {
+            border-radius: 1000px;
+            box-sizing: border-box;
+            padding: var(--gap-sm) var(--gap-lg);
+            display: flex;
+            width: 100%;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+
+        .zc-leaderboard-switcher .switcher-inner {
+            background-color: var(--accent);
+            border-radius: 1000px;
+            box-sizing: border-box;
+            padding: var(--gap-xs);
+            display: flex;
+            width: 100%;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: space-evenly;
+            align-items: center;
+            color: var(--text-main);
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-size: var(--font-size-md);
+        }
+
+        .zc-leaderboard-switcher .switcher-button {
+            padding: var(--gap-xs);
+            border-radius: 1000px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .zc-leaderboard-switcher .switcher-button.active-button {
+            background-color: var(--accent-hover);
+        }
+
+        .zc-leaderboard-listings {
+            flex: 1;
+            gap: var(--gap-sm);
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            box-sizing: border-box;
+            padding: var(--gap-sm) var(--gap-lg);
+            max-height: 100%;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+
+        .zc-leaderboard-listing {
+            gap: var(--gap-sm);
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+        }
+
+        .zc-leaderboard-listings .listing-avatar-container {
+            border-radius: 1000px;
+            width: 40px;
+            height: 40px;
+            overflow: hidden;
+        }
+
+        .zc-leaderboard-listings .listing-avatar {
+            width: 100%;
+            height: 100%;
+        }
+
+        .zc-leaderboard-listings .listing-rank {
+            right: 0px;
+            position: absolute;
+            font-size: var(--font--size-md);
+            line-height: var(--line-height);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .zc-leaderboard-listings .listing-username {
+            font-size: var(--font--size-md);
+            font-weight: 500;
+            line-height: var(--line-height);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .zc-leaderboard-listings .listing-amount {
+            font-size: var(--font-size-sm);
+            line-height: var(--line-height);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .zc-leaderboard-listings .listing-display {
+            position: relative;
+            flex: none;
+            gap: var(--gap-sm);
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .zc-leaderboard-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            height: 100%;
         }
     </style>
 
@@ -2257,6 +2511,210 @@
                 };
             }
 
+            /**
+             * Creates a reusable bottom-overlay panel.
+             */
+            function createBottomOverlay({
+                classNames = [],
+                closeOnBackdrop = false,
+                onDestroy = () => {}
+            } = {}) {
+                // Element factory with empty-class filtering
+                function el(tag, cls = [], txt = '') {
+                    const e = document.createElement(tag);
+                    // normalize to array, remove empty/falsy entries
+                    const list = Array.isArray(cls) ? cls : [cls];
+                    list.filter(c => Boolean(c)).forEach(c => e.classList.add(c));
+                    if (txt) e.textContent = txt;
+                    return e;
+                }
+
+                // Build DOM
+                const overlay = el('div', ['zc-screen-overlay', ...classNames]);
+                const windowEl = el('div', 'zc-bottom-overlay-window');
+                overlay.appendChild(windowEl);
+
+                // Backdrop-click closes & destroys
+                if (closeOnBackdrop) {
+                    overlay.addEventListener('click', evt => {
+                        if (evt.target === overlay) api.destroy();
+                    });
+                }
+
+                // Public API
+                const api = {
+                    root: overlay,
+
+                    open() {
+                        overlay.classList.remove('close');
+                        overlay.classList.add('open');
+                    },
+
+                    close() {
+                        overlay.classList.remove('open');
+                        overlay.classList.add('close');
+                    },
+
+                    destroy() {
+                        this.close();
+
+                        // Wait for transition to finish before removing
+                        overlay.addEventListener('transitionend', () => {
+                            overlay.remove();
+                            onDestroy();
+                        }, {
+                            once: true
+                        });
+                    },
+
+                    setContent(node) {
+                        windowEl.innerHTML = '';
+                        windowEl.appendChild(node);
+                    }
+                };
+
+                return api;
+            }
+
+            /**
+             * Builds a leaderboard UI inside a bottom-overlay.
+             */
+            function createLeaderboardOverlay(options = {}) {
+                const {
+                    title = 'Leaderboard',
+                        topListings = [],
+                        listings = [],
+                        periods = ['Daily', 'Weekly', 'Monthly', 'Yearly', 'All Time'],
+                        activePeriod = 'Daily',
+                        onPeriodChange = () => {},
+                        closeOnBackdrop = false
+                } = options;
+
+                // Create generic bottom overlay
+                const overlay = createBottomOverlay({
+                    classNames: [],
+                    closeOnBackdrop
+                });
+
+                // Element factory (same filtering el)
+                function el(tag, cls = [], txt = '') {
+                    const e = document.createElement(tag);
+                    const list = Array.isArray(cls) ? cls : [cls];
+                    list.filter(c => Boolean(c)).forEach(c => e.classList.add(c));
+                    if (txt) e.textContent = txt;
+                    return e;
+                }
+
+                // Single listing renderer
+                function createListingDisplay({
+                    rank,
+                    username,
+                    amountLabel,
+                    avatarUrl
+                }, idx) {
+                    const badge = rank ?? idx + 1;
+                    const medal =
+                        badge === 1 ? 'gold' :
+                        badge === 2 ? 'silver' :
+                        badge === 3 ? 'bronze' : '';
+
+                    const container = el('div', ['listing-display', medal]);
+                    const rankEl = el('div', 'listing-rank', `#${badge}`);
+                    const avatarWrap = el('div', 'listing-avatar-container');
+                    const img = el('img', 'listing-avatar');
+                    img.src = avatarUrl;
+                    img.alt = `${username} avatar`;
+                    avatarWrap.appendChild(img);
+
+                    const details = el('div', 'listing-details');
+                    details.append(
+                        el('div', 'listing-username', username),
+                        el('div', 'listing-amount', amountLabel)
+                    );
+
+                    container.append(rankEl, avatarWrap, details);
+                    return container;
+                }
+
+                // Period switcher component
+                function buildSwitcher(keys, activeKey, changeCb) {
+                    const sw = el('div', 'zc-leaderboard-switcher');
+                    const inner = el('div', 'switcher-inner');
+                    const buttons = new Map();
+
+                    function setActive(key) {
+                        buttons.forEach((btn, k) => {
+                            btn.classList.toggle('active-button', k === key);
+                        });
+                    }
+
+                    keys.forEach(key => {
+                        const btn = el('div', 'switcher-button', key);
+                        btn.tabIndex = 0;
+                        btn.role = 'button';
+                        if (key === activeKey) btn.classList.add('active-button');
+
+                        const trigger = () => {
+                            setActive(key);
+                            changeCb(key);
+                        };
+
+                        btn.addEventListener('click', trigger);
+                        btn.addEventListener('keydown', e => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                trigger();
+                            }
+                        });
+
+                        buttons.set(key, btn);
+                        inner.appendChild(btn);
+                    });
+
+                    sw.appendChild(inner);
+                    return sw;
+                }
+
+                // Renders main listing rows
+                function updateListings(root, rows) {
+                    root.innerHTML = '';
+                    rows.forEach((row, idx) => {
+                        root.appendChild(createListingDisplay(row, idx));
+                    });
+                }
+
+                // Build the leaderboard DOM
+                const container = el('div', 'zc-leaderboard-container');
+                const header = el('div', 'title-display', title);
+
+                const topRow = el('div', 'zc-leaderboard-top-listings');
+                topListings.forEach((item, i) => {
+                    topRow.appendChild(createListingDisplay(item, i));
+                });
+
+                const switcher = buildSwitcher(periods, activePeriod, onPeriodChange);
+
+                const mainList = el('div', 'zc-leaderboard-listings');
+                updateListings(mainList, listings);
+
+                container.append(header, topRow, switcher, mainList);
+                overlay.setContent(container);
+
+                // Extend API with data-updater
+                return {
+                    ...overlay,
+                    setData({
+                        topListings: t = null,
+                        listings: l = null
+                    } = {}) {
+                        if (t) {
+                            topRow.innerHTML = '';
+                            t.forEach((itm, i) => topRow.appendChild(createListingDisplay(itm, i)));
+                        }
+                        if (l) updateListings(mainList, l);
+                    }
+                };
+            }
 
             const debouncedFunction = () => {};
 
@@ -2266,6 +2724,7 @@
             debouncedFunction.System.calculateUserDailyAverages = getDailyAverageForUsers;
 
             debouncedFunction.UI = debouncedFunction.UI || {};
+            debouncedFunction.UI.createLeaderboardOverlay = createLeaderboardOverlay
             debouncedFunction.UI.renderZcOverlayPrompt = createZcPrompt;
             debouncedFunction.UI.buildDMChannelComponent = createDMChannel;
             debouncedFunction.UI.generateInteractiveButtonSet = createInteractiveButtons;
@@ -2342,19 +2801,85 @@
                     label: 'Leaderboard',
                     icon: 'https://cdn3.emoji.gg/emojis/3514-the-best-server-emojis.png',
                     onClick: (e, ctx) => {
-                        zycordInternals.UI.showEphemeralMessage(
-                            document.querySelector(".zc-overlays"),
-                            "Leaderboard is coming soon!", {
-                                duration: 3000,
-                                variant: 'info',
-                                live: 'polite'
-                            }
-                        );
-                        const handle = showEphemeralMessage('.app-shell', 'Saved!', {
-                            variant: 'success'
+                        // Instantiate the new leaderboard overlay
+                        const overlay = zycordInternals.UI.createLeaderboardOverlay({
+                            title: 'Leaderboard',
+                            topListings: [{
+                                    rank: 2,
+                                    username: 'Zylux',
+                                    amountLabel: '5 Interactions',
+                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1142098842242797719/46483dc630c33ffa3a499c93a2dc785c.png'
+                                },
+                                {
+                                    rank: 1,
+                                    username: 'Z',
+                                    amountLabel: '169 Interactions',
+                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1132521952238637117/d01e72ce81a4754ebe138ffa648067b8.png'
+                                },
+                                {
+                                    rank: 3,
+                                    username: 'cat',
+                                    amountLabel: '2 Interactions',
+                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
+                                }
+                            ],
+                            listings: [{
+                                    rank: 4,
+                                    username: 'cat',
+                                    amountLabel: '2 Interactions',
+                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
+                                },
+                                {
+                                    rank: 5,
+                                    username: 'cat',
+                                    amountLabel: '2 Interactions',
+                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
+                                },
+                                {
+                                    rank: 6,
+                                    username: 'cat',
+                                    amountLabel: '2 Interactions',
+                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
+                                },
+                                {
+                                    rank: 7,
+                                    username: 'cat',
+                                    amountLabel: '2 Interactions',
+                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
+                                },
+                                {
+                                    rank: 8,
+                                    username: 'cat',
+                                    amountLabel: '2 Interactions',
+                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
+                                },
+                                {
+                                    rank: 9,
+                                    username: 'cat',
+                                    amountLabel: '2 Interactions',
+                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
+                                },
+                                {
+                                    rank: 10,
+                                    username: 'cat',
+                                    amountLabel: '2 Interactions',
+                                    avatarUrl: 'https://cdn.discordapp.com/avatars/1158105552375779429/403d4d59eb767e3fe00928847c4a2d2c.png'
+                                }
+                            ],
+                            periods: ['Daily', 'Weekly', 'Monthly', 'Yearly', 'All Time'],
+                            activePeriod: 'Daily',
+                            onPeriodChange: period => {
+                                console.log('Switched to', period);
+                                // later: overlay.setData({ topListings: newTop, listings: newRows });
+                            },
+                            closeOnBackdrop: true
                         });
-                        setTimeout(() => handle.dismiss(), 1200);
+
+                        // mount into your overlay container and open it
+                        document.querySelector('.zc-overlays').appendChild(overlay.root);
+                        overlay.open();
                     }
+
                 },
                 {
                     type: 'button',
