@@ -888,7 +888,7 @@
         .zc-leaderboard-top-listings {
             gap: var(--gap-xs);
             box-sizing: border-box;
-            padding: var(--gap-sm);
+            padding: 0 var(--gap-lg);
             display: flex;
             align-items: flex-end;
             justify-content: space-evenly;
@@ -929,7 +929,7 @@
         }
 
         .zc-leaderboard-top-listings .listing-display.gold .listing-avatar-container {
-            border: var(--gap-xs) var(--accent) solid;
+            border: 4px var(--accent) solid;
         }
 
         .zc-leaderboard-top-listings .listing-display.gold {
@@ -939,17 +939,17 @@
         }
 
         .zc-leaderboard-top-listings .listing-display.bronze .listing-avatar-container {
-            border: var(--gap-xs) var(--accent) solid;
+            border: 4px var(--accent) solid;
         }
 
         .zc-leaderboard-top-listings .listing-display.bronze {
             background: linear-gradient(transparent, var(--accent));
-            filter: saturate(0.4);
+            filter: saturate(0.2);
             padding-bottom: var(--gap-lg);
         }
 
         .zc-leaderboard-top-listings .listing-display.silver .listing-avatar-container {
-            border: var(--gap-xs) var(--accent) solid;
+            border: 4px var(--accent) solid;
         }
 
         .zc-leaderboard-top-listings .listing-display.silver {
@@ -993,7 +993,7 @@
         }
 
         .zc-leaderboard-container .title-display {
-            padding: var(--gap-lg);
+            padding: var(--gap-md);
             font-weight: 500;
             text-overflow: ellipsis;
             overflow: hidden;
@@ -1006,7 +1006,7 @@
         .zc-leaderboard-switcher {
             border-radius: 1000px;
             box-sizing: border-box;
-            padding: var(--gap-sm);
+            padding: 0 var(--gap-lg);
             display: flex;
             width: 100%;
             flex-direction: row;
@@ -1016,7 +1016,8 @@
         }
 
         .zc-leaderboard-switcher .switcher-inner {
-            background-color: var(--accent);
+            border: 1px var(--bg-hover) solid;
+            background-color: var(--bg-secondary);
             border-radius: 1000px;
             box-sizing: border-box;
             padding: var(--gap-xs);
@@ -1030,7 +1031,7 @@
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            font-size: var(--font-size-sm);
+            font-size: var(--font-size-md);
         }
 
         .zc-leaderboard-switcher .switcher-button {
@@ -1041,7 +1042,7 @@
         }
 
         .zc-leaderboard-switcher .switcher-button.active-button {
-            background-color: var(--accent-hover);
+            background-color: var(--bg-hover);
         }
 
         .zc-leaderboard-listings {
@@ -1051,7 +1052,7 @@
             flex-direction: column;
             flex-wrap: nowrap;
             box-sizing: border-box;
-            padding: var(--gap-sm) var(--gap-lg);
+            padding: 0 var(--gap-lg);
             max-height: 100%;
             overflow-y: auto;
             scrollbar-width: none;
@@ -1116,29 +1117,13 @@
         }
 
         .zc-leaderboard-container {
-            position: relative;
-            box-sizing: border-box;
             width: 100%;
             display: flex;
             flex-direction: column;
             flex-wrap: nowrap;
             height: 100%;
-            padding-bottom: var(--device-inset-bottom);
-            overflow: hidden;
+            gap: var(--gap-sm);
         }
-
-        .zc-leaderboard-container::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: var(--gap-lg);
-            pointer-events: none;
-            background: linear-gradient(to bottom, transparent, var(--bg-primary));
-            z-index: 10;
-        }
-
 
         @keyframes zcPulse {
             0% {
