@@ -33,8 +33,6 @@
             /* Prevents touch gestures like pull-to-refresh */
         }
 
-
-
         :root {
             /* Layout & Spacing */
             --rail-h: 60px;
@@ -970,7 +968,7 @@
             overflow: hidden;
             color: var(--text-main);
             font-size: var(--font-size-lg);
-            line-height: var(----line-height);
+            line-height: var(--line-height);
         }
 
         .zc-leaderboard-top-listings .listing-amount {
@@ -978,7 +976,7 @@
             overflow: hidden;
             color: var(--text-main);
             font-size: var(--font-size-sm);
-            line-height: var(----line-height);
+            line-height: var(--line-height);
             white-space: nowrap;
         }
 
@@ -987,7 +985,7 @@
             overflow: hidden;
             color: var(--text-main);
             font-size: var(--font-size-sm);
-            line-height: var(----line-height);
+            line-height: var(--line-height);
         }
 
         .zc-leaderboard-top-listings .listing-details {
@@ -995,6 +993,13 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            flex-wrap: nowrap;
+        }
+        
+        .zc-leaderboard-listings .listing-details {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             flex-wrap: nowrap;
         }
 
@@ -1005,7 +1010,7 @@
             overflow: hidden;
             color: var(--text-main);
             font-size: var(--font-size-lg);
-            line-height: var(----line-height);
+            line-height: var(--line-height);
             text-align: center;
         }
 
@@ -1070,6 +1075,10 @@
             flex-direction: row;
             flex-wrap: nowrap;
             align-items: center;
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius-md);
+            padding: var(--gap-sm);
+            box-shadow: var(--shadow-soft);
         }
 
         .zc-leaderboard-listings .listing-avatar-container {
