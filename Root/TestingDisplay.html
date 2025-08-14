@@ -929,33 +929,39 @@
         }
 
         .zc-leaderboard-top-listings .listing-display.gold .listing-avatar-container {
-            border: 4px var(--accent) solid;
+            border: 1px var(--accent) solid;
         }
 
         .zc-leaderboard-top-listings .listing-display.gold {
-            background: linear-gradient(transparent, var(--accent));
-            padding-bottom: calc(var(--gap-lg) + var(--gap-lg));
+            background: linear-gradient(var(--bg-secondary), var(--accent));
+            padding-bottom: calc(var(--gap-lg) + calc(var(--gap-md) / 2));
             filter: saturate(1.2);
+            border: 1px var(--accent) solid;
+            padding-top: calc(var(--gap-lg) + calc(var(--gap-md) / 2));
         }
 
         .zc-leaderboard-top-listings .listing-display.bronze .listing-avatar-container {
-            border: 4px var(--accent) solid;
+            border: 1px var(--accent) solid;
         }
 
         .zc-leaderboard-top-listings .listing-display.bronze {
             background: linear-gradient(transparent, var(--accent));
             filter: saturate(0.2);
             padding-bottom: var(--gap-lg);
+            border: 1px var(--accent) solid;
+            padding-top: var(--gap-lg);
         }
 
         .zc-leaderboard-top-listings .listing-display.silver .listing-avatar-container {
-            border: 4px var(--accent) solid;
+            border: 1px var(--accent) solid;
         }
 
         .zc-leaderboard-top-listings .listing-display.silver {
-            background: linear-gradient(transparent, var(--accent));
+            background: linear-gradient(var(--bg-secondary), var(--accent));
             filter: saturate(0.6);
             padding-bottom: var(--gap-lg);
+            padding-top: var(--gap-lg);
+            border: 1px var(--accent) solid;
         }
 
         .zc-leaderboard-top-listings .listing-username {
@@ -993,7 +999,7 @@
         }
 
         .zc-leaderboard-container .title-display {
-            padding: var(--gap-md);
+            padding-top: var(--gap-md);
             font-weight: 500;
             text-overflow: ellipsis;
             overflow: hidden;
@@ -1031,7 +1037,7 @@
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            font-size: var(--font-size-md);
+            font-size: var(--font-size-sm);
         }
 
         .zc-leaderboard-switcher .switcher-button {
@@ -1081,7 +1087,7 @@
         .zc-leaderboard-listings .listing-rank {
             right: 0px;
             position: absolute;
-            font-size: var(--font--size-md);
+            font-size: var(--font--size-sm);
             line-height: var(--line-height);
             overflow: hidden;
             text-overflow: ellipsis;
