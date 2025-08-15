@@ -728,11 +728,16 @@
         }
 
         .zc-prompt {
+            display: flex;
             border-radius: 12px;
             padding: var(--gap-lg);
             background: var(--bg-primary);
             width: 80%;
             max-height: 60%;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            align-items: center;
+            justify-content: center;
         }
 
         .zc-prompt .title {
@@ -742,7 +747,7 @@
             font-weight: 500;
             color: var(--text-main);
             line-height: var(--line-height);
-            font-size: var(--font-size-md);
+            font-size: var(--font-size-lg);
         }
 
         .zc-prompt .description {
@@ -886,7 +891,7 @@
         .zc-leaderboard-top-listings {
             gap: var(--gap-xs);
             box-sizing: border-box;
-            padding: 0 var(--gap-lg);
+            /* padding: 0 var(--gap-lg); */
             display: flex;
             align-items: flex-end;
             justify-content: space-evenly;
@@ -1004,7 +1009,8 @@
         }
 
         .zc-leaderboard-container .title-display {
-            padding-top: var(--gap-md);
+            flex-shrink: 0;
+            /* padding-top: var(--gap-md); */
             font-weight: 500;
             text-overflow: ellipsis;
             overflow: hidden;
@@ -1017,7 +1023,7 @@
         .zc-leaderboard-switcher {
             border-radius: 1000px;
             box-sizing: border-box;
-            padding: 0 var(--gap-lg);
+            /* padding: 0 var(--gap-lg); */
             display: flex;
             width: 100%;
             flex-direction: row;
@@ -1063,9 +1069,9 @@
             flex-direction: column;
             flex-wrap: nowrap;
             box-sizing: border-box;
-            padding: 0 var(--gap-lg);
+            /* padding: 0 var(--gap-lg); */
             max-height: 100%;
-            overflow-y: auto;
+            /* overflow-y: auto; */
             scrollbar-width: none;
         }
 
@@ -1094,6 +1100,7 @@
         }
 
         .zc-leaderboard-listings .listing-rank {
+            box-sizing: border-box;
             right: 0px;
             position: absolute;
             font-size: var(--font--size-sm);
@@ -1101,9 +1108,11 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            display: flex;
         }
 
         .zc-leaderboard-listings .listing-username {
+            display: flex;
             box-sizing: border-box;
             font-size: var(--font--size-md);
             font-weight: 500;
@@ -1114,6 +1123,7 @@
         }
 
         .zc-leaderboard-listings .listing-amount {
+            display: flex;
             box-sizing: border-box;
             font-size: var(--font-size-sm);
             line-height: var(--line-height);
@@ -1134,12 +1144,16 @@
         }
 
         .zc-leaderboard-container {
+            box-sizing: border-box;
+            scrollbar-width: none;
+            overflow-y: auto;
             width: 100%;
             display: flex;
             flex-direction: column;
             flex-wrap: nowrap;
             height: 100%;
             gap: var(--gap-sm);
+            padding: var(--gap-lg);
         }
 
         @keyframes zcPulse {
@@ -1171,6 +1185,7 @@
         }
 
         .zc-skel-text {
+            height: 100%;
             font-weight: inherit;
             text-overflow: inherit;
             overflow: inherit;
@@ -1181,6 +1196,75 @@
             padding: 0px var(--gap-sm);
             mix-blend-mode: lighten;
             animation: zcPulse 1.5s ease-in-out infinite;
+        }
+
+        /* Backdrop and window (adjust names if yours differ) */
+        .zc-screen-overlay {
+            position: fixed;
+            inset: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 220ms ease;
+            /* Prevent background page scroll on iOS while sheet is open */
+            overscroll-behavior: contain;
+        }
+
+        .zc-screen-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .zc-screen-overlay.close {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .zc-bottom-overlay-window {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            transform: translateY(100%);
+            transition: transform 260ms cubic-bezier(.2, .8, .2, 1);
+            will-change: transform;
+            /* Optional: iOS safe-area comfort */
+            padding-bottom: max(env(safe-area-inset-bottom), 16px);
+        }
+
+        /* Open/close states */
+        .zc-screen-overlay.open .zc-bottom-overlay-window {
+            transform: translateY(0);
+        }
+
+        .zc-screen-overlay.close .zc-bottom-overlay-window {
+            transform: translateY(100%);
+        }
+
+        /* While dragging: remove transitions for live tracking */
+        .zc-screen-overlay.dragging {
+            transition: none;
+        }
+
+        .zc-screen-overlay.dragging .zc-bottom-overlay-window {
+            transition: none;
+        }
+
+        /* Optional: subtle drag handle */
+        .zc-bottom-overlay-window::before {
+            z-index: 100;
+            transform: translateX(-50%);
+            left: 50%;
+            top: 8px;
+            position: absolute;
+            content: "";
+            display: block;
+            width: 36px;
+            height: 4px;
+            border-radius: 2px;
+            margin: 8px auto 12px;
+            background:
+                color-mix(in oklab, white 70%, transparent);
+            opacity: .8;
         }
     </style>
 
@@ -2574,17 +2658,23 @@
             /**
              * Creates a reusable bottom-overlay panel.
              */
+
+
             function createBottomOverlay({
                 classNames = [],
                 closeOnBackdrop = false,
+                enablePullToClose = true,
+                dragThreshold = 90, // px to close on release
+                velocityThreshold = 0.45, // px/ms fling-to-close
+                resistance = 0.5, // 0..1 rubberband
+                lockChildOverflowsDuringDrag = true,
                 onDestroy = () => {}
             } = {}) {
                 // Element factory with empty-class filtering
                 function el(tag, cls = [], txt = '') {
                     const e = document.createElement(tag);
-                    // normalize to array, remove empty/falsy entries
                     const list = Array.isArray(cls) ? cls : [cls];
-                    list.filter(c => Boolean(c)).forEach(c => e.classList.add(c));
+                    list.filter(Boolean).forEach(c => e.classList.add(c));
                     if (txt) e.textContent = txt;
                     return e;
                 }
@@ -2601,6 +2691,222 @@
                     });
                 }
 
+                // ——— Scroll utils ———
+                function isScrollableY(node) {
+                    const cs = getComputedStyle(node);
+                    const oy = cs.overflowY;
+                    if (oy === 'hidden' || oy === 'visible') return false;
+                    return node.scrollHeight - node.clientHeight > 1;
+                }
+
+                function findDominantScroller(root) {
+                    // 1) Prefer a marked node if present
+                    const marked = root.querySelector('[data-sheet-scroll]');
+                    if (marked && isScrollableY(marked)) return marked;
+
+                    // 2) Otherwise pick the first “dominant” scrollable child:
+                    //    - scrollable on Y
+                    //    - largest scrollHeight among visible elements
+                    const candidates = Array.from(root.querySelectorAll('*')).filter(isScrollableY);
+                    if (!candidates.length) return null;
+
+                    // Heuristic: prefer the largest scrollHeight; tie-break by largest clientHeight
+                    candidates.sort((a, b) => {
+                        const dh = b.scrollHeight - a.scrollHeight;
+                        return dh !== 0 ? dh : (b.clientHeight - a.clientHeight);
+                    });
+
+                    return candidates[0] || null;
+                }
+
+                // Overflow locker: hide during drag, restore after
+                function createOverflowLocker() {
+                    const changed = [];
+                    return {
+                        lock(root) {
+                            if (!lockChildOverflowsDuringDrag) return;
+                            // Lock all descendants (not windowEl itself), only if their computed overflowY is not hidden
+                            const nodes = root.querySelectorAll('*');
+                            for (const node of nodes) {
+                                const cs = getComputedStyle(node);
+                                if (cs.overflowY !== 'hidden') {
+                                    // Record original inline values (empty string means “not set inline”)
+                                    const prevOverflow = node.style.overflow;
+                                    const prevOverflowY = node.style.overflowY;
+                                    // Only push once per node
+                                    changed.push([node, prevOverflow, prevOverflowY]);
+                                    // Hide Y overflow; leave X alone, but if overflow shorthand exists it can override
+                                    // Setting both ensures no shorthand reverts; Y wins for scrolling behavior.
+                                    node.style.overflow = node.style.overflow || ''; // preserve existing inline if any
+                                    node.style.overflowY = 'hidden';
+                                }
+                            }
+                        },
+                        unlock() {
+                            // Restore exactly what we changed
+                            for (const [node, prevOverflow, prevOverflowY] of changed) {
+                                node.style.overflow = prevOverflow || '';
+                                node.style.overflowY = prevOverflowY || '';
+                            }
+                            changed.length = 0;
+                        }
+                    };
+                }
+
+                let dominantScroller = null;
+                const overflowLocker = createOverflowLocker();
+
+                // ——— Gesture state ———
+                let dragging = false;
+                let eligible = false; // only true when dominant scroller is at top and pulling downward
+                let startY = 0;
+                let startT = 0;
+                let lastY = 0;
+                let lastT = 0;
+                let dy = 0;
+                let raf = 0;
+
+                function scrollerAtTop() {
+                    // Evaluate lazily and cache
+                    if (!dominantScroller) dominantScroller = findDominantScroller(windowEl);
+                    if (!dominantScroller) return true; // if none, treat as at top
+                    return (dominantScroller.scrollTop || 0) <= 0;
+                }
+
+                function setTranslate(y) {
+                    windowEl.style.transform = `translateY(${y}px)`;
+                    // Optional backdrop fade proportional to pull distance
+                    const alpha = Math.max(0, 1 - Math.min(1, y / 240));
+                    overlay.style.opacity = String(alpha);
+                }
+
+                function rubberband(dist) {
+                    return dist * resistance;
+                }
+
+                function onPointerDown(e) {
+                    // Only primary touch/pointer
+                    if (e.pointerType && e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+                    if (e.button !== undefined && e.button !== 0) return;
+
+                    startY = (e.touches ? e.touches[0].clientY : e.clientY);
+                    startT = performance.now();
+                    lastY = startY;
+                    lastT = startT;
+                    dy = 0;
+                    dragging = false;
+                    eligible = enablePullToClose && scrollerAtTop();
+
+                    // Pointer capture for robustness
+                    if (e.target.setPointerCapture && e.pointerId !== undefined) {
+                        try {
+                            e.target.setPointerCapture(e.pointerId);
+                        } catch {}
+                    }
+                }
+
+                function onPointerMove(e) {
+                    if (!enablePullToClose) return;
+
+                    const y = (e.touches ? e.touches[0].clientY : e.clientY);
+                    const t = performance.now();
+                    const deltaY = y - startY;
+
+                    // Only consider downward pulls
+                    if (deltaY <= 0) {
+                        lastY = y;
+                        lastT = t;
+                        return;
+                    }
+
+                    // Allow eligibility to “arm” once user hits top mid-gesture
+                    if (!eligible) {
+                        if (scrollerAtTop() && deltaY > 4) eligible = true;
+                        else {
+                            lastY = y;
+                            lastT = t;
+                            return;
+                        }
+                    }
+
+                    // We’re engaging the sheet drag; prevent native scroll
+                    if (e.cancelable) e.preventDefault();
+
+                    if (!dragging) {
+                        dragging = true;
+                        overlay.classList.add('dragging');
+                        // Lock overflows now to remove scroll interference while dragging
+                        overflowLocker.lock(windowEl);
+                    }
+
+                    dy = rubberband(deltaY);
+
+                    if (!raf) {
+                        raf = requestAnimationFrame(() => {
+                            setTranslate(dy);
+                            raf = 0;
+                        });
+                    }
+
+                    lastY = y;
+                    lastT = t;
+                }
+
+                function finishDrag(completeClose) {
+                    overlay.classList.remove('dragging');
+                    overlay.style.removeProperty('opacity');
+
+                    // Restore transitions for snap or close
+                    windowEl.style.transition = '';
+                    overlay.style.transition = '';
+
+                    // Unlock child overflows
+                    overflowLocker.unlock();
+
+                    if (completeClose) {
+                        api.destroy();
+                    } else {
+                        windowEl.style.transform = 'translateY(0)';
+                    }
+
+                    dragging = false;
+                    eligible = false;
+                    dy = 0;
+                }
+
+                function onPointerUpOrCancel() {
+                    if (!dragging) {
+                        eligible = false;
+                        return;
+                    }
+
+                    // Velocity based on total displacement/time (stable and cheap)
+                    const totalDy = lastY - startY;
+                    const totalDt = Math.max(1, lastT - startT); // ms
+                    const v = totalDy / totalDt; // px/ms
+
+                    const shouldClose = dy > dragThreshold || v > velocityThreshold;
+                    finishDrag(shouldClose);
+                }
+
+                // Attach listeners to the sheet window. You can scope to a handle if you prefer.
+                windowEl.addEventListener('touchstart', onPointerDown, {
+                    passive: true
+                });
+                windowEl.addEventListener('touchmove', onPointerMove, {
+                    passive: false
+                });
+                windowEl.addEventListener('touchend', onPointerUpOrCancel, {
+                    passive: true
+                });
+                windowEl.addEventListener('touchcancel', onPointerUpOrCancel, {
+                    passive: true
+                });
+                windowEl.addEventListener('pointerdown', onPointerDown);
+                windowEl.addEventListener('pointermove', onPointerMove);
+                windowEl.addEventListener('pointerup', onPointerUpOrCancel);
+                windowEl.addEventListener('pointercancel', onPointerUpOrCancel);
+
                 // Public API
                 const api = {
                     root: overlay,
@@ -2608,6 +2914,10 @@
                     open() {
                         overlay.classList.remove('close');
                         overlay.classList.add('open');
+                        windowEl.style.transform = 'translateY(0)';
+                        overlay.style.removeProperty('opacity');
+                        // Re-evaluate scroller on open (content may have changed)
+                        dominantScroller = findDominantScroller(windowEl);
                     },
 
                     close() {
@@ -2618,23 +2928,45 @@
                     destroy() {
                         this.close();
 
-                        // Wait for transition to finish before removing
-                        overlay.addEventListener('transitionend', () => {
+                        const cleanup = () => {
+                            // Defensive: ensure scroll locks are released
+                            overflowLocker.unlock();
                             overlay.remove();
                             onDestroy();
+                        };
+
+                        const timeout = setTimeout(cleanup, 500);
+                        overlay.addEventListener('transitionend', () => {
+                            clearTimeout(timeout);
+                            cleanup();
                         }, {
                             once: true
                         });
+
+                        // Detach listeners
+                        windowEl.removeEventListener('touchstart', onPointerDown);
+                        windowEl.removeEventListener('touchmove', onPointerMove);
+                        windowEl.removeEventListener('touchend', onPointerUpOrCancel);
+                        windowEl.removeEventListener('touchcancel', onPointerUpOrCancel);
+                        windowEl.removeEventListener('pointerdown', onPointerDown);
+                        windowEl.removeEventListener('pointermove', onPointerMove);
+                        windowEl.removeEventListener('pointerup', onPointerUpOrCancel);
+                        windowEl.removeEventListener('pointercancel', onPointerUpOrCancel);
+                        if (raf) cancelAnimationFrame(raf);
                     },
 
                     setContent(node) {
                         windowEl.innerHTML = '';
                         windowEl.appendChild(node);
+                        // Recompute the dominant scroller since content changed
+                        dominantScroller = findDominantScroller(windowEl);
                     }
                 };
 
                 return api;
             }
+
+
 
             function createLeaderboardOverlay(options = {}) {
                 const {
