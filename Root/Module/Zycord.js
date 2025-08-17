@@ -133,6 +133,7 @@
             this.reconnectDelay = Math.max(0, Number(reconnectDelay) || 0);
             this.apiBase = apiBase;
 
+            this._isBot = null;
             this._token = null;
             this._ws = null;
             this._heartbeatIntervalId = null;
@@ -156,9 +157,12 @@
             this.channels = new ChannelsManager(this);
         }
 
-        login(token) {
-            if (!token) throw new Error('login(token) requires a token');
-            this._token = token;
+        login(token, loginBot = false) {
+            if (!token) {
+                throw new Error('login(token) requires a token');
+            }
+            this._isBot = Boolean(loginBot);
+            this._token = this._isBot ? `Bot ${token.trim()}` : token.trim();
             this._connect();
             return Promise.resolve(token);
         }
@@ -435,14 +439,42 @@
 
         _identify() {
             if (!this._ws || this._ws.readyState !== WebSocket.OPEN) return;
+
             const identify = {
                 op: 2,
                 d: {
                     token: this._token,
                     properties: this.properties,
-                    ...(this._presence ? { presence: this._presence } : {})
+                    ...(this._presence ? { presence: this._presence } : {}),
+                    ...(this._isBot
+                        ? {
+                            intents:
+                                (1 << 0)
+                                | (1 << 1)
+                                | (1 << 2)
+                                | (1 << 3)
+                                | (1 << 4)
+                                | (1 << 5)
+                                | (1 << 6)
+                                | (1 << 7)
+                                | (1 << 8)
+                                | (1 << 9)
+                                | (1 << 10)
+                                | (1 << 11)
+                                | (1 << 12)
+                                | (1 << 13)
+                                | (1 << 14)
+                                | (1 << 15)
+                                | (1 << 16)
+                                | (1 << 20)
+                                | (1 << 21)
+                                | (1 << 24)
+                                | (1 << 25)
+                        }
+                        : {})
                 }
             };
+
             this._ws.send(JSON.stringify(identify));
             this.emit('debug', 'Identify sent');
         }
