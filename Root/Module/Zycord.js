@@ -422,7 +422,7 @@
                         },
                         editReply: async (content) => {
                             const body = typeof content === 'string' ? { content } : content;
-                            return this.client._api(
+                            return _api(
                                 `/webhooks/${data.application_id}/${data.token}/messages/@original`,
                                 {
                                     method: 'PATCH',
@@ -433,7 +433,7 @@
 
                         followUp: async (content) => {
                             const body = typeof content === 'string' ? { content } : content;
-                            return this.client._api(
+                            return _api(
                                 `/webhooks/${data.application_id}/${data.token}`,
                                 {
                                     method: 'POST',
