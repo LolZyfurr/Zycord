@@ -98,7 +98,7 @@
         html,
         body {
             bottom: 0px;
-            height: var(--app-height);
+            height: calc(var(--app-height) + var(--device-inset-bottom));
             overscroll-behavior: none;
             /* Prevents scroll chaining */
             overflow: hidden;
