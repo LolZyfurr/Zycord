@@ -111,37 +111,6 @@
             return null;
         }
     }
-    // --- SlashCommandBuilder helper ---
-    class SlashCommandBuilder {
-        constructor() {
-            this.command = { type: 1 }; // type 1 = CHAT_INPUT
-        }
-        setName(name) {
-            this.command.name = String(name);
-            return this;
-        }
-        setDescription(desc) {
-            this.command.description = String(desc);
-            return this;
-        }
-        setDMPermission(allow) {
-            this.command.dm_permission = Boolean(allow);
-            return this;
-        }
-        addStringOption(name, description, required = false) {
-            if (!this.command.options) this.command.options = [];
-            this.command.options.push({
-                type: 3,
-                name,
-                description,
-                required
-            });
-            return this;
-        }
-        toJSON() {
-            return this.command;
-        }
-    }
     class Client extends Emitter {
         constructor(options = {}) {
             super();
@@ -568,58 +537,6 @@
                 throw new Error(`API ${res.status} ${res.statusText}: ${text}`);
             }
             return res.json().catch(() => null);
-        }
-        async syncSlashCommands(desiredCommands, guildId = null) {
-            const appId = this.application?.id || this.user?.id;
-            if (!appId) throw new Error("Application ID not available yet.");
-            const path = guildId
-                ? `applications/${appId}/guilds/${guildId}/commands`
-                : `applications/${appId}/commands`;
-            const stripReadOnly = (command) => {
-                const { id, application_id, version, ...rest } = command;
-                return rest;
-            };
-            const deepEqual = (a, b) => {
-                const sortKeys = (obj) =>
-                    typeof obj === 'object' && obj !== null
-                        ? Array.isArray(obj)
-                            ? obj.map(sortKeys)
-                            : Object.keys(obj).sort().reduce((res, key) => {
-                                res[key] = sortKeys(obj[key]);
-                                return res;
-                            }, {})
-                        : obj;
-                return JSON.stringify(sortKeys(a)) === JSON.stringify(sortKeys(b));
-            };
-            const current = await this._api(path);
-            const currentByName = Object.fromEntries(current.map(c => [c.name, c]));
-            const desiredByName = Object.fromEntries(
-                desiredCommands.map(c => [c.name, typeof c.toJSON === 'function' ? c.toJSON() : c])
-            );
-            for (const name in currentByName) {
-                if (!desiredByName[name]) {
-                    await this._api(`${path}/${currentByName[name].id}`, { method: 'DELETE' });
-                }
-            }
-            for (const [name, desired] of Object.entries(desiredByName)) {
-                const existing = currentByName[name];
-
-                if (!existing) {
-                    await this._api(path, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: desired
-                    });
-                    continue;
-                }
-                if (!deepEqual(stripReadOnly(existing), desired)) {
-                    await this._api(`${path}/${existing.id}`, {
-                        method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: desired
-                    });
-                }
-            }
         }
     }
     function createClient(options) {
