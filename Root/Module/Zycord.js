@@ -125,7 +125,7 @@
                 properties,
                 autoReconnect = true,
                 reconnectDelay = 5000,
-                apiBase = 'https://discord.com/api/v9'
+                apiBase = 'https://discord.com/api/v9/'
             } = options;
 
             this.properties = properties || this._defaultProperties();
@@ -575,7 +575,6 @@
             const { method = 'GET', query, body, headers } = opts;
             const url = new URL(path, this.apiBase);
             if (query) for (const [k, v] of Object.entries(query)) url.searchParams.append(k, v);
-
             const res = await fetch(url.toString(), {
                 method,
                 headers: {
@@ -585,9 +584,7 @@
                 },
                 body: body == null ? undefined : JSON.stringify(body)
             });
-
             if (res.status === 204) return null;
-
             if (res.status === 429) {
                 let retryAfterMs = 1000;
                 try {
@@ -602,12 +599,10 @@
                 await this._sleep(retryAfterMs);
                 return this._api(path, opts);
             }
-
             if (!res.ok) {
                 const text = await res.text().catch(() => String(res.status));
                 throw new Error(`API ${res.status} ${res.statusText}: ${text}`);
             }
-
             return res.json().catch(() => null);
         }
     }
