@@ -404,10 +404,47 @@
                     }
                 } else if (type === 'PRESENCE_UPDATE') {
                     if (data) this._storePresence(data);
+                } else if (type === 'INTERACTION_CREATE' && data?.type === 2) {
+                    const interaction = {
+                        ...data,
+                        reply: async (content) => {
+                            const body = typeof content === 'string' ? { content } : content;
+                            return this.client._api(
+                                `/interactions/${data.id}/${data.token}/callback`,
+                                {
+                                    method: 'POST',
+                                    body: {
+                                        type: 4,
+                                        data: body
+                                    }
+                                }
+                            );
+                        },
+                        editReply: async (content) => {
+                            const body = typeof content === 'string' ? { content } : content;
+                            return this.client._api(
+                                `/webhooks/${data.application_id}/${data.token}/messages/@original`,
+                                {
+                                    method: 'PATCH',
+                                    body
+                                }
+                            );
+                        },
+
+                        followUp: async (content) => {
+                            const body = typeof content === 'string' ? { content } : content;
+                            return this.client._api(
+                                `/webhooks/${data.application_id}/${data.token}`,
+                                {
+                                    method: 'POST',
+                                    body
+                                }
+                            );
+                        }
+                    };
+                    this.emit('slashCommand', interaction);
                 } else if (type === 'SESSIONS_REPLACE') {
                     this.emit('debug', 'Session replace called', data);
-
-                    // data is an array for SESSIONS_REPLACE
                     if (Array.isArray(data)) {
                         const allSession = data.find(session => session?.session_id === 'all');
                         if (allSession) {
