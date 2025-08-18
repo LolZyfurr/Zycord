@@ -106,10 +106,10 @@
 
         .zc-app {
             width: 100%;
-            height: calc(100% + var(--device-inset-bottom));
+            height: calc(var(--app-height) + var(--device-inset-bottom));
             min-height: -webkit-fill-available;
             overflow: clip;
-            position: relative;
+            position: fixed;
         }
 
         .zc-main {
