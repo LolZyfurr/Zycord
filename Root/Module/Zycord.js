@@ -542,7 +542,7 @@
     function createClient(options) {
         return new Client(options);
     }
-    const api = { Client, createClient, SlashCommandBuilder };
+    const api = { Client, createClient };
     if (global) {
         global.MiniDiscordish = global.MiniDiscordish || api;
     }
