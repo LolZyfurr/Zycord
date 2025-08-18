@@ -15,7 +15,7 @@
             --safe-t: env(safe-area-inset-top, 0px);
             --safe-b: env(safe-area-inset-bottom, 0px);
             --device-inset-top: env(safe-area-inset-top, 0px);
-            --device-inset-bottom: env(safe-area-inset-bottom, 0px);
+            --device-inset-bottom: 100px;
             --gap-xs: 4px;
             --gap-sm: 8px;
             --gap-md: 16px;
@@ -97,8 +97,8 @@
 
         html,
         body {
-            bottom: 0px;
-            height: var(--app-height);
+            inset: 0px;
+            height: calc(var(--app-height) + var(--device-inset-bottom));
             overscroll-behavior: none;
             /* Prevents scroll chaining */
             overflow: hidden;
