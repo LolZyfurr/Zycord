@@ -569,35 +569,25 @@
             }
             return res.json().catch(() => null);
         }
-        // Registers an array of slash commands globally or per guild
         async syncSlashCommands(desiredCommands, guildId = null) {
             const path = guildId
                 ? `applications/${this.user.id}/guilds/${guildId}/commands`
                 : `applications/${this.user.id}/commands`;
-
-            // 1. Fetch current
             const current = await this._api(path);
-
             const currentByName = Object.fromEntries(current.map(c => [c.name, c]));
             const desiredByName = Object.fromEntries(
                 desiredCommands.map(c => [c.name, typeof c.toJSON === 'function' ? c.toJSON() : c])
             );
-
-            // 2. Delete missing
             for (const name in currentByName) {
                 if (!desiredByName[name]) {
                     await this._api(`${path}/${currentByName[name].id}`, { method: 'DELETE' });
                 }
             }
-
-            // 3. Create new
             for (const name in desiredByName) {
                 if (!currentByName[name]) {
                     await this._api(path, { method: 'POST', body: desiredByName[name] });
                 }
             }
-
-            // 4. Update changed
             for (const name in desiredByName) {
                 if (currentByName[name]) {
                     const cur = currentByName[name];
@@ -613,7 +603,7 @@
     function createClient(options) {
         return new Client(options);
     }
-    const api = { Client, createClient };
+    const api = { Client, createClient, SlashCommandBuilder };
     if (global) {
         global.MiniDiscordish = global.MiniDiscordish || api;
     }
