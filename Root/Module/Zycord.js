@@ -570,28 +570,44 @@
             return res.json().catch(() => null);
         }
         // Registers an array of slash commands globally or per guild
-        async registerSlashCommands(commands, guildId = null) {
-            if (!Array.isArray(commands)) throw new Error('Commands must be an array');
+        async syncSlashCommands(desiredCommands, guildId = null) {
             const path = guildId
                 ? `applications/${this.user.id}/guilds/${guildId}/commands`
                 : `applications/${this.user.id}/commands`;
-            return this._api(path, {
-                method: 'PUT',
-                body: commands.map(cmd =>
-                    typeof cmd.toJSON === 'function' ? cmd.toJSON() : cmd
-                )
-            });
-        }
 
-        // Clears all registered slash commands globally or for a specific guild
-        async clearSlashCommands(guildId = null) {
-            const path = guildId
-                ? `applications/${this.user.id}/guilds/${guildId}/commands`
-                : `applications/${this.user.id}/commands`;
-            return this._api(path, {
-                method: 'PUT',
-                body: [] // empty array removes all commands in that scope
-            });
+            // 1. Fetch current
+            const current = await this._api(path);
+
+            const currentByName = Object.fromEntries(current.map(c => [c.name, c]));
+            const desiredByName = Object.fromEntries(
+                desiredCommands.map(c => [c.name, typeof c.toJSON === 'function' ? c.toJSON() : c])
+            );
+
+            // 2. Delete missing
+            for (const name in currentByName) {
+                if (!desiredByName[name]) {
+                    await this._api(`${path}/${currentByName[name].id}`, { method: 'DELETE' });
+                }
+            }
+
+            // 3. Create new
+            for (const name in desiredByName) {
+                if (!currentByName[name]) {
+                    await this._api(path, { method: 'POST', body: desiredByName[name] });
+                }
+            }
+
+            // 4. Update changed
+            for (const name in desiredByName) {
+                if (currentByName[name]) {
+                    const cur = currentByName[name];
+                    const des = desiredByName[name];
+                    if (JSON.stringify(cur.description) !== JSON.stringify(des.description) ||
+                        JSON.stringify(cur.options || []) !== JSON.stringify(des.options || [])) {
+                        await this._api(`${path}/${cur.id}`, { method: 'PATCH', body: des });
+                    }
+                }
+            }
         }
     }
     function createClient(options) {
