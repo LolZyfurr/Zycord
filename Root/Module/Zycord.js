@@ -380,8 +380,29 @@
                     if (data) this._storePresence(data);
                 } else if (type === 'INTERACTION_CREATE' && data?.type === 2) {
                     const client = this;
+
                     const interaction = {
                         ...data,
+
+                        // Matches discord.js-style: returns name of first subcommand, or null
+                        getSubcommand(required = true) {
+                            try {
+                                const opts = data.data?.options;
+                                if (!opts || !Array.isArray(opts)) {
+                                    if (required) throw new Error('No subcommand provided');
+                                    return null;
+                                }
+                                // Look for type 1 = SUB_COMMAND
+                                const sub = opts.find(o => o.type === 1);
+                                if (!sub) {
+                                    if (required) throw new Error('No subcommand found');
+                                    return null;
+                                }
+                                return sub.name;
+                            } catch (err) {
+                                throw err;
+                            }
+                        },
 
                         // Immediately acknowledge and send final reply
                         reply: async (content) => {
@@ -399,19 +420,18 @@
                             );
                         },
 
-                        // New: acknowledge without content so you can reply later
+                        // Acknowledge without content so you can reply later
                         deferReply: async () => {
                             return client._api(
                                 `interactions/${data.id}/${data.token}/callback`,
                                 {
                                     method: 'POST',
                                     auth: false,
-                                    body: {
-                                        type: 5 // DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE
-                                    }
+                                    body: { type: 5 } // DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE
                                 }
                             );
                         },
+
                         editReply: async (content) => {
                             const body = typeof content === 'string' ? { content } : content;
                             return client._api(
@@ -423,6 +443,7 @@
                                 }
                             );
                         },
+
                         followUp: async (content) => {
                             const body = typeof content === 'string' ? { content } : content;
                             return client._api(
@@ -435,6 +456,7 @@
                             );
                         }
                     };
+
                     this.emit('slashCommand', interaction);
                 } else if (type === 'SESSIONS_REPLACE') {
                     this.emit('debug', 'Session replace called', data);
