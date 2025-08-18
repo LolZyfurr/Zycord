@@ -96,7 +96,7 @@
         html,
         body {
             top: 0px;
-            height: var(--app-height);
+            height: calc(var(--app-height) + 1px);
             overscroll-behavior: none;
             overflow: visible;
             touch-action: none;
@@ -105,7 +105,7 @@
 
         .zc-app {
             width: 100%;
-            height: calc(100% + 2px);
+            height: 100%;
             min-height: -webkit-fill-available;
             overflow: clip;
             position: relative;
