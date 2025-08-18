@@ -73,6 +73,7 @@
             this.client = client;
             this.channel = channel;
         }
+
         async fetch(options = {}) {
             const { limit = 50, before, after, around } = options;
             const query = {};
@@ -86,6 +87,34 @@
                 if (m && m.author) this.client._attachPresenceHelpers(m.author);
             }
             return list;
+        }
+
+        async search({
+            authorId,
+            content,
+            minId,
+            maxId,
+            offset = 0,
+            sortBy = 'timestamp',
+            sortOrder = 'desc'
+        } = {}) {
+            const query = new URLSearchParams();
+            if (authorId) query.append('author_id', String(authorId));
+            if (content) query.append('content', content);
+            if (minId) query.append('min_id', String(minId));
+            if (maxId) query.append('max_id', String(maxId));
+            query.append('sort_by', sortBy);
+            query.append('sort_order', sortOrder);
+            query.append('offset', String(offset));
+
+            const endpoint = `channels/${this.channel.id}/messages/search?${query.toString()}`;
+            const result = await this.client._api(endpoint);
+
+            const messages = result?.messages?.flat() || [];
+            for (const m of messages) {
+                if (m && m.author) this.client._attachPresenceHelpers(m.author);
+            }
+            return messages;
         }
     }
     class TextLikeChannel {
