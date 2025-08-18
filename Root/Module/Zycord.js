@@ -82,8 +82,6 @@
             if (around) query.around = String(around);
             const messages = await this.client._api(`channels/${this.channel.id}/messages`, { query });
             const list = Array.isArray(messages) ? messages : [];
-
-            // Attach presence helpers to authors
             for (const m of list) {
                 if (m && m.author) this.client._attachPresenceHelpers(m.author);
             }
@@ -99,16 +97,11 @@
         patch(data) {
             if (!data || typeof data !== 'object') return this;
             Object.assign(this, data);
-
-            // Attach presence helpers to known user-bearing shapes
             if (Array.isArray(this.recipients)) {
                 for (const r of this.recipients) this.client._attachPresenceHelpers(r);
             }
-            // Also attach directly to channel.user getter target when accessed
             return this;
         }
-
-        // Convenience: the DM counterpart
         get user() {
             if (Array.isArray(this.recipients) && this.recipients.length) {
                 const u = this.recipients.find(r => !r?.bot) || this.recipients[0] || null;
@@ -116,6 +109,37 @@
                 return u || null;
             }
             return null;
+        }
+    }
+    // --- SlashCommandBuilder helper ---
+    class SlashCommandBuilder {
+        constructor() {
+            this.command = { type: 1 }; // type 1 = CHAT_INPUT
+        }
+        setName(name) {
+            this.command.name = String(name);
+            return this;
+        }
+        setDescription(desc) {
+            this.command.description = String(desc);
+            return this;
+        }
+        setDMPermission(allow) {
+            this.command.dm_permission = Boolean(allow);
+            return this;
+        }
+        addStringOption(name, description, required = false) {
+            if (!this.command.options) this.command.options = [];
+            this.command.options.push({
+                type: 3,
+                name,
+                description,
+                required
+            });
+            return this;
+        }
+        toJSON() {
+            return this.command;
         }
     }
     class Client extends Emitter {
@@ -127,12 +151,10 @@
                 reconnectDelay = 5000,
                 apiBase = 'https://discord.com/api/v10/'
             } = options;
-
             this.properties = properties || this._defaultProperties();
             this.autoReconnect = !!autoReconnect;
             this.reconnectDelay = Math.max(0, Number(reconnectDelay) || 0);
             this.apiBase = apiBase;
-
             this._isBot = null;
             this._token = null;
             this._ws = null;
@@ -141,22 +163,13 @@
             this._seq = null;
             this._sessionId = null;
             this._currentlyReconnecting = false;
-
             this._store = new Map();
-
-            // Presence (self)
             this._presence = null;
             this._lastPresenceAt = 0;
-
-            // Exposed self user (set after READY)
             this.user = null;
-
-            // Bind helper so external modules can safely call it.
             this._attachPresenceHelpers = this._attachPresenceHelpers.bind(this);
-
             this.channels = new ChannelsManager(this);
         }
-
         login(token, loginBot = false) {
             if (!token) {
                 throw new Error('login(token) requires a token');
@@ -166,7 +179,6 @@
             this._connect();
             return Promise.resolve(token);
         }
-
         destroy() {
             this.autoReconnect = false;
             this._stopHeartbeat();
@@ -177,7 +189,6 @@
             this._currentlyReconnecting = false;
             return Promise.resolve();
         }
-
         _defaultProperties() {
             const nav = typeof navigator !== 'undefined' ? navigator : null;
             return {
@@ -186,30 +197,21 @@
                 device: 'web'
             };
         }
-
-        // ---------- Presence helpers (others) ----------
-
         _presenceKey(userId) { return `presences:${userId}`; }
-
         _storePresence(presence) {
             const user = presence?.user;
             if (!user || !user.id) return null;
             this._store.set(this._presenceKey(user.id), presence);
             this.emit('presenceUpdate', { user, presence });
         }
-
         getPresence(userId) {
             return this._store.get(this._presenceKey(userId)) || null;
         }
-
-        // Attach non-enumerable getPrescence/getPresence to any user-bearing object
         _attachPresenceHelpers(obj) {
             if (!obj || typeof obj !== 'object') return;
-
             const client = this;
             const defineHelper = (target) => {
                 if (!target || typeof target !== 'object') return;
-
                 if (!Object.prototype.hasOwnProperty.call(target, 'getPrescence')) {
                     Object.defineProperty(target, 'getPrescence', {
                         value: function () {
@@ -230,16 +232,10 @@
                     });
                 }
             };
-
-            // Attach to the object itself
             defineHelper(obj);
-            // And to common nested shapes
             if (obj.user && typeof obj.user === 'object') defineHelper(obj.user);
             if (obj.author && typeof obj.author === 'object') defineHelper(obj.author);
         }
-
-        // ---------- Presence: self update (gateway OP 3) ----------
-
         _normalizeActivity(a = {}) {
             const typeMap = {
                 PLAYING: 0,
@@ -249,29 +245,21 @@
                 CUSTOM: 4,
                 COMPETING: 5
             };
-
             let type = a.type;
             if (typeof type === 'string') type = typeMap[type.toUpperCase()] ?? 0;
             if (typeof type !== 'number') type = 0;
-
             const out = {
                 name: String(a.name || ''),
                 type
             };
-
-            // STREAMING requires a URL
             if (type === 1 && a.url) {
                 out.url = String(a.url);
             }
-
-            // CUSTOM status may include a state field
             if (type === 4 && typeof a.state === 'string') {
                 out.state = a.state;
             }
-
             return out;
         }
-
         _normalizePresence(p = {}) {
             const status = (p.status || 'online').toLowerCase();
             const activities = Array.isArray(p.activities)
@@ -281,7 +269,6 @@
             const afk = !!p.afk;
             return { since, activities, status, afk };
         }
-
         _canSendPresence() {
             const now = Date.now();
             if (!this._lastPresenceAt || (now - this._lastPresenceAt) >= 10000) { // 10s
@@ -290,16 +277,9 @@
             }
             return false;
         }
-
-        /**
-         * Public: set the bot's presence.
-         * Example:
-         * client.user.setPresence({ status: 'online', activities: [{ name: 'Building worlds 🌍', type: 'PLAYING' }] })
-         */
         setPresence(presence = {}) {
             const d = this._normalizePresence(presence);
-            this._presence = d; // keep latest for identify/reconnect
-
+            this._presence = d;
             if (this._ws && this._ws.readyState === WebSocket.OPEN && this._canSendPresence()) {
                 try {
                     this._ws.send(JSON.stringify({ op: 3, d }));
@@ -313,20 +293,15 @@
             }
             return d;
         }
-
-        // ---------- Gateway / lifecycle ----------
-
         _connect() {
             this.emit('debug', 'Connecting');
             const ws = new WebSocket('wss://gateway.discord.gg/?v=10&encoding=json');
             this._ws = ws;
-
             ws.addEventListener('open', () => {
                 this.emit('debug', 'Socket open');
                 this._currentlyReconnecting = false;
                 this._identify();
             });
-
             ws.addEventListener('message', (event) => {
                 let payload;
                 try { payload = JSON.parse(event.data); }
@@ -334,11 +309,9 @@
                     this.emit('error', new Error(`Invalid JSON from gateway: ${err?.message || err}`));
                     return;
                 }
-
                 const { op, t: type, s: seq, d: data } = payload;
                 if (seq != null) this._seq = seq;
                 this.emit('raw', payload);
-
                 switch (op) {
                     case 10:
                         this._startHeartbeat(data?.heartbeat_interval);
@@ -349,18 +322,13 @@
                     default:
                         break;
                 }
-
                 if (type === 'READY') {
                     this._sessionId = data?.session_id || null;
-
-                    // Seed presence map from READY
                     if (Array.isArray(data?.presences)) {
                         for (const presence of data.presences) {
                             this._storePresence(presence);
                         }
                     }
-
-                    // Create/patch a stable self user and expose setPresence on it
                     if (data?.user) {
                         this.user = Object.assign(this.user || {}, data.user);
                         if (!Object.prototype.hasOwnProperty.call(this.user, 'setPresence')) {
@@ -371,10 +339,7 @@
                         }
                         this._attachPresenceHelpers(this.user);
                     }
-
-                    // Optionally attach helpers to the self user shape (kept from original)
                     if (data?.user) this._attachPresenceHelpers(data.user);
-
                     if (data?.user_settings && this.user) {
                         const { custom_status, status } = data.user_settings;
                         const presence = {
@@ -382,11 +347,10 @@
                             since: null,
                             afk: false
                         };
-
                         if (custom_status?.text) {
                             const activity = {
                                 id: 'custom',
-                                type: 4, // CUSTOM
+                                type: 4,
                                 name: 'Custom Status',
                                 state: custom_status.text || ''
                             };
@@ -394,7 +358,6 @@
                         }
                         this.user.setPresence(presence);
                     }
-
                     this.emit('ready', { sessionId: this._sessionId, user: data?.user || null });
                     if (this._presence && this._ws && this._ws.readyState === WebSocket.OPEN) {
                         try {
@@ -456,8 +419,6 @@
                                 user: this.user
                             };
                             this.emit('debug', 'Session replace data', sessionWithUser);
-
-                            // If _storePresence expects a presence-like shape, adapt here:
                             this._storePresence(sessionWithUser);
                         }
                     }
@@ -465,21 +426,17 @@
                     this.emit('message', { op, t: type, s: seq, d: data });
                 }
             });
-
             ws.addEventListener('close', (ev) => {
                 this.emit('debug', 'Socket close', { code: ev.code, reason: ev.reason });
                 this._handleDisconnect('close', ev);
             });
-
             ws.addEventListener('error', (err) => {
                 this.emit('error', err);
                 this._handleDisconnect('error', err);
             });
         }
-
         _identify() {
             if (!this._ws || this._ws.readyState !== WebSocket.OPEN) return;
-
             const identify = {
                 op: 2,
                 d: {
@@ -514,11 +471,9 @@
                         : {})
                 }
             };
-
             this._ws.send(JSON.stringify(identify));
             this.emit('debug', 'Identify sent');
         }
-
         _startHeartbeat(intervalMs) {
             this._stopHeartbeat();
             if (!intervalMs || typeof intervalMs !== 'number') {
@@ -534,7 +489,6 @@
             }, intervalMs);
             this.emit('debug', 'Heartbeat started', { intervalMs });
         }
-
         _stopHeartbeat() {
             if (this._heartbeatIntervalId) {
                 clearInterval(this._heartbeatIntervalId);
@@ -542,7 +496,6 @@
                 this.emit('debug', 'Heartbeat stopped');
             }
         }
-
         async _handleDisconnect(kind, detail) {
             this._stopHeartbeat();
             if (this._ws) {
@@ -550,11 +503,9 @@
                 this._ws = null;
             }
             this._store.clear();
-
             if (!this.autoReconnect) return;
             if (this._currentlyReconnecting) return;
             this._currentlyReconnecting = true;
-
             this.emit('debug', 'Reconnecting soon…', { delay: this.reconnectDelay, kind, detail });
             await this._sleep(this.reconnectDelay);
             try {
@@ -566,32 +517,25 @@
                 this.emit('error', err);
             }
         }
-
         _sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
         _authHeader() {
             if (!this._token) throw new Error('No token set. Call client.login(token) first.');
             return /^(\s*Bot\s+|\s*Bearer\s+)/i.test(this._token) ? this._token : `${this._token}`;
         }
-
         async _api(path, opts = {}) {
             const {
                 method = 'GET',
                 query,
                 body,
                 headers = {},
-                auth = true // <-- defaults to true, set to false to skip adding Authorization
+                auth = true
             } = opts;
-
-            // Build URL
             const url = new URL(path, this.apiBase);
             if (query) {
                 for (const [k, v] of Object.entries(query)) {
                     url.searchParams.append(k, v);
                 }
             }
-
-            // Prepare headers
             const finalHeaders = {
                 'Content-Type': 'application/json',
                 ...headers
@@ -599,18 +543,12 @@
             if (auth) {
                 finalHeaders['Authorization'] = this._authHeader();
             }
-
-            // Send request
             const res = await fetch(url.toString(), {
                 method,
                 headers: finalHeaders,
                 body: body == null ? undefined : JSON.stringify(body)
             });
-
-            // No content
             if (res.status === 204) return null;
-
-            // Rate limit handling
             if (res.status === 429) {
                 let retryAfterMs = 1000;
                 try {
@@ -625,15 +563,35 @@
                 await this._sleep(retryAfterMs);
                 return this._api(path, opts);
             }
-
-            // Error handling
             if (!res.ok) {
                 const text = await res.text().catch(() => String(res.status));
                 throw new Error(`API ${res.status} ${res.statusText}: ${text}`);
             }
-
-            // Parse JSON (if any)
             return res.json().catch(() => null);
+        }
+        // Registers an array of slash commands globally or per guild
+        async registerSlashCommands(commands, guildId = null) {
+            if (!Array.isArray(commands)) throw new Error('Commands must be an array');
+            const path = guildId
+                ? `applications/${this.user.id}/guilds/${guildId}/commands`
+                : `applications/${this.user.id}/commands`;
+            return this._api(path, {
+                method: 'PUT',
+                body: commands.map(cmd =>
+                    typeof cmd.toJSON === 'function' ? cmd.toJSON() : cmd
+                )
+            });
+        }
+
+        // Clears all registered slash commands globally or for a specific guild
+        async clearSlashCommands(guildId = null) {
+            const path = guildId
+                ? `applications/${this.user.id}/guilds/${guildId}/commands`
+                : `applications/${this.user.id}/commands`;
+            return this._api(path, {
+                method: 'PUT',
+                body: [] // empty array removes all commands in that scope
+            });
         }
     }
     function createClient(options) {
