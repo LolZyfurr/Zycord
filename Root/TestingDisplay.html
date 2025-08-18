@@ -97,25 +97,20 @@
 
         html,
         body {
+            bottom: 0px;
+            height: var(--app-height);
             overscroll-behavior: none;
+            /* Prevents scroll chaining */
             overflow: hidden;
             touch-action: none;
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            /* so the inner anchor is relative to full doc */
         }
 
         .zc-app {
-            position: fixed;
-            /* anchor to screen, not doc flow */
-            top: 0;
-            left: 0;
             width: 100%;
-            height: var(--app-height);
+            height: calc(100% + var(--device-inset-bottom));
             min-height: -webkit-fill-available;
-            /* Safari fill aid */
             overflow: hidden;
+            position: relative;
         }
 
         .zc-main {
@@ -4749,7 +4744,6 @@
         let frozenScroll = null;
         let fightingScroll = false;
         let backupActive = false;
-        const appEl = document.querySelector('.zc-app');
 
         function startScrollFight() {
             if (fightingScroll) return;
@@ -4765,23 +4759,21 @@
                         window.scrollTo(frozenScroll.x, frozenScroll.y);
                         backupActive = false; // reset backup
                     } else if (!backupActive) {
-                        // Movement within tolerance — pin app container
-                        if (appEl) {
-                            appEl.style.position = 'fixed';
-                            appEl.style.top = `-${frozenScroll.y}px`;
-                            appEl.style.left = `-${frozenScroll.x}px`;
-                        }
+                        // Movement is within tolerance — apply backup positioning
+                        document.body.style.position = 'fixed';
+                        document.body.style.top = `-${frozenScroll.y}px`;
+                        document.body.style.left = `-${frozenScroll.x}px`;
                         backupActive = true;
                     }
 
                     requestAnimationFrame(fight);
                 } else {
                     // Cleanup on focus loss
-                    if (backupActive && appEl) {
-                        const offsetY = parseInt(appEl.style.top || '0') * -1;
-                        appEl.style.position = '';
-                        appEl.style.top = '';
-                        appEl.style.left = '';
+                    if (backupActive) {
+                        const offsetY = parseInt(document.body.style.top || '0') * -1;
+                        document.body.style.position = '';
+                        document.body.style.top = '';
+                        document.body.style.left = '';
                         window.scrollTo(0, offsetY); // restore original
                     }
                     backupActive = false;
