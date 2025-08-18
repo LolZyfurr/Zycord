@@ -385,22 +385,19 @@
                         ...data,
 
                         // Matches discord.js-style: returns name of first subcommand, or null
-                        getSubcommand(required = true) {
-                            try {
+                        options: {
+                            getSubcommand(required = true) {
                                 const opts = data.data?.options;
                                 if (!opts || !Array.isArray(opts)) {
                                     if (required) throw new Error('No subcommand provided');
                                     return null;
                                 }
-                                // Look for type 1 = SUB_COMMAND
-                                const sub = opts.find(o => o.type === 1);
+                                const sub = opts.find(o => o.type === 1); // 1 = SUB_COMMAND
                                 if (!sub) {
                                     if (required) throw new Error('No subcommand found');
                                     return null;
                                 }
                                 return sub.name;
-                            } catch (err) {
-                                throw err;
                             }
                         },
 
