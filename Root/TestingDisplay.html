@@ -19,7 +19,7 @@
             height: 100dvh;
             touch-action: none;
             inset: 0;
-            position: relative;
+            position: absolute;
             overflow: hidden;
         }
 
@@ -4685,6 +4685,147 @@
                 }
             });
         }
+
+        // Tunables — shape the rhythm
+        const IDLE_INTERVAL_MS = 500; // Low-FPS idle cadence (≈2fps)
+        const ACTIVE_HOLD_MS = 350; // How long to stay "hot" after last action
+
+        let lastHeight = -1; // Start unknown to force first sync
+        let rafId = null;
+        let idleId = null;
+        let activeUntil = 0;
+
+        function readViewportHeight() {
+            // Round to whole px to avoid jittery micro-changes from fractional values
+            const h = window.visualViewport?.height ?? window.innerHeight;
+            return Math.round(h);
+        }
+
+        function setAppHeight() {
+            const vh = readViewportHeight();
+            document.documentElement.style.setProperty('--app-height', `${vh}px`);
+        }
+
+        function tick(now = performance.now()) {
+            // Sample
+            const currentHeight = readViewportHeight();
+
+            // Detect meaningful change
+            if (currentHeight !== lastHeight) {
+                lastHeight = currentHeight;
+                setAppHeight();
+                // Any real change keeps us in "action" mode a touch longer
+                activeUntil = Math.max(activeUntil, now + ACTIVE_HOLD_MS);
+            }
+
+            // Schedule next frame based on current "heat"
+            if (now < activeUntil) {
+                rafId = requestAnimationFrame(tick);
+            } else {
+                // Cool off into idle; switch to a gentle timer
+                rafId = null;
+                idleId = setTimeout(() => {
+                    idleId = null;
+                    tick(performance.now());
+                }, IDLE_INTERVAL_MS);
+            }
+        }
+
+        // Nudge the loop into high-FPS mode for a short window
+        function markAction(extraMs = ACTIVE_HOLD_MS) {
+            const now = performance.now();
+            activeUntil = Math.max(activeUntil, now + extraMs);
+
+            // If we're idling, jump immediately into rAF
+            if (!rafId) {
+                if (idleId) {
+                    clearTimeout(idleId);
+                    idleId = null;
+                }
+                rafId = requestAnimationFrame(tick);
+            }
+        }
+
+        // Wire “action” sources
+        function wireActionDetectors() {
+            const vv = window.visualViewport;
+
+            // Viewport dynamics (URL bar show/hide on mobile, zoom, etc.)
+            if (vv) {
+                vv.addEventListener('resize', () => markAction(600), {
+                    passive: true
+                });
+                vv.addEventListener('scroll', () => markAction(400), {
+                    passive: true
+                });
+            }
+
+            // Classic layout/rotation changes
+            window.addEventListener('resize', () => markAction(800), {
+                passive: true
+            });
+            window.addEventListener('orientationchange', () => markAction(1000), {
+                passive: true
+            });
+
+            // User intent — pointer, wheel, keys (keep it lightweight)
+            window.addEventListener('pointerdown', () => markAction(), {
+                passive: true
+            });
+            window.addEventListener('pointermove', () => markAction(200), {
+                passive: true
+            });
+            window.addEventListener('wheel', () => markAction(300), {
+                passive: true
+            });
+            window.addEventListener('keydown', () => markAction(300), {
+                passive: true
+            });
+
+            // Throttle way down when hidden; resume when visible
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden') {
+                    activeUntil = 0;
+                    if (rafId) {
+                        cancelAnimationFrame(rafId);
+                        rafId = null;
+                    }
+                    if (idleId) clearTimeout(idleId);
+                    idleId = setTimeout(() => {
+                        idleId = null;
+                        tick(performance.now());
+                    }, Math.max(IDLE_INTERVAL_MS, 1000));
+                } else {
+                    markAction(800);
+                }
+            }, {
+                passive: true
+            });
+        }
+
+        // Boot
+        setAppHeight(); // Initial sync
+        wireActionDetectors();
+        tick(); // Start the scheduler
+
+        (function calibrateHitboxes() {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.style.position = 'absolute';
+            input.style.opacity = '0';
+            input.style.pointerEvents = 'none';
+            input.style.top = '-1000px'; // Off-screen
+            input.setAttribute('aria-hidden', 'true');
+            document.body.appendChild(input);
+
+            input.focus();
+
+            setTimeout(() => {
+                input.blur();
+                document.body.removeChild(input);
+                markAction(500); // Trigger recalibration tick
+            }, 250); // Enough time to trigger keyboard without lingering
+        })();
     </script>
 </body>
 
