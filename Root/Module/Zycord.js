@@ -125,7 +125,7 @@
                 properties,
                 autoReconnect = true,
                 reconnectDelay = 5000,
-                apiBase = 'https://discord.com/api/v10'
+                apiBase = 'https://discord.com/api/v9'
             } = options;
 
             this.properties = properties || this._defaultProperties();
@@ -411,7 +411,7 @@
                         reply: async (content) => {
                             const body = typeof content === 'string' ? { content } : content;
                             return client._api(
-                                `/interactions/${data.id}/${data.token}/callback`,
+                                `interactions/${data.id}/${data.token}/callback`,
                                 {
                                     method: 'POST',
                                     body: {
@@ -424,7 +424,7 @@
                         editReply: async (content) => {
                             const body = typeof content === 'string' ? { content } : content;
                             return client._api(
-                                `/webhooks/${data.application_id}/${data.token}/messages/@original`,
+                                `webhooks/${data.application_id}/${data.token}/messages/@original`,
                                 {
                                     method: 'PATCH',
                                     body
@@ -434,7 +434,7 @@
                         followUp: async (content) => {
                             const body = typeof content === 'string' ? { content } : content;
                             return client._api(
-                                `/webhooks/${data.application_id}/${data.token}`,
+                                `webhooks/${data.application_id}/${data.token}`,
                                 {
                                     method: 'POST',
                                     body
