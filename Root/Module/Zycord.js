@@ -73,7 +73,6 @@
             this.client = client;
             this.channel = channel;
         }
-
         async fetch(options = {}) {
             const { limit = 50, before, after, around } = options;
             const query = {};
@@ -88,7 +87,6 @@
             }
             return list;
         }
-
         async search({
             authorId,
             content,
@@ -384,6 +382,8 @@
                     const client = this;
                     const interaction = {
                         ...data,
+
+                        // Immediately acknowledge and send final reply
                         reply: async (content) => {
                             const body = typeof content === 'string' ? { content } : content;
                             return client._api(
@@ -392,8 +392,22 @@
                                     method: 'POST',
                                     auth: false,
                                     body: {
-                                        type: 4,
+                                        type: 4, // CHANNEL_MESSAGE_WITH_SOURCE
                                         data: body
+                                    }
+                                }
+                            );
+                        },
+
+                        // New: acknowledge without content so you can reply later
+                        deferReply: async () => {
+                            return client._api(
+                                `interactions/${data.id}/${data.token}/callback`,
+                                {
+                                    method: 'POST',
+                                    auth: false,
+                                    body: {
+                                        type: 5 // DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE
                                     }
                                 }
                             );
