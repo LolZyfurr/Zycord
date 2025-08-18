@@ -1341,6 +1341,7 @@
             flex-direction: row;
             align-items: center;
             flex-wrap: nowrap;
+            padding-top: var(--device-inset-top);
         }
 
         .zc-display {
@@ -1356,6 +1357,7 @@
         .zc-messages-bottom {
             height: var(--rail-h);
             border-top: 1px var(--bg-hover) solid;
+            padding-bottom: var(--device-inset-bottom);
         }
 
         .zc-messages-fill {
@@ -4289,7 +4291,7 @@
             zcMessagesTop.append(topNav, topProfile);
 
             const zcMessagesFill = el('div', 'zc-messages-fill');
-            
+
             const zcMessagesBottom = el('div', 'zc-messages-bottom');
 
             const composer = el('div', 'zc-composer');
