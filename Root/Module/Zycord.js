@@ -409,7 +409,7 @@
                         ...data,
                         reply: async (content) => {
                             const body = typeof content === 'string' ? { content } : content;
-                            return this.client._api(
+                            return _api(
                                 `/interactions/${data.id}/${data.token}/callback`,
                                 {
                                     method: 'POST',
