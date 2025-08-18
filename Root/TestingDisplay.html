@@ -4686,17 +4686,18 @@
             });
         }
 
-        // Tunables — shape the rhythm
-        const IDLE_INTERVAL_MS = 500; // Low-FPS idle cadence (≈2fps)
-        const ACTIVE_HOLD_MS = 350; // How long to stay "hot" after last action
+        // === Tunables ===
+        const IDLE_INTERVAL_MS = 500;
+        const ACTIVE_HOLD_MS = 350;
+        const SCROLL_TOLERANCE = 5; // px allowed before triggering backup positioning
 
-        let lastHeight = -1; // Start unknown to force first sync
+        let lastHeight = -1;
         let rafId = null;
         let idleId = null;
         let activeUntil = 0;
 
+        // --- Viewport Height ---
         function readViewportHeight() {
-            // Round to whole px to avoid jittery micro-changes from fractional values
             const h = window.visualViewport?.height ?? window.innerHeight;
             return Math.round(h);
         }
@@ -4706,23 +4707,18 @@
             document.documentElement.style.setProperty('--app-height', `${vh}px`);
         }
 
+        // --- Scheduler ---
         function tick(now = performance.now()) {
-            // Sample
             const currentHeight = readViewportHeight();
-
-            // Detect meaningful change
             if (currentHeight !== lastHeight) {
                 lastHeight = currentHeight;
                 setAppHeight();
-                // Any real change keeps us in "action" mode a touch longer
                 activeUntil = Math.max(activeUntil, now + ACTIVE_HOLD_MS);
             }
 
-            // Schedule next frame based on current "heat"
             if (now < activeUntil) {
                 rafId = requestAnimationFrame(tick);
             } else {
-                // Cool off into idle; switch to a gentle timer
                 rafId = null;
                 idleId = setTimeout(() => {
                     idleId = null;
@@ -4731,12 +4727,10 @@
             }
         }
 
-        // Nudge the loop into high-FPS mode for a short window
         function markAction(extraMs = ACTIVE_HOLD_MS) {
             const now = performance.now();
             activeUntil = Math.max(activeUntil, now + extraMs);
 
-            // If we're idling, jump immediately into rAF
             if (!rafId) {
                 if (idleId) {
                     clearTimeout(idleId);
@@ -4746,10 +4740,54 @@
             }
         }
 
+        // --- Scroll Fight + Backup ---
+        let frozenScroll = null;
+        let fightingScroll = false;
+        let backupActive = false;
+
+        function startScrollFight() {
+            if (fightingScroll) return;
+            fightingScroll = true;
+
+            const fight = () => {
+                if (frozenScroll) {
+                    const dx = Math.abs(window.scrollX - frozenScroll.x);
+                    const dy = Math.abs(window.scrollY - frozenScroll.y);
+
+                    if (dx > SCROLL_TOLERANCE || dy > SCROLL_TOLERANCE) {
+                        // Still fighting: yank viewport back
+                        window.scrollTo(frozenScroll.x, frozenScroll.y);
+                        backupActive = false; // reset backup
+                    } else if (!backupActive) {
+                        // Movement is within tolerance — apply backup positioning
+                        document.body.style.position = 'fixed';
+                        document.body.style.top = `-${frozenScroll.y}px`;
+                        document.body.style.left = `-${frozenScroll.x}px`;
+                        backupActive = true;
+                    }
+
+                    requestAnimationFrame(fight);
+                } else {
+                    // Cleanup on focus loss
+                    if (backupActive) {
+                        const offsetY = parseInt(document.body.style.top || '0') * -1;
+                        document.body.style.position = '';
+                        document.body.style.top = '';
+                        document.body.style.left = '';
+                        window.scrollTo(0, offsetY); // restore original
+                    }
+                    backupActive = false;
+                    fightingScroll = false;
+                }
+            };
+
+            fight();
+        }
+
+        // --- Event wiring ---
         function wireActionDetectors() {
             const vv = window.visualViewport;
 
-            // Viewport dynamics (URL bar show/hide on mobile, zoom, etc.)
             if (vv) {
                 vv.addEventListener('resize', () => markAction(600), {
                     passive: true
@@ -4759,7 +4797,6 @@
                 });
             }
 
-            // Classic layout/rotation changes
             window.addEventListener('resize', () => markAction(800), {
                 passive: true
             });
@@ -4767,7 +4804,6 @@
                 passive: true
             });
 
-            // User intent — pointer, wheel, keys (keep it lightweight)
             window.addEventListener('pointerdown', () => markAction(), {
                 passive: true
             });
@@ -4781,7 +4817,6 @@
                 passive: true
             });
 
-            // Throttle way down when hidden; resume when visible
             document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'hidden') {
                     activeUntil = 0;
@@ -4801,47 +4836,49 @@
                 passive: true
             });
 
-            // ✨ Prevent browser from auto-scrolling input into view
+            // Prevent + fight scroll on focus
             document.addEventListener('focusin', e => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-                    // Fight the scroll jump
-                    e.target.scrollIntoView({
-                        block: 'nearest',
-                        inline: 'nearest',
-                        behavior: 'instant'
-                    });
-                    markAction(300); // keep active a bit longer after focus
+                    frozenScroll = {
+                        x: window.scrollX,
+                        y: window.scrollY
+                    };
+                    markAction(300);
+                    startScrollFight();
                 }
             }, {
                 passive: true
             });
+
+            document.addEventListener('focusout', () => {
+                frozenScroll = null;
+            });
         }
 
-        // Boot
-        setAppHeight(); // Initial sync
+        // --- Boot ---
+        setAppHeight();
         wireActionDetectors();
-        tick(); // Start the scheduler
+        tick();
 
-        // Optional: one-time calibration tick after keyboard nudge
         (function calibrateHitboxes() {
             const input = document.createElement('input');
             input.type = 'text';
             input.style.position = 'absolute';
             input.style.opacity = '0';
             input.style.pointerEvents = 'none';
-            input.style.top = '-1000px'; // Off-screen
+            input.style.top = '-1000px';
             input.setAttribute('aria-hidden', 'true');
             document.body.appendChild(input);
 
             input.focus({
                 preventScroll: true
-            }); // extra guard against auto-scroll
+            });
 
             setTimeout(() => {
                 input.blur();
                 document.body.removeChild(input);
-                markAction(500); // Trigger recalibration tick
-            }, 250); // Enough time to trigger keyboard without lingering
+                markAction(500);
+            }, 250);
         })();
     </script>
 </body>
