@@ -28,9 +28,7 @@
             overscroll-behavior: none;
             /* Prevents scroll chaining */
             overflow: hidden;
-            /* Optional: disables scrolling entirely */
             touch-action: none;
-            /* Prevents touch gestures like pull-to-refresh */
         }
 
         :root {
@@ -708,7 +706,7 @@
             height: 100dvh;
             min-height: -webkit-fill-available;
             overflow: hidden;
-            z-index: 10;
+            z-index: 20;
             pointer-events: none;
         }
 
@@ -1266,10 +1264,578 @@
                 color-mix(in oklab, white 70%, transparent);
             opacity: .8;
         }
+
+        .zc-displays {
+            min-height: -webkit-fill-available;
+            overflow: hidden;
+            z-index: 10;
+            pointer-events: none;
+            width: 100%;
+            height: 100dvh;
+            position: absolute;
+        }
+
+        .zc-display {
+            background-color: var(--bg-primary);
+            width: 100%;
+            height: 100%;
+            pointer-events: all;
+        }
+
+        .zc-display .avatar-container {
+            border-radius: 1000px;
+            overflow: hidden;
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+        }
+
+        .zc-display .avatar-display {
+            width: inherit;
+            height: inherit;
+        }
+
+        .zc-message-display {
+            padding-right: 20%;
+            gap: var(--gap-sm);
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            flex-shrink: 0;
+        }
+
+        .zc-message-display .message-content {
+            width: fit-content;
+            color: var(--text-main);
+            font-size: var(--font-size-md);
+            text-overflow: ellipsis;
+            overflow: hidden;
+            border-radius: 4px 12px 12px;
+            background-color: var(--accent);
+            filter: saturate(0);
+            padding: var(--gap-sm);
+        }
+
+        .zc-message-display .message-username {
+            width: fit-content;
+            overflow: hidden;
+            font-size: var(--font-size-md);
+            color: var(--text-main);
+            line-height: var(--line-height);
+            text-overflow: ellipsis;
+        }
+
+        .zc-message-display .message-details {
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: var(--gap-xs);
+        }
+
+        .zc-messages-top {
+            display: flex;
+            height: var(--rail-h);
+            border-bottom: 1px var(--bg-hover) solid;
+            flex-direction: row;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .zc-display {
+            background-color: var(--bg-primary);
+            width: 100%;
+            height: 100%;
+            pointer-events: all;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+        }
+
+        .zc-messages-bottom {
+            height: var(--rail-h);
+            border-top: 1px var(--bg-hover) solid;
+        }
+
+        .zc-messages-fill {
+            overflow: auto;
+            display: flex;
+            padding: var(--gap-sm);
+            flex: 1;
+            box-sizing: border-box;
+            gap: var(--gap-xs);
+            flex-direction: column-reverse;
+            flex-wrap: nowrap;
+            scrollbar-width: none;
+        }
+
+        .zc-message-display.list-self {
+            padding-right: 0%;
+            padding-left: 20%;
+            flex-direction: row-reverse;
+        }
+
+        .zc-message-display.list-self .message-content {
+            filter: saturate(1);
+            border-radius: 12px 4px 12px 12px;
+        }
+
+        .zc-message-display.list-partial .avatar-container {
+            visibility: hidden;
+        }
+
+        .zc-message-display.list-partial .message-username {
+            display: none;
+        }
+
+        .zc-message-display.list-partial .message-content {
+            border-radius: 12px;
+        }
+
+        .zc-message-display.list-self .message-details {
+            align-items: flex-end;
+        }
+
+        .zc-message-display .message-file-attachment {
+            position: relative;
+            border-radius: var(--gap-sm);
+            padding: var(--gap-md);
+            box-sizing: border-box;
+            max-width: 400px;
+            width: 100%;
+            background-color: var(--bg-secondary);
+            border: 1px var(--bg-hover) solid;
+        }
+
+        .zc-message-display .message-file-details {
+            font-size: var(--font-size-sm);
+            color: var(--text-main);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .zc-message-display .message-file-title {
+            font-size: var(--font-size-md);
+            color: var(--text-main);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .zc-message-display .message-file-btns {
+            display: flex;
+            top: var(--gap-sm);
+            right: var(--gap-sm);
+            position: absolute;
+            flex-direction: row-reverse;
+            flex-wrap: nowrap;
+            align-items: center;
+            border-radius: var(--gap-sm);
+            overflow: hidden;
+        }
+
+        .zc-message-display .message-file-btn {
+            display: flex;
+            background-color: var(--bg-hover);
+            width: 30px;
+            height: 30px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zc-message-display .message-file-btn .icon {
+            height: 60%;
+            width: 60%;
+            color: var(--text-main);
+            background-color: currentColor;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-size: 100% 100%;
+            mask-size: 100% 100%;
+            -webkit-mask-position: center;
+            mask-position: center;
+        }
+
+        .zc-message-display .message-file-attachments {
+            gap: var(--gap-xs);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+        }
+
+        .zc-message-display.list-self .message-file-attachments {
+            align-items: flex-end;
+        }
+
+        .zc-message-display .message-reaction {
+            background-color: var(--accent);
+            border-radius: 1000px;
+            align-content: center;
+            height: 30px;
+            width: 30px;
+            top: -20px;
+            right: -20px;
+            position: absolute;
+            text-align: center;
+            z-index: 2;
+            isolation: isolate;
+            /* 👈 Creates a new stacking context */
+        }
+
+        .zc-message-display .message-reaction::before,
+        .zc-message-display .message-reaction::after {
+            background: inherit;
+            content: "";
+            position: absolute;
+            border-radius: 1000px;
+            z-index: -1;
+            /* 👈 Now this works because of isolation */
+        }
+
+        .zc-message-display .message-reaction::before {
+            bottom: 0px;
+            right: 0px;
+            width: 16px;
+            height: 16px;
+        }
+
+        .zc-message-display .message-reaction::after {
+            bottom: -6px;
+            right: -6px;
+            width: 8px;
+            height: 8px;
+        }
+
+        .zc-message-display .message-container {
+            position: relative;
+            width: fit-content;
+        }
+
+        .zc-message-display.list-self .message-reaction {
+            filter: saturate(0);
+            left: -20px;
+        }
+
+        .zc-message-display.list-self .message-reaction::after {
+            left: -6px;
+        }
+
+        .zc-message-display.list-self .message-reaction::before {
+            left: 0px;
+        }
+
+        .zc-message-display .message-image-attachments {
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            width: 80%;
+            max-width: 320px;
+            aspect-ratio: 3 / 4;
+        }
+
+        .zc-message-display .message-image-attachments> :nth-child(1) {
+            box-sizing: border-box;
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            border: 1px var(--bg-hover) solid;
+            border-radius: var(--gap-sm);
+            position: relative;
+            z-index: 6;
+            background-color: var(--bg-secondary);
+        }
+
+        .zc-message-display .message-image-attachments> :nth-child(2) {
+            transform: rotate(2deg) translateX(2px);
+            content: "";
+            z-index: 5;
+        }
+
+        .zc-message-display .message-image-attachments> :nth-child(3) {
+            transform: rotate(4deg) translateX(4px);
+            z-index: 4;
+        }
+
+        .zc-message-display .message-image-attachments> :nth-child(4) {
+            transform: rotate(6deg) translateX(6px);
+            z-index: 3;
+        }
+
+        .zc-message-display .message-image-attachments> :nth-child(5) {
+            transform: rotate(8deg) translateX(8px);
+            z-index: 2;
+        }
+
+        .zc-message-display .message-image-attachments> :nth-child(6) {
+            transform: rotate(10deg) translateX(10px);
+            z-index: 1;
+        }
+
+        .zc-message-display .message-image-attachments> :nth-child(n+7) {
+            display: none;
+        }
+
+        .message-image-attachments:has(:nth-child(6)) {
+            --pad: 20px;
+            padding-top: var(--pad);
+            padding-bottom: var(--pad);
+        }
+
+        .message-image-attachments:has(:nth-child(5):last-child) {
+            --pad: 16px;
+            padding-top: var(--pad);
+            padding-bottom: var(--pad);
+        }
+
+        .message-image-attachments:has(:nth-child(4):last-child) {
+            --pad: 12px;
+            padding-top: var(--pad);
+            padding-bottom: var(--pad);
+        }
+
+        .message-image-attachments:has(:nth-child(3):last-child) {
+            --pad: 8px;
+            padding-top: var(--pad);
+            padding-bottom: var(--pad);
+        }
+
+        .message-image-attachments:has(:nth-child(2):last-child) {
+            --pad: 4px;
+            padding-top: var(--pad);
+            padding-bottom: var(--pad);
+        }
+
+        .zc-message-display .message-image-attachments> :nth-child(2),
+        .zc-message-display .message-image-attachments> :nth-child(3),
+        .zc-message-display .message-image-attachments> :nth-child(4),
+        .zc-message-display .message-image-attachments> :nth-child(5),
+        .zc-message-display .message-image-attachments> :nth-child(6) {
+            box-sizing: border-box;
+            width: 100%;
+            height: calc(100% - calc(var(--pad, 0px) * 2));
+            object-fit: cover;
+            border-radius: var(--gap-sm);
+            border: 1px var(--bg-hover) solid;
+            position: absolute;
+            left: 0px;
+            pointer-events: none;
+            background-color: var(--bg-secondary);
+        }
+
+        :root {
+            --bubble-pad-y: 8px;
+            --bubble-pad-x: 12px;
+
+            --dot-size: 6px;
+            --dot-gap: 6px;
+            --dot-opacity: 0.45;
+            --dot-peak: 1;
+            --dot-duration: 1.2s;
+        }
+
+        .zc-message-display .typing-indicator {
+            margin: 0px var(--bubble-pad-y);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--dot-gap);
+            isolation: isolate;
+        }
+
+        .zc-message-display .typing-indicator .dot {
+            width: var(--dot-size);
+            height: var(--dot-size);
+            border-radius: 999px;
+            background: currentColor;
+            opacity: var(--dot-opacity);
+            transform-origin: center bottom;
+            animation: typing-bounce var(--dot-duration) infinite ease-in-out;
+        }
+
+        .zc-message-display .typing-indicator .dot:nth-child(1) {
+            animation-delay: 0ms;
+        }
+
+        .zc-message-display .typing-indicator .dot:nth-child(2) {
+            animation-delay: 150ms;
+        }
+
+        .zc-message-display .typing-indicator .dot:nth-child(3) {
+            animation-delay: 300ms;
+        }
+
+        @keyframes typing-bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: var(--dot-opacity);
+            }
+
+            40% {
+                transform: translateY(-30%) scale(1.05);
+                opacity: var(--dot-peak);
+            }
+        }
+
+        .typing-message {
+            opacity: 0;
+            transform: translateY(6px);
+            filter: blur(6px);
+            transition: opacity 0.25s ease-out, transform 0.25s ease-out, filter 0.25s ease-out;
+        }
+
+        .typing-message.appear {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0px);
+        }
+
+        .zc-message-display {
+            opacity: 0;
+            transform: translateY(6px);
+            filter: blur(6px);
+            transition: opacity 0.25s ease-out, transform 0.25s ease-out, filter 0.25s ease-out;
+        }
+
+        .zc-message-display.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0px);
+        }
+
+        .zc-composer {
+            gap: var(--gap-xs);
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            padding: var(--gap-sm);
+            box-sizing: border-box;
+        }
+
+        .zc-composer .zc-composer__input {
+            height: 100%;
+            flex: 1;
+        }
+
+        .zc-composer .zc-textarea {
+            padding: var(--gap-sm);
+            align-content: center;
+            border-radius: 1000px;
+            border: 1px var(--bg-hover) solid;
+            outline: none;
+            font-family: inherit;
+            color: var(--text-main);
+            background-color: var(--bg-secondary);
+            resize: none;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            font-size: var(--font-size-md);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .zc-composer .zc-composer__right {
+            gap: var(--gap-xs);
+            display: flex;
+            height: 100%;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .zc-composer .zc-composer__left {
+            gap: var(--gap-xs);
+            display: flex;
+            height: 100%;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .zc-composer .zc-btn {
+            display: flex;
+            border: 1px var(--bg-hover) solid;
+            outline: none;
+            background-color: var(--bg-secondary);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: var(--font-size-md);
+            border-radius: 1000px;
+            height: 100%;
+            aspect-ratio: 1 / 1;
+            box-sizing: border-box;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .zc-composer .zc-btn-icon {
+            aspect-ratio: 1 / 1;
+            height: 50%;
+            width: 50%;
+            color: var(--text-main);
+            background-color: currentColor;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-size: 100% 100%;
+            mask-size: 100% 100%;
+            -webkit-mask-position: center;
+            mask-position: center;
+        }
+
+        .zc-msg-top-nav {
+            height: 100%;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+        }
+
+        .zc-msg-top-nav .zc-btn-icon {
+            aspect-ratio: 1 / 1;
+            height: 40%;
+            width: 40%;
+            color: var(--text-main);
+            background-color: currentColor;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-size: 100% 100%;
+            mask-size: 100% 100%;
+            -webkit-mask-position: center;
+            mask-position: center;
+        }
+
+        .zc-msg-top-profile .username {
+            font-size: var(--font-size-md);
+            text-overflow: ellipsis;
+            overflow: hidden;
+            line-height: var(--line-height);
+            color: var(--text-main);
+        }
+
+        .zc-msg-top-profile .status {
+            font-size: var(--font-size-sm);
+            line-height: var(--line-height);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-main);
+        }
     </style>
 
 <body>
     <div class="zc-app" data-app="zero-cosmos">
+        <div class="zc-displays">
+
+        </div>
         <div class="zc-overlays">
 
         </div>
@@ -3288,59 +3854,6 @@
             return debouncedFunction;
         })();
 
-        const container = document.querySelector('.zc-window-scroller');
-        if (container) {
-            zycordInternals.UI.buildDMChannelComponent({
-                parent: container,
-                avatarSrc: 'https://cdn.discordapp.com/avatars/1338796362707501097/608ba854fa55f80f56d73ce41e8c7f37.png',
-                statusType: zycordInternals.System.EnumTypes.StatusType.dnd,
-                nameplateSrc: 'https://cdn.discordapp.com/assets/collectibles/nameplates/nameplates_v2/spirit_moon/static.png',
-                username: 'Luna >w<',
-                badgeIcon: 'https://cdn.discordapp.com/clan-badges/1135093604218589204/4e377c9abb0be025fec29dd09d1ad01c.png',
-                badgeLabel: 'FOX',
-                statusText: 'hiding my emotions',
-                activityType: zycordInternals.System.EnumTypes.ActivityType.Music,
-                userId: '1338796362707501097',
-                onClick: (e, ctx) => {
-                    // Gesture hook point: open DM, animate, etc.
-                    // console.log('Open DM for', ctx.username, ctx.instanceId);
-                }
-            });
-            zycordInternals.UI.buildDMChannelComponent({
-                parent: container,
-                avatarSrc: 'https://cdn.discordapp.com/avatars/1132521952238637117/d01e72ce81a4754ebe138ffa648067b8.png',
-                statusType: zycordInternals.System.EnumTypes.StatusType.offline,
-                nameplateSrc: '',
-                username: 'Z',
-                badgeIcon: '',
-                badgeLabel: '',
-                statusText: '',
-                activityType: null,
-                userId: '1132521952238637117',
-                onClick: (e, ctx) => {
-                    // Gesture hook point: open DM, animate, etc.
-                    // console.log('Open DM for', ctx.username, ctx.instanceId);
-                }
-            });
-            zycordInternals.UI.buildDMChannelComponent({
-                parent: container,
-                avatarSrc: 'https://cdn.discordapp.com/avatars/1178193013760082003/0aecf69d139e6f4d7aa9593351dc4415.png',
-                statusType: zycordInternals.System.EnumTypes.StatusType.idle,
-                nameplateSrc: '',
-                username: 'The Freak Stealth',
-                badgeIcon: '',
-                badgeLabel: '',
-                statusText: '',
-                activityText: 'Minecraft',
-                activityType: zycordInternals.System.EnumTypes.ActivityType.Game,
-                userId: '1178193013760082003',
-                onClick: (e, ctx) => {
-                    // Gesture hook point: open DM, animate, etc.
-                    // console.log('Open DM for', ctx.username, ctx.instanceId);
-                }
-            });
-        }
-
         zycordInternals.UI.generateInteractiveButtonSet({
             containerSelector: '.zc-window-innernav',
             buttonsData: [{
@@ -3491,127 +4004,685 @@
             ]
         });
 
-        // Tunables — shape the rhythm
-        const IDLE_INTERVAL_MS = 500; // Low-FPS idle cadence (≈2fps)
-        const ACTIVE_HOLD_MS = 350; // How long to stay "hot" after last action
-
-        let lastHeight = -1; // Start unknown to force first sync
-        let rafId = null;
-        let idleId = null;
-        let activeUntil = 0;
-
-        function readViewportHeight() {
-            // Round to whole px to avoid jittery micro-changes from fractional values
-            const h = window.visualViewport?.height ?? window.innerHeight;
-            return Math.round(h);
-        }
-
-        function setAppHeight() {
-            const vh = readViewportHeight();
-            document.documentElement.style.setProperty('--app-height', `${vh}px`);
-        }
-
-        function tick(now = performance.now()) {
-            // Sample
-            const currentHeight = readViewportHeight();
-
-            // Detect meaningful change
-            if (currentHeight !== lastHeight) {
-                lastHeight = currentHeight;
-                setAppHeight();
-                // Any real change keeps us in "action" mode a touch longer
-                activeUntil = Math.max(activeUntil, now + ACTIVE_HOLD_MS);
-            }
-
-            // Schedule next frame based on current "heat"
-            if (now < activeUntil) {
-                rafId = requestAnimationFrame(tick);
-            } else {
-                // Cool off into idle; switch to a gentle timer
-                rafId = null;
-                idleId = setTimeout(() => {
-                    idleId = null;
-                    tick(performance.now());
-                }, IDLE_INTERVAL_MS);
-            }
-        }
-
-        // Nudge the loop into high-FPS mode for a short window
-        function markAction(extraMs = ACTIVE_HOLD_MS) {
-            const now = performance.now();
-            activeUntil = Math.max(activeUntil, now + extraMs);
-
-            // If we're idling, jump immediately into rAF
-            if (!rafId) {
-                if (idleId) {
-                    clearTimeout(idleId);
-                    idleId = null;
-                }
-                rafId = requestAnimationFrame(tick);
-            }
-        }
-
-        // Wire “action” sources
-        function wireActionDetectors() {
-            const vv = window.visualViewport;
-
-            // Viewport dynamics (URL bar show/hide on mobile, zoom, etc.)
-            if (vv) {
-                vv.addEventListener('resize', () => markAction(600), {
-                    passive: true
-                });
-                vv.addEventListener('scroll', () => markAction(400), {
-                    passive: true
-                });
-            }
-
-            // Classic layout/rotation changes
-            window.addEventListener('resize', () => markAction(800), {
-                passive: true
-            });
-            window.addEventListener('orientationchange', () => markAction(1000), {
-                passive: true
-            });
-
-            // User intent — pointer, wheel, keys (keep it lightweight)
-            window.addEventListener('pointerdown', () => markAction(), {
-                passive: true
-            });
-            window.addEventListener('pointermove', () => markAction(200), {
-                passive: true
-            });
-            window.addEventListener('wheel', () => markAction(300), {
-                passive: true
-            });
-            window.addEventListener('keydown', () => markAction(300), {
-                passive: true
-            });
-
-            // Throttle way down when hidden; resume when visible
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'hidden') {
-                    activeUntil = 0;
-                    if (rafId) {
-                        cancelAnimationFrame(rafId);
-                        rafId = null;
-                    }
-                    if (idleId) clearTimeout(idleId);
-                    idleId = setTimeout(() => {
-                        idleId = null;
-                        tick(performance.now());
-                    }, Math.max(IDLE_INTERVAL_MS, 1000));
+        function buildMessageElement(discordMessage) {
+            const {
+                id: messageId,
+                content,
+                attachments = [],
+                author = {},
+                member = {}
+            } = discordMessage || {};
+            const username = member.nick || author.global_name || author.username || 'Unknown User';
+            const authorId = author.id || null;
+            const avatarUrl = author.avatar ?
+                `https://cdn.discordapp.com/avatars/${authorId}/${author.avatar}.png` :
+                null;
+            const safeClan = author.clan || {};
+            const hasBadge = typeof safeClan.identity_guild_id === 'string' && typeof safeClan.badge === 'string';
+            const badgeIcon = hasBadge ?
+                `https://cdn.discordapp.com/clan-badges/${safeClan.identity_guild_id}/${safeClan.badge}` :
+                '';
+            const badgeLabel = typeof safeClan.tag === 'string' ? safeClan.tag : '';
+            const reaction = null;
+            const imageAttachments = [];
+            const fileAttachments = [];
+            attachments.forEach(att => {
+                const type = att.content_type || att.original_content_type || '';
+                if (type.startsWith('image/')) {
+                    imageAttachments.push(att);
                 } else {
-                    markAction(800);
+                    fileAttachments.push({
+                        url: att.url,
+                        title: att.title || att.filename || 'Unknown File',
+                        name: att.filename || 'unnamed'
+                    });
                 }
-            }, {
-                passive: true
             });
+            const wrapper = document.createElement('div');
+            wrapper.className = 'zc-message-display list-start';
+            if (author?.isSelf) {
+                wrapper.classList.add('list-self')
+            }
+            wrapper.dataset.authorId = author.id || '';
+            wrapper.dataset.messageId = messageId || '';
+            const avatarContainer = document.createElement('div');
+            avatarContainer.className = 'avatar-container';
+            const avatarImg = document.createElement('img');
+            avatarImg.className = 'avatar-display';
+            avatarImg.src = avatarUrl || '';
+            avatarContainer.appendChild(avatarImg);
+            const details = document.createElement('div');
+            details.className = 'message-details';
+            const usernameDiv = document.createElement('div');
+            usernameDiv.className = 'message-username';
+            usernameDiv.textContent = username;
+            if (badgeIcon) {
+                const badgeWrapper = document.createElement('span');
+                badgeWrapper.className = 'zc-dm-badge-wrapper';
+                const badgeClamp = document.createElement('span');
+                badgeClamp.className = 'zc-dm-line-clamp';
+                const badgeImg = document.createElement('img');
+                badgeImg.src = badgeIcon;
+                badgeImg.className = 'zc-dm-badge-icon';
+                badgeImg.setAttribute('aria-hidden', 'true');
+                const badgeSpan = document.createElement('span');
+                badgeSpan.className = 'zc-dm-badge-label';
+                badgeSpan.textContent = badgeLabel;
+                badgeClamp.appendChild(badgeImg);
+                badgeClamp.appendChild(badgeSpan);
+                badgeWrapper.appendChild(badgeClamp);
+                usernameDiv.appendChild(document.createTextNode(' '));
+                usernameDiv.appendChild(badgeWrapper);
+            }
+            const msgContainer = document.createElement('div');
+            msgContainer.className = 'message-container';
+            if (content.trim() !== '') {
+                const msgContent = document.createElement('div');
+                msgContent.className = 'message-content';
+                msgContent.textContent = content || '';
+                msgContainer.appendChild(msgContent);
+            }
+            if (reaction) {
+                const reactionDiv = document.createElement('div');
+                reactionDiv.className = 'message-reaction';
+                reactionDiv.textContent = reaction;
+                msgContainer.appendChild(reactionDiv);
+            }
+            if (imageAttachments.length) {
+                const attachmentDiv = document.createElement('div');
+                attachmentDiv.className = 'message-image-attachments';
+                imageAttachments.forEach(a => {
+                    const img = document.createElement('img');
+                    img.src = a.url;
+                    attachmentDiv.appendChild(img);
+                });
+                details.appendChild(attachmentDiv);
+            }
+            if (fileAttachments.length) {
+                const fileAttachmentsDiv = document.createElement('div');
+                fileAttachmentsDiv.className = 'message-file-attachments';
+                fileAttachments.forEach(f => {
+                    const fileAttachment = document.createElement('div');
+                    fileAttachment.className = 'message-file-attachment';
+                    const btnsDiv = document.createElement('div');
+                    btnsDiv.className = 'message-file-btns';
+                    const downloadBtn = document.createElement('div');
+                    downloadBtn.className = 'message-file-btn';
+                    const downloadIcon = document.createElement('div');
+                    downloadIcon.className = 'icon';
+                    downloadIcon.style.webkitMaskImage =
+                        'url(https://cdn3.emoji.gg/emojis/8719-download-apps.png)';
+                    downloadIcon.style.maskImage =
+                        'url(https://cdn3.emoji.gg/emojis/8719-download-apps.png)';
+                    downloadBtn.appendChild(downloadIcon);
+                    const uploadBtn = document.createElement('div');
+                    uploadBtn.className = 'message-file-btn';
+                    const uploadIcon = document.createElement('div');
+                    uploadIcon.className = 'icon';
+                    uploadIcon.style.webkitMaskImage =
+                        'url(https://cdn3.emoji.gg/emojis/7458-upload.png)';
+                    uploadIcon.style.maskImage =
+                        'url(https://cdn3.emoji.gg/emojis/7458-upload.png)';
+                    uploadBtn.appendChild(uploadIcon);
+                    btnsDiv.append(downloadBtn, uploadBtn);
+                    const titleDiv = document.createElement('div');
+                    titleDiv.className = 'message-file-title';
+                    titleDiv.textContent = f.title;
+                    const detailsDiv = document.createElement('div');
+                    detailsDiv.className = 'message-file-details';
+                    detailsDiv.textContent = f.name;
+                    fileAttachment.append(btnsDiv, titleDiv, detailsDiv);
+                    fileAttachmentsDiv.appendChild(fileAttachment);
+                });
+                details.appendChild(fileAttachmentsDiv);
+            }
+            details.prepend(usernameDiv, msgContainer);
+            wrapper.append(avatarContainer, details);
+            return wrapper;
         }
 
-        // Boot
-        setAppHeight(); // Initial sync
-        wireActionDetectors();
-        tick(); // Start the scheduler
+        function sendTyping(parentEl, discordData) {
+            if (!(parentEl instanceof Element)) {
+                console.error('sendTyping: parentEl is not a valid DOM element.');
+                return null;
+            }
+            const safeUser = (discordData && discordData.user) || {};
+            const safeClan = safeUser.clan || {};
+            const hasAvatar = typeof safeUser.id === 'string' && typeof safeUser.avatar === 'string';
+            const avatarUrl = hasAvatar ?
+                `https://cdn.discordapp.com/avatars/${safeUser.id}/${safeUser.avatar}.png` :
+                '';
+            const hasBadge = typeof safeClan.identity_guild_id === 'string' && typeof safeClan.badge === 'string';
+            const badgeIcon = hasBadge ?
+                `https://cdn.discordapp.com/clan-badges/${safeClan.identity_guild_id}/${safeClan.badge}` :
+                '';
+            const badgeLabel = typeof safeClan.tag === 'string' ? safeClan.tag : '';
+            const displayName =
+                typeof safeUser.global_name === 'string' ?
+                safeUser.global_name :
+                typeof safeUser.username === 'string' ?
+                safeUser.username :
+                'Unknown User';
+            const typingEl = document.createElement('div');
+            typingEl.className = 'zc-message-display list-start typing-message';
+            const avatarContainer = document.createElement('div');
+            avatarContainer.className = 'avatar-container';
+            const avatarImg = document.createElement('img');
+            avatarImg.className = 'avatar-display';
+            avatarImg.src = avatarUrl;
+            avatarImg.alt = '';
+            avatarContainer.appendChild(avatarImg);
+            const messageDetails = document.createElement('div');
+            messageDetails.className = 'message-details';
+            const usernameDiv = document.createElement('div');
+            usernameDiv.className = 'message-username';
+            usernameDiv.textContent = displayName;
+            if (badgeIcon) {
+                const badgeWrapper = document.createElement('span');
+                badgeWrapper.className = 'zc-dm-badge-wrapper';
+                const badgeClamp = document.createElement('span');
+                badgeClamp.className = 'zc-dm-line-clamp';
+                const badgeImg = document.createElement('img');
+                badgeImg.src = badgeIcon;
+                badgeImg.className = 'zc-dm-badge-icon';
+                badgeImg.setAttribute('aria-hidden', 'true');
+                const badgeSpan = document.createElement('span');
+                badgeSpan.className = 'zc-dm-badge-label';
+                badgeSpan.textContent = badgeLabel;
+                badgeClamp.appendChild(badgeImg);
+                badgeClamp.appendChild(badgeSpan);
+                badgeWrapper.appendChild(badgeClamp);
+                usernameDiv.appendChild(document.createTextNode(' '));
+                usernameDiv.appendChild(badgeWrapper);
+            }
+            const messageContainer = document.createElement('div');
+            messageContainer.className = 'message-container';
+            messageContainer.dataset.typing = 'true';
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            const typingIndicator = document.createElement('span');
+            typingIndicator.className = 'typing-indicator';
+            for (let i = 0; i < 3; i++) {
+                const dot = document.createElement('span');
+                dot.className = 'dot';
+                typingIndicator.appendChild(dot);
+            }
+            messageContent.appendChild(typingIndicator);
+            messageContainer.appendChild(messageContent);
+            messageDetails.appendChild(usernameDiv);
+            messageDetails.appendChild(messageContainer);
+            typingEl.appendChild(avatarContainer);
+            typingEl.appendChild(messageDetails);
+            parentEl.appendChild(typingEl);
+            parentEl.appendChild(typingEl);
+            requestAnimationFrame(() => {
+                typingEl.classList.add('appear');
+            });
+            return typingEl;
+        }
+
+        function createMessage(parentEl, params) {
+            const el = buildMessageElement(params);
+            el.classList.add('is-entering');
+
+            const lastMessage = parentEl.querySelector('.zc-message-display');
+            if (lastMessage && lastMessage.dataset.authorId === params.author.id) {
+                el.classList.add('list-partial');
+            }
+            parentEl.prepend(el);
+            void el.offsetWidth;
+            el.classList.add('is-visible');
+            return el;
+        }
+
+        function upsertMessage(parentEl, params) {
+            let existing = parentEl.querySelector(`[data-message-id="${params.messageId}"]`);
+            if (existing) {
+                const newEl = buildMessageElement(params);
+                parentEl.replaceChild(newEl, existing);
+                return newEl;
+            } else {
+                return createMessage(parentEl, params);
+            }
+        }
+
+        function createZCDisplay(parentSelector) {
+            const parent = document.querySelector(parentSelector);
+            if (!parent) {
+                console.error(`Parent container not found: ${parentSelector}`);
+                return;
+            }
+
+            const el = (tag, className, text) => {
+                const element = document.createElement(tag);
+                if (className) element.className = className;
+                if (text) element.textContent = text;
+                return element;
+            };
+
+            const zcDisplay = el('div', 'zc-display');
+
+            Object.assign(zcDisplay.style, {
+                position: 'fixed',
+                top: '0',
+                right: '0',
+                transform: 'translateX(100%)',
+                transition: 'transform 0.3s ease',
+                zIndex: '9999'
+            });
+
+            // --- Top section ---
+            const zcMessagesTop = el('div', 'zc-messages-top');
+
+            const topNav = el('div', 'zc-msg-top-nav');
+            const navIcon = el('div', 'zc-btn-icon');
+            navIcon.style.webkitMaskImage = "url('https://cdn3.emoji.gg/emojis/8864https://cdn3.emoji.gg/emojis/8864-discord-clear-search.png')";
+            topNav.appendChild(navIcon);
+            topNav.addEventListener('click', () => {
+                close();
+            });
+
+            const topProfile = el('div', 'zc-msg-top-profile');
+            topProfile.appendChild(el('div', 'username', 'Arcane Einstein'));
+            topProfile.appendChild(el('div', 'status', 'sick af'));
+
+            zcMessagesTop.append(topNav, topProfile);
+
+            const zcMessagesFill = el('div', 'zc-messages-fill');
+            
+            const zcMessagesBottom = el('div', 'zc-messages-bottom');
+
+            const composer = el('div', 'zc-composer');
+            composer.setAttribute('role', 'form');
+            composer.setAttribute('aria-label', 'Message composer');
+
+            const composerLeft = el('div', 'zc-composer__left');
+            const mkBtn = (iconUrl) => {
+                const btn = el('div', 'zc-btn');
+                const icon = el('div', 'zc-btn-icon');
+                icon.style.webkitMaskImage = `url('${iconUrl}')`;
+                icon.style.maskImage = `url('${iconUrl}')`;
+                btn.appendChild(icon);
+                return btn;
+            };
+
+            composerLeft.append(
+                mkBtn('https://cdn3.emoji.gg/emojis/6513-choose-role-icon.png'),
+                mkBtn('https://cdn3.emoji.gg/emojis/4165-bot.png')
+            );
+
+            const composerInput = el('div', 'zc-composer__input');
+            const textarea = document.createElement('textarea');
+            textarea.id = 'zc-message-input';
+            textarea.className = 'zc-textarea';
+            textarea.setAttribute('aria-label', 'Message input');
+            textarea.placeholder = 'Message';
+            textarea.rows = 1;
+            textarea.inputMode = 'text';
+            composerInput.appendChild(textarea);
+
+            const composerRight = el('div', 'zc-composer__right');
+            composerRight.appendChild(
+                mkBtn('https://cdn3.emoji.gg/emojis/8312-active-threads.png')
+            );
+
+            composer.append(composerLeft, composerInput, composerRight);
+            zcMessagesBottom.appendChild(composer);
+
+            zcDisplay.append(zcMessagesTop, zcMessagesFill, zcMessagesBottom);
+            parent.appendChild(zcDisplay);
+
+            // Control functions
+            function open() {
+                zcDisplay.style.transform = 'translateX(0)';
+            }
+
+            function close() {
+                zcDisplay.style.transform = 'translateX(100%)';
+            }
+
+            return {
+                element: zcDisplay,
+                open,
+                close
+            };
+        }
+
+        const chatWindow = createZCDisplay('.zc-displays');
+        const chatParent = chatWindow.element.querySelector('.zc-messages-fill');
+        const typingRef = sendTyping(chatParent, {
+            "user_id": "1142098842242797719",
+            "timestamp": 1755302598,
+            "channel_id": "1276711943910068286",
+            "user": {
+                "username": "im_arcane",
+                "public_flags": 0,
+                "primary_guild": {
+                    "tag": "WYNN",
+                    "identity_guild_id": "143852930036924417",
+                    "identity_enabled": true,
+                    "badge": "a00fce5ca8216a54ddeb27c2ca4eb95c"
+                },
+                "id": "753632471807164438",
+                "global_name": "Arcane Einstein",
+                "display_name_styles": null,
+                "discriminator": "0",
+                "collectibles": null,
+                "clan": {
+                    "tag": "WYNN",
+                    "identity_guild_id": "143852930036924417",
+                    "identity_enabled": true,
+                    "badge": "a00fce5ca8216a54ddeb27c2ca4eb95c"
+                },
+                "avatar_decoration_data": {
+                    "sku_id": "1271174640026255380",
+                    "expires_at": null,
+                    "asset": "a_13913a00bd9990ab4102a3bf069f0f3f"
+                },
+                "avatar": "94d9a17d7e5a29940405fdb13bfe3ecc",
+                "isSelf": false
+            }
+        });
+
+        setTimeout(() => {
+            typingRef.remove();
+            createMessage(chatParent, {
+                "type": 0,
+                "tts": false,
+                "timestamp": "2025-08-16T02:05:14.832000+00:00",
+                "pinned": false,
+                "nonce": "1406096435417448448",
+                "mentions": [],
+                "mention_roles": [],
+                "mention_everyone": false,
+                "id": "1406096438018052197",
+                "flags": 0,
+                "embeds": [],
+                "edited_timestamp": null,
+                "content": "Ughh",
+                "components": [],
+                "channel_type": 1,
+                "channel_id": "1252837586230050879",
+                "author": {
+                    "username": "im_arcane",
+                    "public_flags": 0,
+                    "primary_guild": {
+                        "tag": "WYNN",
+                        "identity_guild_id": "143852930036924417",
+                        "identity_enabled": true,
+                        "badge": "a00fce5ca8216a54ddeb27c2ca4eb95c"
+                    },
+                    "id": "753632471807164438",
+                    "global_name": "Arcane Einstein",
+                    "display_name_styles": null,
+                    "discriminator": "0",
+                    "collectibles": null,
+                    "clan": {
+                        "tag": "WYNN",
+                        "identity_guild_id": "143852930036924417",
+                        "identity_enabled": true,
+                        "badge": "a00fce5ca8216a54ddeb27c2ca4eb95c"
+                    },
+                    "avatar_decoration_data": {
+                        "sku_id": "1271174640026255380",
+                        "expires_at": null,
+                        "asset": "a_13913a00bd9990ab4102a3bf069f0f3f"
+                    },
+                    "avatar": "94d9a17d7e5a29940405fdb13bfe3ecc",
+                    "isSelf": false
+                },
+                "attachments": []
+            });
+        }, 2000);
+
+        setTimeout(() => {
+            typingRef.remove();
+            createMessage(chatParent, {
+                "type": 0,
+                "tts": false,
+                "timestamp": "2025-08-16T02:05:25.207000+00:00",
+                "pinned": false,
+                "nonce": "1406096479654772736",
+                "mentions": [],
+                "mention_roles": [],
+                "mention_everyone": false,
+                "id": "1406096481533952030",
+                "flags": 0,
+                "embeds": [],
+                "edited_timestamp": null,
+                "content": "Give me premium for free",
+                "components": [],
+                "channel_type": 1,
+                "channel_id": "1252837586230050879",
+                "author": {
+                    "username": "im_arcane",
+                    "public_flags": 0,
+                    "primary_guild": {
+                        "tag": "WYNN",
+                        "identity_guild_id": "143852930036924417",
+                        "identity_enabled": true,
+                        "badge": "a00fce5ca8216a54ddeb27c2ca4eb95c"
+                    },
+                    "id": "753632471807164438",
+                    "global_name": "Arcane Einstein",
+                    "display_name_styles": null,
+                    "discriminator": "0",
+                    "collectibles": null,
+                    "clan": {
+                        "tag": "WYNN",
+                        "identity_guild_id": "143852930036924417",
+                        "identity_enabled": true,
+                        "badge": "a00fce5ca8216a54ddeb27c2ca4eb95c"
+                    },
+                    "avatar_decoration_data": {
+                        "sku_id": "1271174640026255380",
+                        "expires_at": null,
+                        "asset": "a_13913a00bd9990ab4102a3bf069f0f3f"
+                    },
+                    "avatar": "94d9a17d7e5a29940405fdb13bfe3ecc"
+                },
+                "attachments": []
+            });
+        }, 4000);
+
+        setTimeout(() => {
+            typingRef.remove();
+            createMessage(chatParent, {
+                "type": 0,
+                "tts": false,
+                "timestamp": "2025-08-16T02:07:00.343000+00:00",
+                "pinned": false,
+                "nonce": "1406096868659691520",
+                "mentions": [],
+                "mention_roles": [],
+                "mention_everyone": false,
+                "id": "1406096880563257424",
+                "flags": 0,
+                "embeds": [],
+                "edited_timestamp": null,
+                "content": "pirate it since u have an android",
+                "components": [],
+                "channel_type": 1,
+                "channel_id": "1252837586230050879",
+                "author": {
+                    "username": "lolzyfurr",
+                    "public_flags": 64,
+                    "primary_guild": {
+                        "tag": null,
+                        "identity_guild_id": null,
+                        "identity_enabled": false,
+                        "badge": null
+                    },
+                    "id": "827356967688339458",
+                    "global_name": "Zyfurr",
+                    "display_name_styles": null,
+                    "discriminator": "0",
+                    "collectibles": null,
+                    "clan": {
+                        "tag": null,
+                        "identity_guild_id": null,
+                        "identity_enabled": false,
+                        "badge": null
+                    },
+                    "avatar_decoration_data": null,
+                    "avatar": "ed6bf886050153fd4d808a85267e32c7",
+                    "isSelf": true
+                },
+                "attachments": []
+            });
+        }, 6000);
+
+        setTimeout(() => {
+            typingRef.remove();
+            createMessage(chatParent, {
+                "type": 0,
+                "tts": false,
+                "timestamp": "2025-08-16T02:07:02.717000+00:00",
+                "pinned": false,
+                "nonce": "1406096878117847040",
+                "mentions": [],
+                "mention_roles": [],
+                "mention_everyone": false,
+                "id": "1406096890520666152",
+                "flags": 0,
+                "embeds": [],
+                "edited_timestamp": null,
+                "content": "I dont have that",
+                "components": [],
+                "channel_type": 1,
+                "channel_id": "1252837586230050879",
+                "author": {
+                    "username": "lolzyfurr",
+                    "public_flags": 64,
+                    "primary_guild": {
+                        "tag": null,
+                        "identity_guild_id": null,
+                        "identity_enabled": false,
+                        "badge": null
+                    },
+                    "id": "827356967688339458",
+                    "global_name": "Zyfurr",
+                    "display_name_styles": null,
+                    "discriminator": "0",
+                    "collectibles": null,
+                    "clan": {
+                        "tag": null,
+                        "identity_guild_id": null,
+                        "identity_enabled": false,
+                        "badge": null
+                    },
+                    "avatar_decoration_data": null,
+                    "avatar": "ed6bf886050153fd4d808a85267e32c7",
+                    "isSelf": true
+                },
+                "attachments": []
+            });
+        }, 8000);
+
+        setTimeout(() => {
+            typingRef.remove();
+            createMessage(chatParent, {
+                "type": 0,
+                "tts": false,
+                "timestamp": "2025-08-16T02:09:10.938000+00:00",
+                "pinned": false,
+                "nonce": "1406097429429747712",
+                "mentions": [],
+                "mention_roles": [],
+                "mention_everyone": false,
+                "id": "1406097428318261440",
+                "flags": 0,
+                "embeds": [],
+                "edited_timestamp": null,
+                "content": "true",
+                "components": [],
+                "channel_type": 1,
+                "channel_id": "1252837586230050879",
+                "author": {
+                    "username": "im_arcane",
+                    "public_flags": 0,
+                    "primary_guild": {
+                        "tag": "WYNN",
+                        "identity_guild_id": "143852930036924417",
+                        "identity_enabled": true,
+                        "badge": "a00fce5ca8216a54ddeb27c2ca4eb95c"
+                    },
+                    "id": "753632471807164438",
+                    "global_name": "Arcane Einstein",
+                    "display_name_styles": null,
+                    "discriminator": "0",
+                    "collectibles": null,
+                    "clan": {
+                        "tag": "WYNN",
+                        "identity_guild_id": "143852930036924417",
+                        "identity_enabled": true,
+                        "badge": "a00fce5ca8216a54ddeb27c2ca4eb95c"
+                    },
+                    "avatar_decoration_data": {
+                        "sku_id": "1271174640026255380",
+                        "expires_at": null,
+                        "asset": "a_13913a00bd9990ab4102a3bf069f0f3f"
+                    },
+                    "avatar": "94d9a17d7e5a29940405fdb13bfe3ecc",
+                    "isSelf": false
+                },
+                "attachments": []
+            });
+        }, 10000);
+
+        const container = document.querySelector('.zc-window-scroller');
+        if (container) {
+            zycordInternals.UI.buildDMChannelComponent({
+                parent: container,
+                avatarSrc: 'https://cdn.discordapp.com/avatars/1338796362707501097/608ba854fa55f80f56d73ce41e8c7f37.png',
+                statusType: zycordInternals.System.EnumTypes.StatusType.dnd,
+                nameplateSrc: 'https://cdn.discordapp.com/assets/collectibles/nameplates/nameplates_v2/spirit_moon/static.png',
+                username: 'Luna >w<',
+                badgeIcon: 'https://cdn.discordapp.com/clan-badges/1135093604218589204/4e377c9abb0be025fec29dd09d1ad01c.png',
+                badgeLabel: 'FOX',
+                statusText: 'hiding my emotions',
+                activityType: zycordInternals.System.EnumTypes.ActivityType.Music,
+                userId: '1338796362707501097',
+                onClick: (e, ctx) => {
+                    // Gesture hook point: open DM, animate, etc.
+                    // console.log('Open DM for', ctx.username, ctx.instanceId);
+                }
+            });
+            zycordInternals.UI.buildDMChannelComponent({
+                parent: container,
+                avatarSrc: 'https://cdn.discordapp.com/avatars/1132521952238637117/d01e72ce81a4754ebe138ffa648067b8.png',
+                statusType: zycordInternals.System.EnumTypes.StatusType.offline,
+                nameplateSrc: '',
+                username: 'Z',
+                badgeIcon: '',
+                badgeLabel: '',
+                statusText: '',
+                activityType: null,
+                userId: '1132521952238637117',
+                onClick: (e, ctx) => {
+                    // Gesture hook point: open DM, animate, etc.
+                    // console.log('Open DM for', ctx.username, ctx.instanceId);
+                }
+            });
+            zycordInternals.UI.buildDMChannelComponent({
+                parent: container,
+                avatarSrc: 'https://cdn.discordapp.com/avatars/1178193013760082003/0aecf69d139e6f4d7aa9593351dc4415.png',
+                statusType: zycordInternals.System.EnumTypes.StatusType.idle,
+                nameplateSrc: '',
+                username: 'The Freak Stealth',
+                badgeIcon: '',
+                badgeLabel: '',
+                statusText: '',
+                activityText: 'Minecraft',
+                activityType: zycordInternals.System.EnumTypes.ActivityType.Game,
+                userId: '1178193013760082003',
+                onClick: (e, ctx) => {
+                    chatWindow.open()
+                    // Gesture hook point: open DM, animate, etc.
+                    // console.log('Open DM for', ctx.username, ctx.instanceId);
+                }
+            });
+        }
     </script>
 </body>
 
