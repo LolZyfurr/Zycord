@@ -249,7 +249,15 @@
             if (typeof type !== 'number') type = 0;
             const out = {
                 name: String(a.name || ''),
-                type
+                type,
+                id: a.id,
+                application_id: a.application_id,
+                assets: a.assets,
+                details: a.details,
+                timestamps: a.timestamps,
+                buttons: a.buttons,
+                party: a.party,
+                // …etc.
             };
             if (type === 1 && a.url) {
                 out.url = String(a.url);
