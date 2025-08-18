@@ -414,6 +414,7 @@
                                 `interactions/${data.id}/${data.token}/callback`,
                                 {
                                     method: 'POST',
+                                    auth: false,
                                     body: {
                                         type: 4,
                                         data: body
@@ -427,6 +428,7 @@
                                 `webhooks/${data.application_id}/${data.token}/messages/@original`,
                                 {
                                     method: 'PATCH',
+                                    auth: false,
                                     body
                                 }
                             );
@@ -437,6 +439,7 @@
                                 `webhooks/${data.application_id}/${data.token}`,
                                 {
                                     method: 'POST',
+                                    auth: false,
                                     body
                                 }
                             );
@@ -572,19 +575,42 @@
         }
 
         async _api(path, opts = {}) {
-            const { method = 'GET', query, body, headers } = opts;
+            const {
+                method = 'GET',
+                query,
+                body,
+                headers = {},
+                auth = true // <-- defaults to true, set to false to skip adding Authorization
+            } = opts;
+
+            // Build URL
             const url = new URL(path, this.apiBase);
-            if (query) for (const [k, v] of Object.entries(query)) url.searchParams.append(k, v);
+            if (query) {
+                for (const [k, v] of Object.entries(query)) {
+                    url.searchParams.append(k, v);
+                }
+            }
+
+            // Prepare headers
+            const finalHeaders = {
+                'Content-Type': 'application/json',
+                ...headers
+            };
+            if (auth) {
+                finalHeaders['Authorization'] = this._authHeader();
+            }
+
+            // Send request
             const res = await fetch(url.toString(), {
                 method,
-                headers: {
-                    'Authorization': this._authHeader(),
-                    'Content-Type': 'application/json',
-                    ...headers
-                },
+                headers: finalHeaders,
                 body: body == null ? undefined : JSON.stringify(body)
             });
+
+            // No content
             if (res.status === 204) return null;
+
+            // Rate limit handling
             if (res.status === 429) {
                 let retryAfterMs = 1000;
                 try {
@@ -595,14 +621,18 @@
                         const ra = res.headers.get('Retry-After');
                         if (ra) retryAfterMs = Number(ra) * 1000;
                     }
-                } catch { /* ignore */ }
+                } catch { /* ignore parse errors */ }
                 await this._sleep(retryAfterMs);
                 return this._api(path, opts);
             }
+
+            // Error handling
             if (!res.ok) {
                 const text = await res.text().catch(() => String(res.status));
                 throw new Error(`API ${res.status} ${res.statusText}: ${text}`);
             }
+
+            // Parse JSON (if any)
             return res.json().catch(() => null);
         }
     }
