@@ -570,9 +570,27 @@
             return res.json().catch(() => null);
         }
         async syncSlashCommands(desiredCommands, guildId = null) {
+            const appId = this.application?.id || this.user?.id;
+            if (!appId) throw new Error("Application ID not available yet.");
             const path = guildId
-                ? `applications/${this.user.id}/guilds/${guildId}/commands`
-                : `applications/${this.user.id}/commands`;
+                ? `applications/${appId}/guilds/${guildId}/commands`
+                : `applications/${appId}/commands`;
+            const stripReadOnly = (command) => {
+                const { id, application_id, version, ...rest } = command;
+                return rest;
+            };
+            const deepEqual = (a, b) => {
+                const sortKeys = (obj) =>
+                    typeof obj === 'object' && obj !== null
+                        ? Array.isArray(obj)
+                            ? obj.map(sortKeys)
+                            : Object.keys(obj).sort().reduce((res, key) => {
+                                res[key] = sortKeys(obj[key]);
+                                return res;
+                            }, {})
+                        : obj;
+                return JSON.stringify(sortKeys(a)) === JSON.stringify(sortKeys(b));
+            };
             const current = await this._api(path);
             const currentByName = Object.fromEntries(current.map(c => [c.name, c]));
             const desiredByName = Object.fromEntries(
@@ -583,19 +601,23 @@
                     await this._api(`${path}/${currentByName[name].id}`, { method: 'DELETE' });
                 }
             }
-            for (const name in desiredByName) {
-                if (!currentByName[name]) {
-                    await this._api(path, { method: 'POST', body: desiredByName[name] });
+            for (const [name, desired] of Object.entries(desiredByName)) {
+                const existing = currentByName[name];
+
+                if (!existing) {
+                    await this._api(path, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: desired
+                    });
+                    continue;
                 }
-            }
-            for (const name in desiredByName) {
-                if (currentByName[name]) {
-                    const cur = currentByName[name];
-                    const des = desiredByName[name];
-                    if (JSON.stringify(cur.description) !== JSON.stringify(des.description) ||
-                        JSON.stringify(cur.options || []) !== JSON.stringify(des.options || [])) {
-                        await this._api(`${path}/${cur.id}`, { method: 'PATCH', body: des });
-                    }
+                if (!deepEqual(stripReadOnly(existing), desired)) {
+                    await this._api(`${path}/${existing.id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: desired
+                    });
                 }
             }
         }
