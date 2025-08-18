@@ -84,6 +84,7 @@
         }
 
         body {
+            background-color: var(--bg-primary);
             font-family: 'Segoe UI', sans-serif;
             color: var(--text-main);
             margin: 0;
@@ -94,21 +95,20 @@
 
         html,
         body {
-            background-color: #F00;
             top: 0px;
             height: var(--app-height);
             overscroll-behavior: none;
+            /* Prevents scroll chaining */
             overflow: visible;
             touch-action: none;
-            scrollbar-width: none;
         }
 
         .zc-app {
             width: 100%;
-            height: calc(var(--app-height) + var(--device-inset-bottom));
+            height: calc(100% + var(--device-inset-bottom));
             min-height: -webkit-fill-available;
             overflow: clip;
-            position: fixed;
+            position: relative;
         }
 
         .zc-main {
@@ -4696,14 +4696,32 @@
         let activeUntil = 0;
 
         // --- Viewport Height ---
+        function isTextFieldFocused() {
+            const el = document.activeElement;
+            if (!el) return false;
+            const tag = el.tagName;
+            const editable = el.isContentEditable;
+            return (
+                tag === 'INPUT' && /^(text|email|number|password|search|tel|url)$/i.test(el.type) ||
+                tag === 'TEXTAREA' ||
+                editable
+            );
+        }
+
+        // --- Viewport Height ---
         function readViewportHeight() {
             const h = window.visualViewport?.height ?? window.innerHeight;
             return Math.round(h);
         }
 
         function setAppHeight() {
-            const vh = readViewportHeight();
-            document.documentElement.style.setProperty('--app-height', `${vh}px`);
+            if (!isTextFieldFocused()) {
+                // Force 100dvh if no textbox is focused
+                document.documentElement.style.setProperty('--app-height', '100dvh');
+            } else {
+                const vh = readViewportHeight();
+                document.documentElement.style.setProperty('--app-height', `${vh}px`);
+            }
         }
 
         // --- Scheduler ---
