@@ -277,26 +277,20 @@
             return false;
         }
         setPresence(presence = {}) {
-            const presences = Array.isArray(presence) ? presence : [presence];
-            const normalized = presences.map(p => this._normalizePresence(p));
-            this._presence = normalized.length === 1 ? normalized[0] : normalized;
-            const sendPresence = (d) => {
-                if (this._ws && this._ws.readyState === WebSocket.OPEN && this._canSendPresence()) {
-                    try {
-                        this._ws.send(JSON.stringify({ op: 3, d }));
-                        this.emit('debug', 'Presence sent', d);
-                        this.emit('presenceSelfUpdate', d);
-                    } catch (e) {
-                        this.emit('error', new Error('Failed to send presence: ' + (e?.message || e)));
-                    }
-                } else {
-                    this.emit('debug', 'Presence queued for next opportunity', d);
+            const d = this._normalizePresence(presence);
+            this._presence = d;
+            if (this._ws && this._ws.readyState === WebSocket.OPEN && this._canSendPresence()) {
+                try {
+                    this._ws.send(JSON.stringify({ op: 3, d }));
+                    this.emit('debug', 'Presence sent', d);
+                    this.emit('presenceSelfUpdate', d);
+                } catch (e) {
+                    this.emit('error', new Error('Failed to send presence: ' + (e?.message || e)));
                 }
-            };
-            for (const d of normalized) {
-                sendPresence(d);
+            } else {
+                this.emit('debug', 'Presence queued for next opportunity', d);
             }
-            return this._presence;
+            return d;
         }
         _connect() {
             this.emit('debug', 'Connecting');
