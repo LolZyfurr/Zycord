@@ -405,11 +405,12 @@
                 } else if (type === 'PRESENCE_UPDATE') {
                     if (data) this._storePresence(data);
                 } else if (type === 'INTERACTION_CREATE' && data?.type === 2) {
+                    const client = this;
                     const interaction = {
                         ...data,
                         reply: async (content) => {
                             const body = typeof content === 'string' ? { content } : content;
-                            return _api(
+                            return client._api(
                                 `/interactions/${data.id}/${data.token}/callback`,
                                 {
                                     method: 'POST',
@@ -422,7 +423,7 @@
                         },
                         editReply: async (content) => {
                             const body = typeof content === 'string' ? { content } : content;
-                            return _api(
+                            return client._api(
                                 `/webhooks/${data.application_id}/${data.token}/messages/@original`,
                                 {
                                     method: 'PATCH',
@@ -430,10 +431,9 @@
                                 }
                             );
                         },
-
                         followUp: async (content) => {
                             const body = typeof content === 'string' ? { content } : content;
-                            return _api(
+                            return client._api(
                                 `/webhooks/${data.application_id}/${data.token}`,
                                 {
                                     method: 'POST',
