@@ -257,7 +257,13 @@
                 timestamps: a.timestamps,
                 buttons: a.buttons,
                 party: a.party,
-                // …etc.
+                created_at: a.created_at ? Number(a.created_at) : null,
+                metadata: a.metadata || {},
+                session_id: a.session_id || null,
+                state: a.state || '',
+                sync_id: a.sync_id || null,
+                flags: a.flags || 0,
+                emoji: a.emoji || null
             };
             if (type === 1 && a.url) {
                 out.url = String(a.url);
