@@ -84,7 +84,7 @@
         }
 
         body {
-            background-color: #fff;
+            background-color: var(--bg-primary);
             font-family: 'Segoe UI', sans-serif;
             color: var(--text-main);
             margin: 0;
@@ -4746,7 +4746,6 @@
             }
         }
 
-        // Wire “action” sources
         function wireActionDetectors() {
             const vv = window.visualViewport;
 
@@ -4801,6 +4800,21 @@
             }, {
                 passive: true
             });
+
+            // ✨ Prevent browser from auto-scrolling input into view
+            document.addEventListener('focusin', e => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                    // Fight the scroll jump
+                    e.target.scrollIntoView({
+                        block: 'nearest',
+                        inline: 'nearest',
+                        behavior: 'instant'
+                    });
+                    markAction(300); // keep active a bit longer after focus
+                }
+            }, {
+                passive: true
+            });
         }
 
         // Boot
@@ -4808,6 +4822,7 @@
         wireActionDetectors();
         tick(); // Start the scheduler
 
+        // Optional: one-time calibration tick after keyboard nudge
         (function calibrateHitboxes() {
             const input = document.createElement('input');
             input.type = 'text';
@@ -4818,7 +4833,9 @@
             input.setAttribute('aria-hidden', 'true');
             document.body.appendChild(input);
 
-            input.focus();
+            input.focus({
+                preventScroll: true
+            }); // extra guard against auto-scroll
 
             setTimeout(() => {
                 input.blur();
