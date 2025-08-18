@@ -106,15 +106,16 @@
             query.append('sort_by', sortBy);
             query.append('sort_order', sortOrder);
             query.append('offset', String(offset));
-
             const endpoint = `channels/${this.channel.id}/messages/search?${query.toString()}`;
             const result = await this.client._api(endpoint);
-
             const messages = result?.messages?.flat() || [];
             for (const m of messages) {
-                if (m && m.author) this.client._attachPresenceHelpers(m.author);
+                if (m?.author) this.client._attachPresenceHelpers(m.author);
             }
-            return messages;
+            return {
+                total_results: Number(result?.total_results ?? 0),
+                messages
+            };
         }
     }
     class TextLikeChannel {
