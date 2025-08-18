@@ -9,27 +9,6 @@
     <meta name="apple-mobile-web-app-title" content="Zycord">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/LolZyfurr/Zycord/refs/heads/main/Root/Logo/ZycordLogo192.png">
     <style>
-        body {
-            background-color: #fff;
-            font-family: 'Segoe UI', sans-serif;
-            color: var(--text-main);
-            margin: 0;
-            box-sizing: border-box;
-            width: 100dvw;
-            height: 100dvh;
-            touch-action: none;
-            position: absolute;
-            overflow: hidden;
-        }
-
-        html,
-        body {
-            overscroll-behavior: none;
-            /* Prevents scroll chaining */
-            overflow: hidden;
-            touch-action: none;
-        }
-
         :root {
             /* Layout & Spacing */
             --rail-h: 60px;
@@ -102,6 +81,27 @@
                 --error-border: #cc0000;
                 --border-color: #ccc;
             }
+        }
+
+        body {
+            background-color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--text-main);
+            margin: 0;
+            box-sizing: border-box;
+            width: 100dvw;
+            touch-action: none;
+            position: absolute;
+            overflow: hidden;
+        }
+
+        html,
+        body {
+            height: var(--app-height);
+            overscroll-behavior: none;
+            /* Prevents scroll chaining */
+            overflow: hidden;
+            touch-action: none;
         }
 
         .zc-app {
