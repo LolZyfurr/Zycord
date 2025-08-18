@@ -279,7 +279,7 @@
         setPresence(presence = {}) {
             const d = this._normalizePresence(presence);
             this._presence = d;
-            if (this._ws && this._ws.readyState === WebSocket.OPEN && this._canSendPresence()) {
+            if (this._ws && this._ws.readyState === WebSocket.OPEN) {
                 try {
                     this._ws.send(JSON.stringify({ op: 3, d }));
                     this.emit('debug', 'Presence sent', d);
@@ -288,7 +288,7 @@
                     this.emit('error', new Error('Failed to send presence: ' + (e?.message || e)));
                 }
             } else {
-                this.emit('debug', 'Presence queued for next opportunity', d);
+                this.emit('debug', 'WebSocket not open, presence not sent', d);
             }
             return d;
         }
