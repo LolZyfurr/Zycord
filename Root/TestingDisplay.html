@@ -4702,9 +4702,18 @@
         }
 
         function setAppHeight() {
-            const vh = readViewportHeight();
-            document.documentElement.style.setProperty('--app-height', `${vh}px`);
+            const activeInput = document.activeElement;
+            const isTextInputFocused = activeInput && (
+                activeInput.tagName === 'INPUT' ||
+                activeInput.tagName === 'TEXTAREA' ||
+                activeInput.isContentEditable
+            );
+
+            const vh = isTextInputFocused ? readViewportHeight() : window.innerHeight;
+            const heightValue = isTextInputFocused ? `${vh}px` : '100%';
+            document.documentElement.style.setProperty('--app-height', heightValue);
         }
+
 
         // --- Scheduler ---
         function tick(now = performance.now()) {
@@ -4851,6 +4860,7 @@
 
             document.addEventListener('focusout', () => {
                 frozenScroll = null;
+                setAppHeight();
             });
         }
 
