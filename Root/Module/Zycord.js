@@ -385,12 +385,11 @@
                     }
                 } else if (type === 'MESSAGE_CREATE') {
                     const user = data?.author;
-                    const isSelf = user?.id === this.user?.id;
-                    this._storeUser(user);
-                    this.emit('messageCreate', {
-                        message: data,
-                        user: { ...user, isSelf }
-                    });
+                    if (user) {
+                        user.isSelf = user.id === this.user?.id;
+                        this._storeUser(user);
+                    }
+                    this.emit('messageCreate', data);
                 } else if (type === 'PRESENCE_UPDATE') {
                     if (data) this._storePresence(data);
                 } else if (type === 'INTERACTION_CREATE' && data?.type === 2) {
