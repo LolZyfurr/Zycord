@@ -1737,24 +1737,24 @@
             const frag = document.createDocumentFragment();
 
             for (const item of items) {
-                const btn = el('div', {
+                const btn = this.createEl('div', {
                     class: `zc-nav-button${item.active ? ' active' : ''}`,
                     role: 'button',
                     tabindex: 0,
                     'data-target': item.target,
                     'aria-controls': item.target,
                     'aria-selected': String(!!item.active)
-                }, el('div', {
+                }, this.createEl('div', {
                     class: 'zc-nav-button-inner'
                 }, [
-                    el('div', {
+                    this.createEl('div', {
                         class: 'zc-nav-icon',
                         style: {
                             '-webkit-mask-image': `url('${item.icon}')`,
                             'mask-image': `url('${item.icon}')`
                         }
                     }),
-                    el('div', {
+                    this.createEl('div', {
                         class: 'zc-nav-label',
                         hidden: true
                     }, item.label)
