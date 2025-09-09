@@ -161,6 +161,7 @@
             this._sessionId = null;
             this._currentlyReconnecting = false;
             this._store = new Map();
+            this._userCache = new Map();
             this._presence = null;
             this._lastPresenceAt = 0;
             this.user = null;
@@ -304,6 +305,12 @@
             }
             return d;
         }
+        _storeUser(user) {
+            if (user?.id) this._userCache.set(user.id, user);
+        }
+        getUser(userId) {
+            return this._userCache.get(userId) || null;
+        }
         _connect() {
             this.emit('debug', 'Connecting');
             const ws = new WebSocket('wss://gateway.discord.gg/?v=10&encoding=json');
@@ -376,6 +383,14 @@
                             this.emit('debug', 'Presence flushed post-READY', this._presence);
                         } catch { /* ignore */ }
                     }
+                } else if (type === 'MESSAGE_CREATE') {
+                    const user = data?.author;
+                    const isSelf = user?.id === this.user?.id;
+                    this._storeUser(user);
+                    this.emit('messageCreate', {
+                        message: data,
+                        user: { ...user, isSelf }
+                    });
                 } else if (type === 'PRESENCE_UPDATE') {
                     if (data) this._storePresence(data);
                 } else if (type === 'INTERACTION_CREATE' && data?.type === 2) {
