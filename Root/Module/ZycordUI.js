@@ -1730,8 +1730,13 @@
             };
         }
     }
-    const api = { ZycordUI };
+    const api = new ZycordUI();
     if (global) {
-        global.MiniDiscordishUi = global.MiniDiscordishUi || api;
+        global.MiniDiscordishUI = global.MiniDiscordishUI || ZycordUI;
+    }
+    if (typeof module !== 'undefined') {
+        module.exports = { ZycordUI };
+    } else if (typeof globalThis !== 'undefined') {
+        globalThis.ZycordUI = ZycordUI;
     }
 })(typeof window !== 'undefined' ? window : (typeof globalThis !== 'undefined' ? globalThis : this));
