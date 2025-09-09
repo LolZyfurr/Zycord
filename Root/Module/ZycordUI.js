@@ -1730,13 +1730,9 @@
             };
         }
     }
-    const api = new ZycordUI();
+
+    const api = { ZycordUI };
     if (global) {
-        global.MiniDiscordishUI = global.MiniDiscordishUI || ZycordUI;
-    }
-    if (typeof module !== 'undefined') {
-        module.exports = { ZycordUI };
-    } else if (typeof globalThis !== 'undefined') {
-        globalThis.ZycordUI = ZycordUI;
+        global.MiniDiscordishUI = global.MiniDiscordishUI || api;
     }
 })(typeof window !== 'undefined' ? window : (typeof globalThis !== 'undefined' ? globalThis : this));
