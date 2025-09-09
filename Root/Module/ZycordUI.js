@@ -1729,6 +1729,77 @@
                 close
             };
         }
+
+        createNavButtons(container, items, windowsRoot = '.zc-windows') {
+            const parent = typeof container === 'string' ? document.querySelector(container) : container;
+            if (!parent) return;
+
+            const frag = document.createDocumentFragment();
+
+            for (const item of items) {
+                const btn = el('div', {
+                    class: `zc-nav-button${item.active ? ' active' : ''}`,
+                    role: 'button',
+                    tabindex: 0,
+                    'data-target': item.target,
+                    'aria-controls': item.target,
+                    'aria-selected': String(!!item.active)
+                }, el('div', {
+                    class: 'zc-nav-button-inner'
+                }, [
+                    el('div', {
+                        class: 'zc-nav-icon',
+                        style: {
+                            '-webkit-mask-image': `url('${item.icon}')`,
+                            'mask-image': `url('${item.icon}')`
+                        }
+                    }),
+                    el('div', {
+                        class: 'zc-nav-label',
+                        hidden: true
+                    }, item.label)
+                ]));
+                const activate = () => {
+                    const root = document.querySelector(windowsRoot);
+                    if (!root) return;
+
+                    const targetKey = btn.dataset.target;
+                    const targetWin =
+                        document.getElementById(targetKey) ||
+                        root.querySelector(`.zc-window[data-window-id="${targetKey}"]`);
+
+                    if (!targetWin) return;
+                    root.querySelectorAll('.zc-window').forEach(w => {
+                        w.hidden = true;
+                        w.setAttribute('aria-hidden', 'true');
+                    });
+                    targetWin.hidden = false;
+                    targetWin.setAttribute('aria-hidden', 'false');
+                    parent.querySelectorAll('.zc-nav-button').forEach(b => {
+                        const isActive = b === btn;
+                        b.classList.toggle('active', isActive);
+                        b.setAttribute('aria-selected', String(isActive));
+                    });
+                    targetWin.dispatchEvent(new CustomEvent('zc:window:activated', {
+                        bubbles: true,
+                        detail: {
+                            target: targetKey
+                        }
+                    }));
+                };
+                btn.addEventListener('click', activate);
+                btn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        activate();
+                    }
+                });
+                frag.appendChild(btn);
+            }
+            parent.appendChild(frag);
+            const initial = parent.querySelector('.zc-nav-button.active') || parent.querySelector('.zc-nav-button');
+            if (initial) initial.click();
+        }
     }
 
     const api = { ZycordUI };
