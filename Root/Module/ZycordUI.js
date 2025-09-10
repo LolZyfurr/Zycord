@@ -1428,7 +1428,6 @@
                 `https://cdn.discordapp.com/clan-badges/${safeClan.identity_guild_id}/${safeClan.badge}` :
                 '';
             const badgeLabel = typeof safeClan.tag === 'string' ? safeClan.tag : '';
-            const reaction = null;
             const imageAttachments = [];
             const fileAttachments = [];
             attachments.forEach(att => {
@@ -1487,10 +1486,15 @@
                 msgContent.textContent = content || '';
                 msgContainer.appendChild(msgContent);
             }
+            const reactions = discordMessage.reactions || [];
+            const reaction = reactions.reduce((max, current) => {
+                return current.count > (max?.count ?? 0) ? current : max;
+            }, null);
             if (reaction) {
                 const reactionDiv = document.createElement('div');
                 reactionDiv.className = 'message-reaction';
-                reactionDiv.textContent = reaction;
+                const emoji = reaction.emoji?.name || '✨';
+                reactionDiv.textContent = `${emoji} ${reaction.count}`;
                 msgContainer.appendChild(reactionDiv);
             }
             if (imageAttachments.length) {
