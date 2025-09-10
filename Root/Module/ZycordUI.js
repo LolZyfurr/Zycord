@@ -1638,6 +1638,12 @@
             return el;
         }
 
+        massMessages(parentEl, messages) {
+            for (let i = messages.length - 1; i >= 0; i--) {
+                this.createMessage(parentEl, messages[i]);
+            }
+        }
+
         upsertMessage(parentEl, params) {
             let existing = parentEl.querySelector(`[data-message-id="${params.messageId}"]`);
             if (existing) {
