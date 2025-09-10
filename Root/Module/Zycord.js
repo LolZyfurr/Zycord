@@ -84,6 +84,7 @@
             const list = Array.isArray(messages) ? messages : [];
             for (const m of list) {
                 if (m && m.author) this.client._attachPresenceHelpers(m.author);
+                if (m && m.author) this.client._attachRelationshipHelpers(m.author);
             }
             return list;
         }
@@ -109,6 +110,7 @@
             const messages = result?.messages?.flat() || [];
             for (const m of messages) {
                 if (m?.author) this.client._attachPresenceHelpers(m.author);
+                if (m?.author) this.client._attachRelationshipHelpers(m.author);
             }
             return {
                 total_results: Number(result?.total_results ?? 0),
@@ -127,6 +129,7 @@
             Object.assign(this, data);
             if (Array.isArray(this.recipients)) {
                 for (const r of this.recipients) this.client._attachPresenceHelpers(r);
+                for (const r of this.recipients) this.client._attachRelationshipHelpers(r);
             }
             return this;
         }
@@ -134,6 +137,7 @@
             if (Array.isArray(this.recipients) && this.recipients.length) {
                 const u = this.recipients.find(r => !r?.bot) || this.recipients[0] || null;
                 if (u) this.client._attachPresenceHelpers(u);
+                if (u) this.client._attachRelationshipHelpers(u);
                 return u || null;
             }
             return null;
@@ -234,6 +238,42 @@
             if (obj.user && typeof obj.user === 'object') defineHelper(obj.user);
             if (obj.author && typeof obj.author === 'object') defineHelper(obj.author);
         }
+
+        _relationshipKey(userId) { return `relationships:${userId}`; }
+        _storeRelationship(relationship) {
+            const user = relationship?.user;
+            if (!user || !user.id) return null;
+            this._store.set(this._relationshipKey(user.id), relationship);
+            this.emit('relationshipUpdate', { user, relationship });
+        }
+        getRelationship(userId) {
+            return this._store.get(this._relationshipKey(userId)) || null;
+        }
+        _attachRelationshipHelpers(obj) {
+            if (!obj || typeof obj !== 'object') return;
+            const client = this;
+
+            const defineHelper = (target) => {
+                if (!target || typeof target !== 'object') return;
+
+                if (!Object.prototype.hasOwnProperty.call(target, 'getRelationship')) {
+                    Object.defineProperty(target, 'getRelationship', {
+                        value: function () {
+                            const id = this?.id ?? this?.user?.id ?? this?.author?.id ?? null;
+                            return id ? client.getRelationship(id) : null;
+                        },
+                        enumerable: false,
+                        configurable: true,
+                        writable: false
+                    });
+                }
+            };
+
+            defineHelper(obj);
+            if (obj.user && typeof obj.user === 'object') defineHelper(obj.user);
+            if (obj.author && typeof obj.author === 'object') defineHelper(obj.author);
+        }
+
         _normalizeActivity(a = {}) {
             const typeMap = {
                 PLAYING: 0,
@@ -342,22 +382,38 @@
                 }
                 if (type === 'READY') {
                     this._sessionId = data?.session_id || null;
+
                     if (Array.isArray(data?.presences)) {
                         for (const presence of data.presences) {
                             this._storePresence(presence);
                         }
                     }
+
+                    if (Array.isArray(data?.relationships)) {
+                        for (const relationship of data.relationships) {
+                            this._storeRelationship(relationship);
+                        }
+                    }
+
                     if (data?.user) {
                         this.user = Object.assign(this.user || {}, data.user);
+
                         if (!Object.prototype.hasOwnProperty.call(this.user, 'setPresence')) {
                             Object.defineProperty(this.user, 'setPresence', {
                                 value: (p) => this.setPresence(p),
                                 enumerable: false
                             });
                         }
+
                         this._attachPresenceHelpers(this.user);
+                        this._attachRelationshipHelpers(this.user);
                     }
-                    if (data?.user) this._attachPresenceHelpers(data.user);
+
+                    if (data?.user) {
+                        this._attachPresenceHelpers(data.user);
+                        this._attachRelationshipHelpers(data.user);
+                    }
+
                     if (data?.user_settings && this.user) {
                         const { custom_status, status } = data.user_settings;
                         const presence = {
@@ -365,6 +421,7 @@
                             since: null,
                             afk: false
                         };
+
                         if (custom_status?.text) {
                             const activity = {
                                 id: 'custom',
@@ -374,9 +431,12 @@
                             };
                             presence.activities = [activity];
                         }
+
                         this.user.setPresence(presence);
                     }
+
                     this.emit('ready', { sessionId: this._sessionId, user: data?.user || null });
+
                     if (this._presence && this._ws && this._ws.readyState === WebSocket.OPEN) {
                         try {
                             this._ws.send(JSON.stringify({ op: 3, d: this._presence }));
