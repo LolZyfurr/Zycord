@@ -1639,9 +1639,12 @@
         }
 
         massMessages(parentEl, messages) {
-            for (let i = messages.length - 1; i >= 0; i--) {
-                this.createMessage(parentEl, messages[i]);
-            }
+            const createdElements = [];
+            messages.forEach(msg => {
+                const el = this.createMessage(parentEl, msg);
+                createdElements.push(el);
+            });
+            return createdElements;
         }
 
         upsertMessage(parentEl, params) {
