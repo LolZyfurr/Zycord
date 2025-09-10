@@ -1506,10 +1506,16 @@
             if (sticker_items.length) {
                 const stickerDiv = document.createElement('div');
                 stickerDiv.className = 'message-sticker-attachments';
-                sticker_items.forEach(a => {
+                const createStickerImage = ({ id, name = 'sticker', format = 'png' }) => {
                     const img = document.createElement('img');
                     img.className = 'message-sticker-attachment';
-                    img.src = a.url;
+                    img.src = `https://media.discordapp.net/stickers/${id}.${format}`;
+                    img.alt = name;
+                    return img;
+                };
+
+                sticker_items.forEach(sticker => {
+                    const img = createStickerImage(sticker);
                     stickerDiv.appendChild(img);
                 });
                 details.appendChild(stickerDiv);
