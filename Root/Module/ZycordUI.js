@@ -1679,8 +1679,10 @@
                 close();
             });
             const topProfile = el('div', 'zc-msg-top-profile');
-            topProfile.appendChild(el('div', 'username', 'Arcane Einstein'));
-            topProfile.appendChild(el('div', 'status', 'sick af'));
+            const profileUsername = el('div', 'username', 'User Placeholder');
+            const profileStatus = el('div', 'status', 'Status Placeholder');
+            topProfile.appendChild(profileUsername);
+            topProfile.appendChild(profileStatus);
             zcMessagesTop.append(topNav, topProfile);
             const zcMessagesFill = el('div', 'zc-messages-fill');
             const zcMessagesBottom = el('div', 'zc-messages-bottom');
@@ -1717,6 +1719,12 @@
             zcMessagesBottom.appendChild(composer);
             zcDisplay.append(zcMessagesTop, zcMessagesFill, zcMessagesBottom);
             parent.appendChild(zcDisplay);
+            function setUsername(textContent) {
+                profileUsername.textContent = textContent;
+            }
+            function setStatus(textContent) {
+                profileStatus.textContent = textContent;
+            }
             function open() {
                 zcDisplay.style.transform = 'translateX(0)';
             }
@@ -1725,6 +1733,8 @@
             }
             return {
                 element: zcDisplay,
+                setUsername,
+                setStatus,
                 open,
                 close
             };
