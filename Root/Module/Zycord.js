@@ -80,12 +80,19 @@
             if (before) query.before = String(before);
             if (after) query.after = String(after);
             if (around) query.around = String(around);
+
             const messages = await this.client._api(`channels/${this.channel.id}/messages`, { query });
             const list = Array.isArray(messages) ? messages : [];
+
             for (const m of list) {
-                if (m && m.author) this.client._attachPresenceHelpers(m.author);
-                if (m && m.author) this.client._attachRelationshipHelpers(m.author);
+                const author = m?.author;
+                if (author) {
+                    author.isSelf = author.id === this.client.user?.id;
+                    this.client._attachPresenceHelpers(author);
+                    this.client._attachRelationshipHelpers(author);
+                }
             }
+
             return list;
         }
         async search({
