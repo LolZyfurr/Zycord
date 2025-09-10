@@ -140,6 +140,15 @@
             }
             return this;
         }
+        async send(contentOrOptions) {
+            const body = typeof contentOrOptions === 'string'
+                ? { content: contentOrOptions }
+                : contentOrOptions;
+            return await this.client._api(`channels/${this.id}/messages`, {
+                method: 'POST',
+                body
+            });
+        }
         get user() {
             if (Array.isArray(this.recipients) && this.recipients.length) {
                 const u = this.recipients.find(r => !r?.bot) || this.recipients[0] || null;
