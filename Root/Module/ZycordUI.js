@@ -1643,10 +1643,20 @@
                 console.warn("Expected an array of messages, got:", messages);
                 return;
             }
-            messages.forEach(msg => {
+            messages.slice().reverse().forEach(msg => {
                 if (!msg || typeof msg !== 'object') return;
                 this.createMessage(parentEl, msg);
             });
+        }
+
+        clearMessages(parentEl) {
+            if (!(parentEl instanceof Element)) {
+                console.error('clearMessages: parentEl is not a valid DOM element.');
+                return;
+            }
+            while (parentEl.firstChild) {
+                parentEl.removeChild(parentEl.firstChild);
+            }
         }
 
         upsertMessage(parentEl, params) {
