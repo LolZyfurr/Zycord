@@ -1413,6 +1413,7 @@
                 id: messageId,
                 content,
                 attachments = [],
+                sticker_items = [],
                 author = {},
                 member = {}
             } = discordMessage || {};
@@ -1501,6 +1502,17 @@
                     attachmentDiv.appendChild(img);
                 });
                 details.appendChild(attachmentDiv);
+            }
+            if (sticker_items.length) {
+                const stickerDiv = document.createElement('div');
+                stickerDiv.className = 'message-sticker-attachments';
+                sticker_items.forEach(a => {
+                    const img = document.createElement('img');
+                    img.className = 'message-sticker-attachment';
+                    img.src = a.url;
+                    stickerDiv.appendChild(img);
+                });
+                details.appendChild(stickerDiv);
             }
             if (fileAttachments.length) {
                 const fileAttachmentsDiv = document.createElement('div');
