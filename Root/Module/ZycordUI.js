@@ -1763,9 +1763,8 @@
             textarea.inputMode = 'text';
             composerInput.appendChild(textarea);
             const composerRight = el('div', 'zc-composer__right');
-            composerRight.appendChild(
-                mkBtn('https://cdn3.emoji.gg/emojis/8312-active-threads.png')
-            );
+            const sendBtn = mkBtn('https://cdn3.emoji.gg/emojis/8312-active-threads.png');
+            composerRight.appendChild(sendBtn);
             composer.append(composerLeft, composerInput, composerRight);
             zcMessagesBottom.appendChild(composer);
             zcDisplay.append(zcMessagesTop, zcMessagesFill, zcMessagesBottom);
@@ -1787,7 +1786,11 @@
                 setUsername,
                 setStatus,
                 open,
-                close
+                close,
+                composer: {
+                    textInput: textarea,
+                    sendButton: sendBtn
+                }
             };
         }
 
