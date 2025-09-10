@@ -1639,12 +1639,14 @@
         }
 
         massMessages(parentEl, messages) {
-            const createdElements = [];
+            if (!Array.isArray(messages)) {
+                console.warn("Expected an array of messages, got:", messages);
+                return;
+            }
             messages.forEach(msg => {
-                const el = this.createMessage(parentEl, msg);
-                createdElements.push(el);
+                if (!msg || typeof msg !== 'object') return;
+                this.createMessage(parentEl, msg);
             });
-            return createdElements;
         }
 
         upsertMessage(parentEl, params) {
