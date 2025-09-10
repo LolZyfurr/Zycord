@@ -1493,8 +1493,16 @@
             if (reaction) {
                 const reactionDiv = document.createElement('div');
                 reactionDiv.className = 'message-reaction';
-                const emoji = reaction.emoji?.name || '✨';
-                reactionDiv.textContent = `${emoji} ${reaction.count}`;
+                const { id, name } = reaction.emoji || {};
+                if (id) {
+                    const emojiImg = document.createElement('img');
+                    emojiImg.alt = name || '';
+                    emojiImg.className = 'message-reaction-img';
+                    emojiImg.src = `https://cdn.discordapp.com/emojis/${id}.png`;
+                    reactionDiv.appendChild(emojiImg);
+                } else if (name) {
+                    reactionDiv.textContent = name;
+                }
                 msgContainer.appendChild(reactionDiv);
             }
             if (imageAttachments.length) {
