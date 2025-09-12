@@ -748,9 +748,14 @@
                 container.setAttribute('aria-busy', 'false');
                 state.loading = false;
                 topRow.innerHTML = '';
-                state.rawData.slice(0, 3).forEach((itm, i) =>
-                    topRow.appendChild(createListingDisplay(itm, i, true))
-                );
+                state.rawData.slice(0, 3).forEach((itm, i) => {
+                    const display = createListingDisplay(itm, i, true);
+                    if (i === 1) {
+                        topRow.prepend(display); // gold goes in the middle
+                    } else {
+                        topRow.appendChild(display); // silver and bronze go around it
+                    }
+                });
                 updateListings(mainList, state.rawData.slice(3));
                 setSwitcherActive(state.activePeriod);
             }
