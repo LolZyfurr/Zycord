@@ -612,10 +612,12 @@
             function createListingDisplay(entry, idx) {
                 const { user, interactions, change } = entry;
                 const badge = idx + 1;
-                const medal =
-                    badge === 1 ? 'gold' :
-                        badge === 2 ? 'silver' :
-                            badge === 3 ? 'bronze' : '';
+
+                // Map index to medal so gold is in the middle
+                let medal = '';
+                if (idx === 0) medal = 'silver';
+                else if (idx === 1) medal = 'gold';
+                else if (idx === 2) medal = 'bronze';
 
                 const container = el('div', ['listing-display', medal]);
                 const rankEl = el('div', 'listing-rank', `#${badge}`);
