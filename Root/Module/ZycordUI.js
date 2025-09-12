@@ -495,6 +495,11 @@
                 const shouldClose = dy > dragThreshold || v > velocityThreshold;
                 finishDrag(shouldClose);
             }
+            const isTouchDevice = (
+                'ontouchstart' in window ||
+                navigator.maxTouchPoints > 0 ||
+                navigator.msMaxTouchPoints > 0
+            );
             windowEl.addEventListener('touchstart', onPointerDown, {
                 passive: true
             });
@@ -508,7 +513,9 @@
                 passive: true
             });
             windowEl.addEventListener('pointerdown', onPointerDown);
-            windowEl.addEventListener('pointermove', onPointerMove);
+            if (isTouchDevice) {
+                windowEl.addEventListener('pointermove', onPointerMove);
+            }
             windowEl.addEventListener('pointerup', onPointerUpOrCancel);
             windowEl.addEventListener('pointercancel', onPointerUpOrCancel);
             const api = {
@@ -560,7 +567,7 @@
         createLeaderboardOverlay(options = {}) {
             const {
                 title = 'Leaderboard',
-                data = [], // raw getDMLeaderboard output
+                data = [],
                 periods = ['Daily', 'Weekly', 'Monthly', 'Yearly', 'All Time'],
                 activePeriod: initialPeriod = 'Daily',
                 onPeriodChange = () => { },
