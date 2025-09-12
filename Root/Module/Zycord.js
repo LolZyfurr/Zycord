@@ -468,12 +468,13 @@
                         user.isSelf = user.id === this.user?.id;
                         this._storeUser(user);
                     }
+
                     const key = `messages:${data.channel_id}`;
                     if (this._store.has(key)) {
                         const arr = this._store.get(key);
-                        arr.push(data);
-                        this._store.set(key, arr);
+                        this._store.set(key, [...arr, data]);
                     }
+
                     this.emit('messageCreate', data);
                 } else if (type === 'PRESENCE_UPDATE') {
                     if (data) this._storePresence(data);
