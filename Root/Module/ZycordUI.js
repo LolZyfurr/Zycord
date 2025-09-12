@@ -609,15 +609,29 @@
                 return el('div', 'zc-skel-circle');
             }
 
-            function createListingDisplay(entry, idx) {
+            function createListingDisplay(entry, idx, isTop = false) {
                 const { user, interactions, change } = entry;
-                const badge = idx + 1;
+
+                // Adjust badge so #1 appears second when isTop is true
+                let badge;
+                if (isTop) {
+                    // idx: 0 → #2, idx: 1 → #1, idx: 2 → #3
+                    badge = idx === 1 ? 1 : (idx === 0 ? 2 : 3);
+                } else {
+                    badge = 3 + (idx + 1);
+                }
 
                 // Map index to medal so gold is in the middle
                 let medal = '';
-                if (idx === 0) medal = 'silver';
-                else if (idx === 1) medal = 'gold';
-                else if (idx === 2) medal = 'bronze';
+                if (isTop) {
+                    if (idx === 0) medal = 'silver';
+                    else if (idx === 1) medal = 'gold';
+                    else if (idx === 2) medal = 'bronze';
+                } else {
+                    if (idx === 0) medal = 'gold';
+                    else if (idx === 1) medal = 'silver';
+                    else if (idx === 2) medal = 'bronze';
+                }
 
                 const container = el('div', ['listing-display', medal]);
                 const rankEl = el('div', 'listing-rank', `#${badge}`);
@@ -710,7 +724,7 @@
             function updateListings(root, rows) {
                 root.innerHTML = '';
                 rows.forEach((row, idx) => {
-                    root.appendChild(createListingDisplay(row, idx));
+                    root.appendChild(createListingDisplay(row, idx, false));
                 });
             }
 
@@ -722,7 +736,7 @@
             const topRow = el('div', 'zc-leaderboard-top-listings');
             const topListings = state.rawData.slice(0, 3);
             topListings.forEach((item, i) => {
-                topRow.appendChild(createListingDisplay(item, i));
+                topRow.appendChild(createListingDisplay(item, i, true));
             });
 
             const { root: switcherRoot, setActive: setSwitcherActive } =
@@ -742,7 +756,7 @@
                 state.loading = false;
                 topRow.innerHTML = '';
                 state.rawData.slice(0, 3).forEach((itm, i) =>
-                    topRow.appendChild(createListingDisplay(itm, i))
+                    topRow.appendChild(createListingDisplay(itm, i, true))
                 );
                 updateListings(mainList, state.rawData.slice(3));
                 setSwitcherActive(state.activePeriod);
