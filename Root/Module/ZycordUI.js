@@ -560,31 +560,33 @@
         createLeaderboardOverlay(options = {}) {
             const {
                 title = 'Leaderboard',
-                topListings: initialTop = [],
-                listings: initialList = [],
+                data = [], // raw getDMLeaderboard output
                 periods = ['Daily', 'Weekly', 'Monthly', 'Yearly', 'All Time'],
                 activePeriod: initialPeriod = 'Daily',
                 onPeriodChange = () => { },
                 closeOnBackdrop = false
             } = options;
+
             const overlay = this.createBottomOverlay({
                 classNames: [],
                 closeOnBackdrop
             });
+
             function el(tag, cls = [], txt = '') {
                 const e = document.createElement(tag);
                 const list = Array.isArray(cls) ? cls : [cls];
-                list.filter(c => Boolean(c)).forEach(c => e.classList.add(c));
+                list.filter(Boolean).forEach(c => e.classList.add(c));
                 if (txt) e.textContent = txt;
                 return e;
             }
+
             const state = {
-                topListings: Array.isArray(initialTop) ? initialTop.slice() : [],
-                listings: Array.isArray(initialList) ? initialList.slice() : [],
+                rawData: Array.isArray(data) ? data.slice() : [],
                 periods: periods.slice(),
                 activePeriod: initialPeriod,
                 loading: false
             };
+
             function randInt(min, max) {
                 return Math.floor(Math.random() * (max - min + 1)) + min;
             }
@@ -597,68 +599,81 @@
                 return skelText(randInt(minLen, maxLen));
             }
             function skelCircle(size = 40) {
-                const d = el('div', 'zc-skel-circle');
-                return d;
+                return el('div', 'zc-skel-circle');
             }
-            function createListingDisplay({
-                rank,
-                username,
-                amountLabel,
-                avatarUrl
-            }, idx) {
-                const badge = rank ?? idx + 1;
+
+            function createListingDisplay(entry, idx) {
+                const { user, interactions, change } = entry;
+                const badge = idx + 1;
                 const medal =
                     badge === 1 ? 'gold' :
                         badge === 2 ? 'silver' :
                             badge === 3 ? 'bronze' : '';
+
                 const container = el('div', ['listing-display', medal]);
                 const rankEl = el('div', 'listing-rank', `#${badge}`);
+
                 const avatarWrap = el('div', 'listing-avatar-container');
                 const img = el('img', 'listing-avatar');
-                img.src = avatarUrl;
-                img.alt = `${username} avatar`;
+                img.src = user?.avatar
+                    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`
+                    : 'https://cdn.discordapp.com/embed/avatars/0.png';
+                img.alt = `${user?.username || 'Unknown'} avatar`;
                 avatarWrap.appendChild(img);
+
                 const details = el('div', 'listing-details');
+                const username = user?.global_name || user?.username || 'Unknown';
+                const amountLabel = `${interactions} msgs` + (change != null ? ` (${change.toFixed(1)}%)` : '');
                 details.append(
                     el('div', 'listing-username', username),
                     el('div', 'listing-amount', amountLabel)
                 );
+
                 container.append(rankEl, avatarWrap, details);
                 return container;
             }
+
             function createSkeletonListing(isTop = false, idx = 0, total = 3) {
                 const middle = Math.floor(total / 2);
                 let medal = '';
                 if (idx === middle) medal = 'gold';
                 else if (idx < middle) medal = 'silver';
                 else if (idx > middle) medal = 'bronze';
+
                 const container = el('div', ['listing-display', 'zc-skeleton', medal]);
                 const rankEl = el('div', 'listing-rank');
                 rankEl.appendChild(skelText(randInt(2, 3)));
+
                 const avatarWrap = el('div', 'listing-avatar-container');
                 avatarWrap.appendChild(skelCircle(isTop ? 56 : 40));
+
                 const details = el('div', 'listing-details');
                 const username = el('div', 'listing-username');
                 username.appendChild(skelBar(8, 16));
                 const amount = el('div', 'listing-amount');
                 amount.appendChild(skelBar(4, 8));
+
                 details.append(username, amount);
                 container.append(rankEl, avatarWrap, details);
                 return container;
             }
+
             function renderSkeletons(root, count, isTop = false) {
                 root.innerHTML = '';
                 for (let i = 0; i < count; i++) root.appendChild(createSkeletonListing(isTop, i));
             }
+
             function buildSwitcher(keys, activeKey, changeCb) {
                 const sw = el('div', 'zc-leaderboard-switcher');
                 const inner = el('div', 'switcher-inner');
                 const buttons = new Map();
+
                 function setActive(key) {
                     buttons.forEach((btn, k) => {
                         btn.classList.toggle('active-button', k === key);
                     });
                 }
+
                 keys.forEach(key => {
                     const btn = el('div', 'switcher-button', key);
                     btn.tabIndex = 0;
@@ -678,114 +693,76 @@
                     buttons.set(key, btn);
                     inner.appendChild(btn);
                 });
+
                 sw.appendChild(inner);
-                return {
-                    root: sw,
-                    setActive
-                };
+                return { root: sw, setActive };
             }
+
             function updateListings(root, rows) {
                 root.innerHTML = '';
                 rows.forEach((row, idx) => {
                     root.appendChild(createListingDisplay(row, idx));
                 });
             }
+
             const container = el('div', 'zc-leaderboard-container');
             container.setAttribute('aria-busy', 'false');
+
             const header = el('div', 'title-display', title);
+
             const topRow = el('div', 'zc-leaderboard-top-listings');
-            state.topListings.forEach((item, i) => {
+            const topListings = state.rawData.slice(0, 3);
+            topListings.forEach((item, i) => {
                 topRow.appendChild(createListingDisplay(item, i));
             });
-            const {
-                root: switcherRoot,
-                setActive: setSwitcherActive
-            } =
+
+            const { root: switcherRoot, setActive: setSwitcherActive } =
                 buildSwitcher(state.periods, state.activePeriod, (key) => {
                     state.activePeriod = key;
                     onPeriodChange(key);
                 });
+
             const mainList = el('div', 'zc-leaderboard-listings');
-            updateListings(mainList, state.listings);
+            updateListings(mainList, state.rawData.slice(3));
+
             container.append(header, topRow, switcherRoot, mainList);
             overlay.setContent(container);
+
             function renderData() {
                 container.setAttribute('aria-busy', 'false');
                 state.loading = false;
                 topRow.innerHTML = '';
-                (state.topListings || []).forEach((itm, i) =>
+                state.rawData.slice(0, 3).forEach((itm, i) =>
                     topRow.appendChild(createListingDisplay(itm, i))
                 );
-                updateListings(mainList, state.listings || []);
+                updateListings(mainList, state.rawData.slice(3));
                 setSwitcherActive(state.activePeriod);
             }
+
             function renderSkeleton(opts = {}) {
                 const {
-                    topCount = Math.max(3, (state.topListings && state.topListings.length) || 3),
-                    listCount = Math.max(8, (state.listings && state.listings.length) || 8)
+                    topCount = 3,
+                    listCount = 8
                 } = opts;
                 container.setAttribute('aria-busy', 'true');
                 state.loading = true;
                 renderSkeletons(topRow, topCount, true);
                 renderSkeletons(mainList, listCount, false);
             }
+
             function openSkeleton(opts = {}) {
                 renderSkeleton(opts);
                 if (typeof overlay.open === 'function') overlay.open();
             }
-            function upsertData(payload = {}, options = {}) {
-                const {
-                    topListings,
-                    listings,
-                    period
-                } = payload;
-                const {
-                    mode = 'replace', key = 'username'
-                } = options;
-                const getKey = (item, idx) =>
-                    typeof key === 'function' ? key(item, idx) :
-                        key in (item || {}) ? item[key] :
-                            (item && item.rank) ?? idx;
-                function merge(oldArr = [], newArr = []) {
-                    if (!Array.isArray(newArr) || newArr.length === 0) return oldArr.slice();
-                    if (mode === 'replace') return newArr.slice();
-                    const seen = new Set();
-                    const mapOld = new Map(oldArr.map((o, i) => [getKey(o, i), o]));
-                    const merged = [];
-                    newArr.forEach((n, i) => {
-                        const k = getKey(n, i);
-                        seen.add(k);
-                        merged.push(n);
-                    });
-                    oldArr.forEach((o, i) => {
-                        const k = getKey(o, i);
-                        if (!seen.has(k)) merged.push(o);
-                    });
-                    return merged;
-                }
-                if (period && period !== state.activePeriod) {
-                    state.activePeriod = period;
-                    setSwitcherActive(state.activePeriod);
-                }
-                if (topListings) state.topListings = merge(state.topListings, topListings);
-                if (listings) state.listings = merge(state.listings, listings);
+
+            function setData(newData = []) {
+                state.rawData = Array.isArray(newData) ? newData.slice() : [];
                 renderData();
             }
-            function setData({
-                topListings: t = null,
-                listings: l = null
-            } = {}) {
-                return upsertData({
-                    topListings: t || undefined,
-                    listings: l || undefined
-                }, {
-                    mode: 'replace'
-                });
-            }
+
             return {
                 ...overlay,
                 openSkeleton,
-                upsertData,
                 setData
             };
         }
