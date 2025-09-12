@@ -72,9 +72,10 @@
         constructor(client, channel) {
             this.client = client;
             this.channel = channel;
+            this._cachePrefix = `message:${channel.id}:`;
         }
         async fetch(options = {}) {
-            const { limit = 50, before, after, around } = options;
+            const { limit = 50, before, after, around, force = false } = options;
             const query = {};
             if (limit != null) query.limit = String(Math.max(1, Math.min(100, Number(limit))));
             if (before) query.before = String(before);
@@ -90,6 +91,12 @@
                     author.isSelf = author.id === this.client.user?.id;
                     this.client._attachPresenceHelpers(author);
                     this.client._attachRelationshipHelpers(author);
+                }
+
+                // Cache each message by ID
+                const key = `${this._cachePrefix}${m.id}`;
+                if (force || !this.client._store.has(key)) {
+                    this.client._store.set(key, m);
                 }
             }
 
