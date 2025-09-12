@@ -81,10 +81,12 @@
             if (before) query.before = String(before);
             if (after) query.after = String(after);
             if (around) query.around = String(around);
-
+            const key = `messages:${this.channel.id}`;
+            if (!force && this.client._store.has(key)) {
+                return this.client._store.get(key);
+            }
             const messages = await this.client._api(`channels/${this.channel.id}/messages`, { query });
             const list = Array.isArray(messages) ? messages : [];
-
             for (const m of list) {
                 const author = m?.author;
                 if (author) {
@@ -92,14 +94,8 @@
                     this.client._attachPresenceHelpers(author);
                     this.client._attachRelationshipHelpers(author);
                 }
-
-                // Cache each message by ID
-                const key = `${this._cachePrefix}${m.id}`;
-                if (force || !this.client._store.has(key)) {
-                    this.client._store.set(key, m);
-                }
             }
-
+            this.client._store.set(key, list);
             return list;
         }
         async search({
@@ -471,6 +467,12 @@
                     if (user) {
                         user.isSelf = user.id === this.user?.id;
                         this._storeUser(user);
+                    }
+                    const key = `messages:${data.channel_id}`;
+                    if (this._store.has(key)) {
+                        const arr = this._store.get(key);
+                        arr.push(data);
+                        this._store.set(key, arr);
                     }
                     this.emit('messageCreate', data);
                 } else if (type === 'PRESENCE_UPDATE') {
