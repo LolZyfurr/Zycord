@@ -613,7 +613,7 @@
                 const { user, interactions, change } = entry;
 
                 // Use actual rank instead of idx for badge
-                const badge = isTop ? 0 : 3 + (idx + 1);
+                const badge = (isTop ? 0 : 3) + (idx + 1);
 
                 // Assign medal based on badge
                 let medal = '';
