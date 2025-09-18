@@ -105,7 +105,8 @@
             maxId,
             offset = 0,
             sortBy = 'timestamp',
-            sortOrder = 'desc'
+            sortOrder = 'desc',
+            force = false
         } = {}) {
             const query = new URLSearchParams();
             if (authorId) query.append('author_id', String(authorId));
@@ -115,17 +116,24 @@
             query.append('sort_by', sortBy);
             query.append('sort_order', sortOrder);
             query.append('offset', String(offset));
-            const endpoint = `channels/${this.channel.id}/messages/search?${query.toString()}`;
+            const queryString = query.toString();
+            const key = `search:${this.channel.id}:${queryString}`;
+            if (!force && this.client._store.has(key)) {
+                return this.client._store.get(key);
+            }
+            const endpoint = `channels/${this.channel.id}/messages/search?${queryString}`;
             const result = await this.client._api(endpoint);
             const messages = result?.messages?.flat() || [];
             for (const m of messages) {
                 if (m?.author) this.client._attachPresenceHelpers(m.author);
                 if (m?.author) this.client._attachRelationshipHelpers(m.author);
             }
-            return {
+            const output = {
                 total_results: Number(result?.total_results ?? 0),
                 messages
             };
+            this.client._store.set(key, output);
+            return output;
         }
     }
     class TextLikeChannel {
