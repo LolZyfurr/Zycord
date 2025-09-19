@@ -328,6 +328,36 @@
             applyFilter();
         }
 
+        createSettingsOption({ title, description, iconUrl, className = '', onClick, appendTo }) {
+            const option = document.createElement('div');
+            option.className = `zc-settings-option ${className}`.trim();
+            const iconWrapper = document.createElement('div');
+            iconWrapper.className = 'option-icon';
+            const iconHolder = document.createElement('div');
+            iconHolder.className = 'icon-holder';
+            iconHolder.style.maskImage = `url('${iconUrl}')`;
+            iconWrapper.appendChild(iconHolder);
+            const contentWrapper = document.createElement('div');
+            contentWrapper.className = 'option-content';
+            const contentTitle = document.createElement('div');
+            contentTitle.className = 'content-title';
+            contentTitle.textContent = title;
+            const contentDesc = document.createElement('div');
+            contentDesc.className = 'content-desc';
+            contentDesc.textContent = description;
+            contentWrapper.appendChild(contentTitle);
+            contentWrapper.appendChild(contentDesc);
+            option.appendChild(iconWrapper);
+            option.appendChild(contentWrapper);
+            if (typeof onClick === 'function') {
+                option.addEventListener('click', onClick);
+            }
+            if (appendTo instanceof HTMLElement) {
+                appendTo.appendChild(option);
+            }
+            return option;
+        }
+
         createBottomOverlay({
             classNames = [],
             closeOnBackdrop = false,
