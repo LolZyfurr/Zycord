@@ -1728,19 +1728,21 @@
             }
         }
 
-        createZCDisplay(parentSelector) {
+        createDisplay(parentSelector) {
             const parent = document.querySelector(parentSelector);
             if (!parent) {
                 console.error(`Parent container not found: ${parentSelector}`);
-                return;
+                return null;
             }
-            const el = (tag, className, text) => {
-                const element = document.createElement(tag);
-                if (className) element.className = className;
-                if (text) element.textContent = text;
-                return element;
+
+            const createElement = (tag, className = '', text = '') => {
+                const el = document.createElement(tag);
+                if (className) el.className = className;
+                if (text) el.textContent = text;
+                return el;
             };
-            const zcDisplay = el('div', 'zc-display');
+
+            const zcDisplay = createElement('div', 'zc-display');
             Object.assign(zcDisplay.style, {
                 position: 'absolute',
                 top: '0',
@@ -1749,26 +1751,33 @@
                 transition: 'transform 0.3s ease',
                 zIndex: '9999'
             });
-            const zcMessagesTop = el('div', 'zc-messages-top');
-            const topNav = el('div', 'zc-msg-top-nav');
-            const navIcon = el('div', 'zc-btn-icon');
-            navIcon.style.webkitMaskImage = "url('https://cdn3.emoji.gg/emojis/8864https://cdn3.emoji.gg/emojis/8864-discord-clear-search.png')";
-            topNav.appendChild(navIcon);
-            topNav.addEventListener('click', () => {
-                close();
-            });
-            const topProfile = el('div', 'zc-msg-top-profile');
-            const profileUsername = el('div', 'username', 'User Placeholder');
-            const profileStatus = el('div', 'status', 'Status Placeholder');
-            topProfile.appendChild(profileUsername);
-            topProfile.appendChild(profileStatus);
-            zcMessagesTop.append(topNav, topProfile);
-            const zcMessagesFill = el('div', 'zc-messages-fill');
-            const zcMessagesBottom = el('div', 'zc-messages-bottom');
-            const composer = el('div', 'zc-composer');
-            composer.setAttribute('role', 'form');
-            composer.setAttribute('aria-label', 'Message composer');
-            const composerLeft = el('div', 'zc-composer__left');
+
+            parent.appendChild(zcDisplay);
+
+            const toggleDisplay = (visible) => {
+                zcDisplay.style.transform = visible ? 'translateX(0)' : 'translateX(100%)';
+            };
+
+            return {
+                element: zcDisplay,
+                open: () => toggleDisplay(true),
+                close: () => toggleDisplay(false)
+            };
+        }
+
+        createZCDisplay(parentSelector) {
+            const displayObj = createDisplay(parentSelector);
+            if (!displayObj) return null;
+
+            const { element: zcDisplay, open, close } = displayObj;
+
+            const el = (tag, className = '', text = '') => {
+                const e = document.createElement(tag);
+                if (className) e.className = className;
+                if (text) e.textContent = text;
+                return e;
+            };
+
             const mkBtn = (iconUrl) => {
                 const btn = el('div', 'zc-btn');
                 const icon = el('div', 'zc-btn-icon');
@@ -1777,10 +1786,33 @@
                 btn.appendChild(icon);
                 return btn;
             };
+
+            const zcMessagesTop = el('div', 'zc-messages-top');
+            const topNav = el('div', 'zc-msg-top-nav');
+            const navIcon = el('div', 'zc-btn-icon');
+            navIcon.style.webkitMaskImage = "url('https://cdn3.emoji.gg/emojis/8864-discord-clear-search.png')";
+            topNav.appendChild(navIcon);
+            topNav.addEventListener('click', close);
+
+            const topProfile = el('div', 'zc-msg-top-profile');
+            const profileUsername = el('div', 'username', 'User Placeholder');
+            const profileStatus = el('div', 'status', 'Status Placeholder');
+            topProfile.append(profileUsername, profileStatus);
+            zcMessagesTop.append(topNav, topProfile);
+
+            const zcMessagesFill = el('div', 'zc-messages-fill');
+
+            const zcMessagesBottom = el('div', 'zc-messages-bottom');
+            const composer = el('div', 'zc-composer');
+            composer.setAttribute('role', 'form');
+            composer.setAttribute('aria-label', 'Message composer');
+
+            const composerLeft = el('div', 'zc-composer__left');
             composerLeft.append(
                 mkBtn('https://cdn3.emoji.gg/emojis/6513-choose-role-icon.png'),
                 mkBtn('https://cdn3.emoji.gg/emojis/4165-bot.png')
             );
+
             const composerInput = el('div', 'zc-composer__input');
             const textarea = document.createElement('textarea');
             textarea.id = 'zc-message-input';
@@ -1790,29 +1822,20 @@
             textarea.rows = 1;
             textarea.inputMode = 'text';
             composerInput.appendChild(textarea);
+
             const composerRight = el('div', 'zc-composer__right');
             const sendBtn = mkBtn('https://cdn3.emoji.gg/emojis/8312-active-threads.png');
             composerRight.appendChild(sendBtn);
+
             composer.append(composerLeft, composerInput, composerRight);
             zcMessagesBottom.appendChild(composer);
+
             zcDisplay.append(zcMessagesTop, zcMessagesFill, zcMessagesBottom);
-            parent.appendChild(zcDisplay);
-            function setUsername(textContent) {
-                profileUsername.textContent = textContent;
-            }
-            function setStatus(textContent) {
-                profileStatus.textContent = textContent;
-            }
-            function open() {
-                zcDisplay.style.transform = 'translateX(0)';
-            }
-            function close() {
-                zcDisplay.style.transform = 'translateX(100%)';
-            }
+
             return {
                 element: zcDisplay,
-                setUsername,
-                setStatus,
+                setUsername: (text) => profileUsername.textContent = text,
+                setStatus: (text) => profileStatus.textContent = text,
                 open,
                 close,
                 composer: {
