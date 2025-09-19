@@ -1766,7 +1766,7 @@
         }
 
         createZCDisplay(parentSelector) {
-            const displayObj = createDisplay(parentSelector);
+            const displayObj = this.createDisplay(parentSelector);
             if (!displayObj) return null;
 
             const { element: zcDisplay, open, close } = displayObj;
