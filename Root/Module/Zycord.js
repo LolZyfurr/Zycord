@@ -95,6 +95,7 @@
                     this.client._attachRelationshipHelpers(author);
                 }
             }
+            list.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
             this.client._store.set(key, list);
             return list;
         }
