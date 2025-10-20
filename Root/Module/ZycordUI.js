@@ -1562,7 +1562,8 @@
                 }
 
                 if (lastIndex < text.length) {
-                    const textNode = document.createTextNode(text.slice(lastIndex));
+                    const textNode = document.createElement('div');
+                    textNode.textContent = text.slice(lastIndex);
                     container.appendChild(textNode);
                 }
             }
