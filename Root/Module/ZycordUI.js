@@ -1511,7 +1511,20 @@
             if (content.trim() !== '') {
                 const msgContent = document.createElement('div');
                 msgContent.className = 'message-content';
-                msgContent.textContent = content || '';
+                const parsedContent = content.replace(
+                    /<a?:\w+:(\d+)>/g,
+                    (match, id) => {
+                        const isAnimated = match.startsWith('<a:');
+                        const ext = isAnimated ? 'gif' : 'png';
+                        return `<img 
+                        src="https://cdn.discordapp.com/emojis/${id}.${ext}" 
+                        alt="${match}" 
+                        class="content-emoji" 
+                        draggable="false"
+                    >`;
+                    }
+                );
+                msgContent.innerHTML = parsedContent;
                 msgContainer.appendChild(msgContent);
             }
             const reactions = discordMessage.reactions || [];
