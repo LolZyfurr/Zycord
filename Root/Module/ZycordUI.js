@@ -1542,7 +1542,8 @@
 
                 while ((match = unicodeEmojiRegex.exec(text)) !== null) {
                     if (match.index > lastIndex) {
-                        const textNode = document.createTextNode(text.slice(lastIndex, match.index));
+                        const textNode = document.createElement('div');
+                        textNode.textContent = text.slice(lastIndex, match.index);
                         container.appendChild(textNode);
                     }
 
