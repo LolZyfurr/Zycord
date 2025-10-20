@@ -1701,7 +1701,7 @@
                 console.warn("Expected an array of messages, got:", messages);
                 return;
             }
-            messages.slice().reverse().forEach(msg => {
+            messages.slice().forEach(msg => {
                 if (!msg || typeof msg !== 'object') return;
                 this.createMessage(parentEl, msg);
             });
@@ -1763,41 +1763,6 @@
                 open: () => toggleDisplay(true),
                 close: () => toggleDisplay(false)
             };
-        }
-
-        createSettingsDisplay(parentSelector) {
-            const displayObj = this.createDisplay(parentSelector);
-            if (!displayObj) return null;
-            const { element: settingsDisplay, open, close } = displayObj;
-            const windowTop = document.createElement("div");
-            windowTop.className = "zc-window-top";
-            const innerNav = document.createElement("div");
-            innerNav.className = "zc-window-innernav";
-            const roundButton = document.createElement("div");
-            roundButton.className = "zc-round-button zc-button-cover";
-            roundButton.setAttribute("role", "button");
-            roundButton.setAttribute("tabindex", "0");
-            roundButton.setAttribute("aria-pressed", "false");
-            roundButton.dataset.index = "0";
-            roundButton.dataset.type = "input";
-            roundButton.style.position = "relative";
-            const buttonIcon = document.createElement("div");
-            buttonIcon.className = "zc-button-icon";
-            buttonIcon.style.maskImage = "url('https://cdn3.emoji.gg/emojis/9670-discord-search.png')";
-            const input = document.createElement("input");
-            input.className = "zc-button-text";
-            input.type = "text";
-            input.placeholder = "Search";
-            input.setAttribute("aria-expanded", "false");
-            roundButton.appendChild(buttonIcon);
-            roundButton.appendChild(input);
-            innerNav.appendChild(roundButton);
-            windowTop.appendChild(innerNav);
-            const windowSettings = document.createElement("div");
-            windowSettings.className = "zc-window-settings";
-            settingsDisplay.appendChild(windowTop);
-            settingsDisplay.appendChild(windowSettings);
-            return { element: windowSettings, open, close };
         }
 
         createZCDisplay(parentSelector) {
