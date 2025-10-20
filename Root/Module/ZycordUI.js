@@ -1542,7 +1542,7 @@
 
                 while ((match = unicodeEmojiRegex.exec(text)) !== null) {
                     if (match.index > lastIndex) {
-                        const textNode = document.createElement('div');
+                        const textNode = document.createElement('span');
                         textNode.textContent = text.slice(lastIndex, match.index);
                         container.appendChild(textNode);
                     }
@@ -1563,7 +1563,7 @@
                 }
 
                 if (lastIndex < text.length) {
-                    const textNode = document.createElement('div');
+                    const textNode = document.createElement('span');
                     textNode.textContent = text.slice(lastIndex);
                     container.appendChild(textNode);
                 }
