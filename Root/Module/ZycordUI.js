@@ -1539,21 +1539,30 @@
                 const unicodeEmojiRegex = /\p{Extended_Pictographic}/gu;
                 let lastIndex = 0;
                 let match;
+
                 while ((match = unicodeEmojiRegex.exec(text)) !== null) {
                     if (match.index > lastIndex) {
-                        const textNode = document.createElement('div');
-                        textNode.textContent = text.slice(lastIndex, match.index);
+                        const textNode = document.createTextNode(text.slice(lastIndex, match.index));
                         container.appendChild(textNode);
                     }
-                    const emojiDiv = document.createElement('div');
-                    emojiDiv.className = 'unicode-emoji';
-                    emojiDiv.textContent = match[0];
-                    container.appendChild(emojiDiv);
+
+                    // Convert emoji to codepoint(s) for Twemoji URL
+                    const codePoints = Array.from(match[0])
+                        .map(char => char.codePointAt(0).toString(16))
+                        .join('-');
+
+                    const img = document.createElement('img');
+                    img.src = `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${codePoints}.svg`;
+                    img.alt = match[0];
+                    img.className = 'content-emoji';
+                    img.draggable = false;
+
+                    container.appendChild(img);
                     lastIndex = unicodeEmojiRegex.lastIndex;
                 }
+
                 if (lastIndex < text.length) {
-                    const textNode = document.createElement('div');
-                    textNode.textContent = text.slice(lastIndex);
+                    const textNode = document.createTextNode(text.slice(lastIndex));
                     container.appendChild(textNode);
                 }
             }
