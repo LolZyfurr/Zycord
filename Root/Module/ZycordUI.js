@@ -1511,15 +1511,13 @@
             if (content.trim() !== '') {
                 const msgContent = document.createElement('div');
                 msgContent.className = 'message-content';
-                const regex = /<a?:\w+:(\d+)>/g;
+                const customEmojiRegex = /<a?:\w+:(\d+)>/g;
                 let lastIndex = 0;
                 let match;
-                while ((match = regex.exec(content)) !== null) {
+                while ((match = customEmojiRegex.exec(content)) !== null) {
                     if (match.index > lastIndex) {
                         const textPart = content.slice(lastIndex, match.index);
-                        const textNode = document.createElement('div');
-                        textNode.textContent = textPart;
-                        msgContent.appendChild(textNode);
+                        appendTextWithUnicodeEmoji(msgContent, textPart);
                     }
                     const isAnimated = match[0].startsWith('<a:');
                     const ext = isAnimated ? 'gif' : 'png';
@@ -1529,15 +1527,35 @@
                     emoji.className = 'content-emoji';
                     emoji.draggable = false;
                     msgContent.appendChild(emoji);
-                    lastIndex = regex.lastIndex;
+                    lastIndex = customEmojiRegex.lastIndex;
                 }
                 if (lastIndex < content.length) {
                     const textPart = content.slice(lastIndex);
-                    const textNode = document.createElement('div');
-                    textNode.textContent = textPart;
-                    msgContent.appendChild(textNode);
+                    appendTextWithUnicodeEmoji(msgContent, textPart);
                 }
                 msgContainer.appendChild(msgContent);
+            }
+            function appendTextWithUnicodeEmoji(container, text) {
+                const unicodeEmojiRegex = /\p{Extended_Pictographic}/gu;
+                let lastIndex = 0;
+                let match;
+                while ((match = unicodeEmojiRegex.exec(text)) !== null) {
+                    if (match.index > lastIndex) {
+                        const textNode = document.createElement('div');
+                        textNode.textContent = text.slice(lastIndex, match.index);
+                        container.appendChild(textNode);
+                    }
+                    const emojiDiv = document.createElement('div');
+                    emojiDiv.className = 'unicode-emoji';
+                    emojiDiv.textContent = match[0];
+                    container.appendChild(emojiDiv);
+                    lastIndex = unicodeEmojiRegex.lastIndex;
+                }
+                if (lastIndex < text.length) {
+                    const textNode = document.createElement('div');
+                    textNode.textContent = text.slice(lastIndex);
+                    container.appendChild(textNode);
+                }
             }
             const reactions = discordMessage.reactions || [];
             const reaction = reactions.reduce((max, current) => {
