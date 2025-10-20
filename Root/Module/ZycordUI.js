@@ -1730,8 +1730,23 @@
             const el = this.buildMessageElement(params);
             el.classList.add('is-entering');
             const lastMessage = parentEl.querySelector('.zc-message-display');
-            if (lastMessage && lastMessage.dataset.authorId === params.author.id) {
-                el.classList.add('list-partial');
+            if (lastMessage) {
+                const sameAuthor = lastMessage.dataset.authorId === params.author.id;
+                const isSnowflake = id => /^\d{17,20}$/.test(id);
+                const lastId = lastMessage.dataset.messageId;
+                const currentId = params.id;
+                let withinFiveMinutes = false;
+                if (isSnowflake(lastId) && isSnowflake(currentId)) {
+                    const snowflakeToDate = id =>
+                        new Date(Number(BigInt(id) >> 22n) + 1420070400000);
+                    const lastDate = snowflakeToDate(BigInt(lastId));
+                    const currentDate = snowflakeToDate(BigInt(currentId));
+
+                    withinFiveMinutes = (currentDate - lastDate) <= (5 * 60 * 1000);
+                }
+                if (sameAuthor && withinFiveMinutes) {
+                    el.classList.add('list-partial');
+                }
             }
             parentEl.prepend(el);
             void el.offsetWidth;
