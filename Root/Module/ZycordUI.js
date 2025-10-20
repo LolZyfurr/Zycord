@@ -1511,20 +1511,32 @@
             if (content.trim() !== '') {
                 const msgContent = document.createElement('div');
                 msgContent.className = 'message-content';
-                const parsedContent = content.replace(
-                    /<a?:\w+:(\d+)>/g,
-                    (match, id) => {
-                        const isAnimated = match.startsWith('<a:');
-                        const ext = isAnimated ? 'gif' : 'png';
-                        return `<img 
-                        src="https://cdn.discordapp.com/emojis/${id}.${ext}" 
-                        alt="${match}" 
-                        class="content-emoji" 
-                        draggable="false"
-                    >`;
+                const regex = /<a?:\w+:(\d+)>/g;
+                let lastIndex = 0;
+                let match;
+                while ((match = regex.exec(content)) !== null) {
+                    if (match.index > lastIndex) {
+                        const textPart = content.slice(lastIndex, match.index);
+                        const textNode = document.createElement('div');
+                        textNode.textContent = textPart;
+                        msgContent.appendChild(textNode);
                     }
-                );
-                msgContent.innerHTML = parsedContent;
+                    const isAnimated = match[0].startsWith('<a:');
+                    const ext = isAnimated ? 'gif' : 'png';
+                    const emoji = document.createElement('img');
+                    emoji.src = `https://cdn.discordapp.com/emojis/${match[1]}.${ext}`;
+                    emoji.alt = match[0];
+                    emoji.className = 'content-emoji';
+                    emoji.draggable = false;
+                    msgContent.appendChild(emoji);
+                    lastIndex = regex.lastIndex;
+                }
+                if (lastIndex < content.length) {
+                    const textPart = content.slice(lastIndex);
+                    const textNode = document.createElement('div');
+                    textNode.textContent = textPart;
+                    msgContent.appendChild(textNode);
+                }
                 msgContainer.appendChild(msgContent);
             }
             const reactions = discordMessage.reactions || [];
