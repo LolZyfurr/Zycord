@@ -41,8 +41,16 @@
                 if (!force && this.client._store.has(key)) {
                     return this.client._store.get(key);
                 }
-                await this._hydrateAllDMs({ force });
-                return this.client._store.get(key);
+                try {
+                    const data = await this.client._api(`channels/${id}`);
+                    if (!data) return null;
+                    const channel = new TextLikeChannel(this.client, data);
+                    this.client._store.set(key, channel);
+                    return channel;
+                } catch (err) {
+                    this.client.emit('error', new Error(`Failed to fetch channel ${id}: ${err.message}`));
+                    return null;
+                }
             }
             if (!force && this.client._store.has(this._dmIndexKey)) {
                 const ids = this.client._store.get(this._dmIndexKey);
@@ -52,11 +60,9 @@
         }
         async _hydrateAllDMs({ force = false } = {}) {
             const list = await this.client._api('users/@me/channels');
+            if (!Array.isArray(list)) return [];
             const ids = [];
             for (const data of list) {
-                if (data.type !== 1) continue;
-                const recipient = data.recipients?.[0];
-                if (!recipient || recipient.bot) continue;
                 const key = `channel:${data.id}`;
                 if (force || !this.client._store.has(key)) {
                     const channel = new TextLikeChannel(this.client, data);
