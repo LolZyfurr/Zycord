@@ -158,14 +158,23 @@
             }
             return this;
         }
+        async deleteMessage(messageId) {
+            return await this.client._api(`channels/${this.id}/messages/${messageId}`, {
+                method: 'DELETE'
+            });
+        }
         async send(contentOrOptions) {
             const body = typeof contentOrOptions === 'string'
                 ? { content: contentOrOptions }
                 : contentOrOptions;
-            return await this.client._api(`channels/${this.id}/messages`, {
+            const messageData = await this.client._api(`channels/${this.id}/messages`, {
                 method: 'POST',
                 body
             });
+            if (messageData && messageData.id) {
+                messageData.delete = () => this.deleteMessage(messageData.id);
+            }
+            return messageData;
         }
         get user() {
             if (Array.isArray(this.recipients) && this.recipients.length) {
