@@ -516,18 +516,23 @@
                     this._patchMessage(data);
 
                     const key = `messages:${data.channel_id}`;
+                    let updatedMessage = data; // Default to the raw data received
+
                     if (this._store.has(key)) {
                         const messages = this._store.get(key);
                         const index = messages.findIndex(m => m.id === data.id);
 
                         if (index !== -1) {
-                            const updatedMessage = { ...messages[index], ...data };
+                            // Merge the update into the cached message
+                            updatedMessage = { ...messages[index], ...data };
                             messages[index] = updatedMessage;
-
                             this._store.set(key, [...messages]);
-                            this.emit('messageUpdate', updatedMessage);
                         }
                     }
+
+                    // IMPORTANT: Emit even if it wasn't in the store. 
+                    // This allows your queue logic to see the edit.
+                    this.emit('messageUpdate', updatedMessage);
                 } else if (type === 'PRESENCE_UPDATE') {
                     if (data) this._storePresence(data);
                 } else if (type === 'INTERACTION_CREATE' && data?.type === 2) {
