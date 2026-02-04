@@ -498,7 +498,7 @@
                         } catch { /* ignore */ }
                     }
                 } else if (type === 'MESSAGE_CREATE') {
-                    this._patchMessage(data); // Add this line
+                    this._patchMessage(data);
                     const user = data?.author;
                     if (user) {
                         user.isSelf = user.id === this.user?.id;
@@ -512,6 +512,22 @@
                     }
 
                     this.emit('messageCreate', data);
+                } else if (type === 'MESSAGE_UPDATE') {
+                    this._patchMessage(data);
+
+                    const key = `messages:${data.channel_id}`;
+                    if (this._store.has(key)) {
+                        const messages = this._store.get(key);
+                        const index = messages.findIndex(m => m.id === data.id);
+
+                        if (index !== -1) {
+                            const updatedMessage = { ...messages[index], ...data };
+                            messages[index] = updatedMessage;
+
+                            this._store.set(key, [...messages]);
+                            this.emit('messageUpdate', updatedMessage);
+                        }
+                    }
                 } else if (type === 'PRESENCE_UPDATE') {
                     if (data) this._storePresence(data);
                 } else if (type === 'INTERACTION_CREATE' && data?.type === 2) {
