@@ -93,7 +93,8 @@
             }
             const messages = await this.client._api(`channels/${this.channel.id}/messages`, { query });
             const list = Array.isArray(messages) ? messages : [];
-            for (const m of list) {
+            for (let m of list) {
+                this.client._patchMessage(m);
                 const author = m?.author;
                 if (author) {
                     author.isSelf = author.id === this.client.user?.id;
@@ -316,7 +317,17 @@
             if (obj.user && typeof obj.user === 'object') defineHelper(obj.user);
             if (obj.author && typeof obj.author === 'object') defineHelper(obj.author);
         }
+        _patchMessage(data) {
+            if (!data || !data.channel_id || !data.id) return data;
 
+            // Add the delete helper directly to the message object
+            data.delete = async () => {
+                return await this._api(`channels/${data.channel_id}/messages/${data.id}`, {
+                    method: 'DELETE'
+                });
+            };
+            return data;
+        }
         _normalizeActivity(a = {}) {
             const typeMap = {
                 PLAYING: 0,
@@ -487,6 +498,7 @@
                         } catch { /* ignore */ }
                     }
                 } else if (type === 'MESSAGE_CREATE') {
+                    this._patchMessage(data); // Add this line
                     const user = data?.author;
                     if (user) {
                         user.isSelf = user.id === this.user?.id;
