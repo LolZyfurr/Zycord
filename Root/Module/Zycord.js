@@ -159,33 +159,96 @@
             }
             return this;
         }
-        async deleteMessage(messageId) {
-            return await this.client._api(`channels/${this.id}/messages/${messageId}`, {
-                method: 'DELETE'
-            });
-        }
         async send(contentOrOptions) {
-            const body = typeof contentOrOptions === 'string'
-                ? { content: contentOrOptions }
-                : contentOrOptions;
+            const body = typeof contentOrOptions === 'string' ? { content: contentOrOptions } : contentOrOptions;
             const messageData = await this.client._api(`channels/${this.id}/messages`, {
                 method: 'POST',
                 body
             });
-            if (messageData && messageData.id) {
+            if (messageData?.id) {
                 messageData.delete = () => this.deleteMessage(messageData.id);
             }
             return messageData;
         }
+        async deleteMessage(messageId) {
+            return await this.client._api(`channels/${this.id}/messages/${messageId}`, { method: 'DELETE' });
+        }
+        async bulkDelete(messages) {
+            const ids = Array.isArray(messages) ? messages : [messages];
+            return await this.client._api(`channels/${this.id}/messages/bulk-delete`, {
+                method: 'POST',
+                body: { messages: ids }
+            });
+        }
+        async sendTyping() {
+            return await this.client._api(`channels/${this.id}/typing`, { method: 'POST' });
+        }
+        async edit(data) {
+            const newData = await this.client._api(`channels/${this.id}`, { method: 'PATCH', body: data });
+            return this.patch(newData);
+        }
+        async delete() {
+            return await this.client._api(`channels/${this.id}`, { method: 'DELETE' });
+        }
+        async clone() {
+            return await this.client._api(`guilds/${this.guildId}/channels`, {
+                method: 'POST',
+                body: { ...this, name: this.name }
+            });
+        }
+        async fetch() {
+            const data = await this.client._api(`channels/${this.id}`, { method: 'GET' });
+            return this.patch(data);
+        }
+        setName(name) { return this.edit({ name }); }
+        setTopic(topic) { return this.edit({ topic }); }
+        setNSFW(nsfw) { return this.edit({ nsfw }); }
+        setParent(parentId) { return this.edit({ parent_id: parentId }); }
+        setPosition(position) { return this.edit({ position }); }
+        setRateLimitPerUser(seconds) { return this.edit({ rate_limit_per_user: seconds }); }
+        setType(type) { return this.edit({ type }); }
+        setDefaultAutoArchiveDuration(duration) { return this.edit({ default_auto_archive_duration: duration }); }
+        isTextBased() { return [0, 1, 3, 5, 10, 11, 12, 15].includes(this.type); }
+        isDMBased() { return [1, 3].includes(this.type); }
+        isThread() { return [10, 11, 12].includes(this.type); }
+        isVoiceBased() { return [2, 13].includes(this.type); }
+        isThreadOnly() { return this.type === 15; }
+        isSendable() { return this.isTextBased() || this.isThread(); }
+        equals(channel) {
+            return channel && this.id === channel.id && this.type === channel.type;
+        }
+        async createInvite(options = {}) {
+            return await this.client._api(`channels/${this.id}/invites`, { method: 'POST', body: options });
+        }
+        async fetchInvites() {
+            return await this.client._api(`channels/${this.id}/invites`, { method: 'GET' });
+        }
+        async createWebhook(name, options = {}) {
+            return await this.client._api(`channels/${this.id}/webhooks`, { method: 'POST', body: { name, ...options } });
+        }
+        async fetchWebhooks() {
+            return await this.client._api(`channels/${this.id}/webhooks`, { method: 'GET' });
+        }
+        async lockPermissions() {
+            if (!this.parentId) return this;
+            return this;
+        }
+        async awaitMessages(options) { return this.createMessageCollector(options).next(); }
+        async awaitMessageComponent(options) { return this.createMessageComponentCollector(options).next(); }
         get user() {
             if (Array.isArray(this.recipients) && this.recipients.length) {
                 const u = this.recipients.find(r => !r?.bot) || this.recipients[0] || null;
-                if (u) this.client._attachPresenceHelpers(u);
-                if (u) this.client._attachRelationshipHelpers(u);
-                return u || null;
+                if (u) {
+                    this.client._attachPresenceHelpers(u);
+                    this.client._attachRelationshipHelpers(u);
+                }
+                return u;
             }
             return null;
         }
+        toJSON() { return { ...this }; }
+        toString() { return `<#${this.id}>`; }
+        valueOf() { return this.id; }
     }
     class Client extends Emitter {
         constructor(options = {}) {
