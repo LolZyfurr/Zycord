@@ -23,53 +23,58 @@
         createEl(tag, attrs = {}, children = []) {
             const el = document.createElement(tag);
             for (const [key, val] of Object.entries(attrs)) {
-                if (val === false || val == null) continue;
-                if (key === "style" && typeof val === "object") {
-                    for (const [prop, styleVal] of Object.entries(val)) {
-                        el.style.setProperty(prop, styleVal);
-                    }
-                } else if (key === "class" || key === "className") {
+                if (val == null || val === false) continue;
+                if (key.startsWith('on') && typeof val === 'function') {
+                    el.addEventListener(key.substring(2).toLowerCase(), val);
+                }
+                else if (key === "style" && typeof val === "object") {
+                    Object.assign(el.style, val);
+                }
+                else if (key === "class" || key === "className") {
                     el.className = val;
-                } else if (typeof val === "boolean") {
-                    if (val) el.setAttribute(key, "");
-                } else {
-                    el.setAttribute(key, val);
+                }
+                else {
+                    if (typeof val === "boolean") {
+                        val ? el.setAttribute(key, "") : el.removeAttribute(key);
+                    } else {
+                        el.setAttribute(key, val);
+                    }
                 }
             }
-            (Array.isArray(children) ? children : [children]).forEach(child => {
-                if (child != null) {
-                    el.appendChild(typeof child === "string" ? document.createTextNode(child) : child);
-                }
+            const childrenArr = Array.isArray(children) ? children.flat() : [children];
+            childrenArr.forEach(child => {
+                if (child == null || child === false) return;
+                el.append(child);
             });
             return el;
         }
-
         matchEnum(value, enumObj) {
             if (!value) return null;
-            if (typeof value === "object" && value.className) return value;
-            if (typeof value === "string") {
-                const key = Object.keys(enumObj).find(k => k.toLowerCase() === value.toLowerCase());
-                return key ? enumObj[key] : null;
-            }
-            return null;
+            if (typeof value === "object") return value;
+            const target = String(value).toLowerCase();
+            const entry = Object.entries(enumObj).find(([key]) => key.toLowerCase() === target);
+            return entry ? entry[1] : null;
         }
-
         createUid(prefix = 'id') {
-            if (typeof crypto !== 'undefined' && crypto.randomUUID) return `${prefix}-${crypto.randomUUID()}`;
-            return `${prefix}-${Math.random().toString(36).slice(2, 10)}`;
+            const uuid = (typeof crypto !== 'undefined' && crypto.randomUUID)
+                ? crypto.randomUUID()
+                : Math.random().toString(36).substring(2, 12);
+            return `${prefix}-${uuid}`;
         }
-
         loadImage(el, { src, alt = "", fallback, width, height }) {
-            if (width) el.setAttribute("width", String(width));
-            if (height) el.setAttribute("height", String(height));
-            el.loading = "lazy";
-            el.decoding = "async";
-            el.referrerPolicy = "no-referrer";
-            el.alt = alt;
-            el.src = src || fallback || "";
+            if (width) el.width = width;
+            if (height) el.height = height;
+            Object.assign(el, {
+                loading: "lazy",
+                decoding: "async",
+                referrerPolicy: "no-referrer",
+                alt: alt,
+                src: src || fallback || ""
+            });
             if (fallback) {
                 el.onerror = () => {
                     if (el.src !== fallback) el.src = fallback;
+                    el.onerror = null;
                 };
             }
             return el;
