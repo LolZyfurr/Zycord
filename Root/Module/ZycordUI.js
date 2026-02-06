@@ -1355,17 +1355,24 @@
                 duration = 2500,
                 variant = 'info',
                 live = 'polite',
-                extraClasses = []
+                extraClasses = [],
+                onDismiss,
+                classes = {
+                    screen: 'zc-overlay-details-screen',
+                    message: 'zc-overlay-details-message',
+                    enter: 'is-enter',
+                    exit: 'is-exit'
+                }
             } = opts;
             const root = typeof parent === 'string' ? document.querySelector(parent) : parent;
-            if (!root) throw new Error('showEphemeralMessage: parent not found');
-            const existing = root.querySelector(':scope > .zc-overlay-details-screen');
+            if (!root) throw new Error(`showEphemeralMessage: Parent "${parent}" not found.`);
+            const existing = root.querySelector(`:scope > .${classes.screen}`);
             if (existing) existing.remove();
             const screen = document.createElement('div');
-            screen.className = 'zc-overlay-details-screen';
+            screen.className = classes.screen;
             screen.setAttribute('aria-hidden', 'true');
             const msg = document.createElement('div');
-            msg.className = 'zc-overlay-details-message';
+            msg.classList.add(classes.message, ...extraClasses);
             msg.textContent = text;
             msg.setAttribute('role', live === 'assertive' ? 'alert' : 'status');
             msg.setAttribute('aria-live', live);
@@ -1374,30 +1381,36 @@
             screen.appendChild(msg);
             root.appendChild(screen);
             requestAnimationFrame(() => {
-                msg.classList.add('is-enter');
+                requestAnimationFrame(() => {
+                    msg.classList.add(classes.enter);
+                });
             });
-            msg.offsetWidth;
             let removed = false;
-            let exitTimer = setTimeout(beginExit, duration);
+            let exitTimer;
+            if (duration > 0) {
+                exitTimer = setTimeout(beginExit, duration);
+            }
             function beginExit() {
                 if (removed) return;
-                msg.classList.remove('is-enter');
-                msg.classList.add('is-exit');
-                const onEnd = () => cleanup();
-                msg.addEventListener('transitionend', onEnd, {
-                    once: true
-                });
-                setTimeout(() => cleanup(), 400);
+                clearTimeout(exitTimer);
+                msg.classList.remove(classes.enter);
+                msg.classList.add(classes.exit);
+                const handleTransitionEnd = (e) => {
+                    if (e.target === msg) cleanup();
+                };
+                msg.addEventListener('transitionend', handleTransitionEnd, { once: true });
+                setTimeout(cleanup, 1000);
             }
             function cleanup() {
                 if (removed) return;
                 removed = true;
-                clearTimeout(exitTimer);
                 screen.remove();
+                if (typeof onDismiss === 'function') onDismiss();
             }
             return {
                 dismiss: beginExit,
-                element: msg
+                element: msg,
+                container: screen
             };
         }
 
