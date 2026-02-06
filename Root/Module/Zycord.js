@@ -382,12 +382,63 @@
         }
         _patchMessage(data) {
             if (!data || !data.channel_id || !data.id) return data;
-
-            // Add the delete helper directly to the message object
+            const msgUrl = `channels/${data.channel_id}/messages/${data.id}`;
             data.delete = async () => {
-                return await this._api(`channels/${data.channel_id}/messages/${data.id}`, {
-                    method: 'DELETE'
+                return await this._api(msgUrl, { method: 'DELETE' });
+            };
+            data.edit = async (content) => {
+                const body = typeof content === 'string' ? { content } : content;
+                return await this._api(msgUrl, { method: 'PATCH', body: JSON.stringify(body) });
+            };
+            data.reply = async (content) => {
+                const body = typeof content === 'string' ? { content } : content;
+                return await this._api(`channels/${data.channel_id}/messages`, {
+                    method: 'POST',
+                    body: JSON.stringify({ ...body, message_reference: { message_id: data.id } })
                 });
+            };
+            data.fetch = async () => {
+                const fresh = await this._api(msgUrl, { method: 'GET' });
+                return this._patchMessage(fresh);
+            };
+            data.react = async (emoji) => {
+                const encodedEmoji = encodeURIComponent(emoji);
+                return await this._api(`${msgUrl}/reactions/${encodedEmoji}/@me`, { method: 'PUT' });
+            };
+            data.pin = async () => {
+                return await this._api(`channels/${data.channel_id}/pins/${data.id}`, { method: 'PUT' });
+            };
+            data.unpin = async () => {
+                return await this._api(`channels/${data.channel_id}/pins/${data.id}`, { method: 'DELETE' });
+            };
+            data.crosspost = async () => {
+                return await this._api(`${msgUrl}/crosspost`, { method: 'POST' });
+            };
+            data.startThread = async (options) => {
+                return await this._api(`${msgUrl}/threads`, { method: 'POST', body: JSON.stringify(options) });
+            };
+            data.suppressEmbeds = async (suppress = true) => {
+                const flags = suppress ? (data.flags | 4) : (data.flags & ~4);
+                return await data.edit({ flags });
+            };
+            data.fetchReference = async () => {
+                if (!data.message_reference) return null;
+                const ref = data.message_reference;
+                const refData = await this._api(`channels/${ref.channel_id}/messages/${ref.message_id}`, { method: 'GET' });
+                return this._patchMessage(refData);
+            };
+            data.forward = async (channelId) => {
+                return await this._api(`channels/${channelId}/messages`, {
+                    method: 'POST',
+                    body: JSON.stringify({ message_reference: { message_id: data.id, type: 1 } })
+                });
+            };
+            data.inGuild = () => !!data.guild_id;
+            data.toString = () => data.content || "";
+            data.toJSON = () => ({ ...data });
+            data.valueOf = () => data.id;
+            data.equals = (other) => {
+                return other && data.id === (other.id || other) && data.content === other.content;
             };
             return data;
         }
