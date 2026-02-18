@@ -80,6 +80,22 @@
             this.channel = channel;
             this._cachePrefix = `message:${channel.id}:`;
         }
+        /**
+         * Fetches messages from the channel with optional pagination parameters.
+         *
+         * @param {Object} [options={}] - Fetch configuration.
+         * @param {number} [options.limit=50] - Number of messages to request (1–100).
+         * @param {string|number} [options.before] - Fetch messages before this message ID.
+         * @param {string|number} [options.after] - Fetch messages after this message ID.
+         * @param {string|number} [options.around] - Fetch messages around this message ID.
+         * @param {boolean} [options.force=false] - If true, bypasses cache and forces a fresh fetch.
+         *
+         * @returns {Promise<Array>} A sorted array of message objects (oldest → newest).
+         *
+         * Notes:
+         * - Cache keys now include query parameters to avoid overwriting unrelated fetches.
+         * - Sorting now validates timestamps to avoid NaN issues.
+         */
         async fetch(options = {}) {
             const { limit = 50, before, after, around, force = false } = options;
             const query = {};
@@ -87,9 +103,16 @@
             if (before) query.before = String(before);
             if (after) query.after = String(after);
             if (around) query.around = String(around);
-            const key = `messages:${this.channel.id}`;
-            if (!force && this.client._store.has(key)) {
-                return this.client._store.get(key);
+            const keyParts = [
+                `messages:${this.channel.id}`,
+                `limit=${query.limit ?? ""}`,
+                `before=${query.before ?? ""}`,
+                `after=${query.after ?? ""}`,
+                `around=${query.around ?? ""}`
+            ];
+            const cacheKey = keyParts.join("|");
+            if (!force && this.client._store.has(cacheKey)) {
+                return this.client._store.get(cacheKey);
             }
             const messages = await this.client._api(`channels/${this.channel.id}/messages`, { query });
             const list = Array.isArray(messages) ? messages : [];
@@ -102,8 +125,17 @@
                     this.client._attachRelationshipHelpers(author);
                 }
             }
-            list.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-            this.client._store.set(key, list);
+            list.sort((a, b) => {
+                const ta = Date.parse(a?.timestamp);
+                const tb = Date.parse(b?.timestamp);
+                const validA = !isNaN(ta);
+                const validB = !isNaN(tb);
+                if (validA && validB) return ta - tb;
+                if (validA) return -1;
+                if (validB) return 1;
+                return 0;
+            });
+            this.client._store.set(cacheKey, list);
             return list;
         }
         async search({
@@ -259,7 +291,7 @@
                 reconnectDelay = 5000,
                 apiBase = 'https://discord.com/api/v10/'
             } = options;
-            this.properties = properties || this._defaultProperties();
+            this.properties = properties || null;
             this.autoReconnect = !!autoReconnect;
             this.reconnectDelay = Math.max(0, Number(reconnectDelay) || 0);
             this.apiBase = apiBase;
@@ -273,20 +305,57 @@
             this._currentlyReconnecting = false;
             this._store = new Map();
             this._userCache = new Map();
+            this._unreads = new Map();
             this._presence = null;
             this._lastPresenceAt = 0;
             this.user = null;
             this._attachPresenceHelpers = this._attachPresenceHelpers.bind(this);
             this.channels = new ChannelsManager(this);
         }
-        login(token, loginBot = false) {
+        /**
+         * Logs the client in using the provided token.
+         *
+         * @param {string} token - The authentication token.
+         * @param {boolean} [loginBot=false] - Whether the token belongs to a bot.
+         * @returns {Promise<this>} Resolves with the client instance after a successful connection.
+         * @throws {Error} If no token is provided or if connection fails.
+         */
+        async login(token, loginBot = false) {
             if (!token) {
                 throw new Error('login(token) requires a token');
             }
+
+            // NEW: If properties aren't set yet, generate them and wait!
+            if (!this.properties) {
+                this.properties = await this._defaultProperties(token);
+            }
+
             this._isBot = Boolean(loginBot);
             this._token = this._isBot ? `Bot ${token.trim()}` : token.trim();
-            this._connect();
-            return Promise.resolve(token);
+
+            try {
+                await this._connect();
+            } catch (err) {
+                throw new Error(`Failed to connect: ${err.message}`);
+            }
+            return this;
+        }
+        getUnreads() {
+            return Array.from(this._unreads.values());
+        }
+        getUnread(channelId) {
+            return this._unreads.get(channelId) || null;
+        }
+        _setUnreadState(channelId, mentionCount, lastMessageId) {
+            if (mentionCount > 0) {
+                this._unreads.set(channelId, {
+                    id: channelId,
+                    mention_count: mentionCount,
+                    last_message_id: lastMessageId
+                });
+            } else {
+                this._unreads.delete(channelId);
+            }
         }
         destroy() {
             this.autoReconnect = false;
@@ -298,15 +367,46 @@
             this._currentlyReconnecting = false;
             return Promise.resolve();
         }
-        _defaultProperties() {
-            const nav = typeof navigator !== 'undefined' ? navigator : null;
-            return {
-                os: (nav && (nav.platform || 'web')) || 'web',
-                browser: (nav && (nav.userAgentData?.brands?.[0]?.brand || nav.userAgent || 'browser')) || 'browser',
-                device: 'web'
-            };
+        async _generateDeviceVendorID(emulatedName, userToken) {
+            const userAgent = (typeof navigator !== 'undefined' && navigator.userAgent) || 'unknown-agent';
+            const cores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) || 4;
+            const factors = [emulatedName, userAgent, cores, userToken];
+            const seed = factors.join('|');
+            const msgUint8 = new TextEncoder().encode(seed);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            const uuid = [
+                hashHex.substring(0, 8),
+                hashHex.substring(8, 12),
+                hashHex.substring(12, 16),
+                hashHex.substring(16, 20),
+                hashHex.substring(20, 32)
+            ].join('-').toUpperCase();
+            return uuid;
         }
-        _presenceKey(userId) { return `presences:${userId}`; }
+        async _defaultProperties(userToken) {
+            const deviceName = 'iPhone16,1';
+            const vendorId = await this._generateDeviceVendorID(deviceName, userToken);
+            const properties = {
+                os: 'iOS',
+                browser: 'Discord iOS',
+                device: deviceName,
+                system_locale: 'en-US',
+                client_version: '247.0',
+                release_channel: 'stable',
+                device_vendor_id: vendorId,
+                browser_user_agent: '',
+                browser_version: '',
+                os_version: '19.2',
+                client_build_number: 62045,
+                client_event_source: null
+            }
+            return properties;
+        }
+        _presenceKey(userId) {
+            return `presences:${userId}`;
+        }
         _storePresence(presence) {
             const user = presence?.user;
             if (!user || !user.id) return null;
@@ -321,20 +421,12 @@
             const client = this;
             const defineHelper = (target) => {
                 if (!target || typeof target !== 'object') return;
-                if (!Object.prototype.hasOwnProperty.call(target, 'getPrescence')) {
-                    Object.defineProperty(target, 'getPrescence', {
+                if (!Object.prototype.hasOwnProperty.call(target, 'getPresence')) {
+                    Object.defineProperty(target, 'getPresence', {
                         value: function () {
                             const id = this?.id ?? this?.user?.id ?? this?.author?.id ?? null;
                             return id ? client.getPresence(id) : null;
                         },
-                        enumerable: false,
-                        configurable: true,
-                        writable: false
-                    });
-                }
-                if (!Object.prototype.hasOwnProperty.call(target, 'getPresence')) {
-                    Object.defineProperty(target, 'getPresence', {
-                        value: target.getPrescence,
                         enumerable: false,
                         configurable: true,
                         writable: false
@@ -345,7 +437,6 @@
             if (obj.user && typeof obj.user === 'object') defineHelper(obj.user);
             if (obj.author && typeof obj.author === 'object') defineHelper(obj.author);
         }
-
         _relationshipKey(userId) { return `relationships:${userId}`; }
         _storeRelationship(relationship) {
             const user = relationship?.user;
@@ -359,7 +450,6 @@
         _attachRelationshipHelpers(obj) {
             if (!obj || typeof obj !== 'object') return;
             const client = this;
-
             const defineHelper = (target) => {
                 if (!target || typeof target !== 'object') return;
 
@@ -375,26 +465,91 @@
                     });
                 }
             };
-
             defineHelper(obj);
             if (obj.user && typeof obj.user === 'object') defineHelper(obj.user);
             if (obj.author && typeof obj.author === 'object') defineHelper(obj.author);
         }
         _patchMessage(data) {
             if (!data || !data.channel_id || !data.id) return data;
+            data.channelId = data.channel_id;
+            data.guildId = data.guild_id || null;
+            data.content = data.content || "";
+            data.author = data.author || null;
+            data.member = data.member || null;
+            data.createdAt = data.timestamp ? new Date(data.timestamp) : new Date();
+            data.createdTimestamp = data.createdAt.getTime();
+            data.editedAt = data.edited_timestamp ? new Date(data.edited_timestamp) : null;
+            data.editedTimestamp = data.editedAt ? data.editedAt.getTime() : null;
+            data.pinned = data.pinned ?? false;
+            data.tts = data.tts ?? false;
+            data.system = data.type !== 0 && data.type !== 19;
+            data.type = data.type ?? 0;
+            data.flags = data.flags ?? 0;
+            data.partial = false;
+            data.attachments = data.attachments || [];
+            data.embeds = data.embeds || [];
+            data.components = data.components || [];
+            const rawMentions = data.mentions || [];
+            data.mentions = {
+                users: rawMentions,
+                roles: data.mention_roles || [],
+                channels: data.mention_channels || [],
+                everyone: !!data.mention_everyone,
+                has: (target, options = { ignoreDirect: false, ignoreRoles: false, ignoreEveryone: false }) => {
+                    const id = target?.id || target;
+                    if (!options.ignoreDirect && rawMentions.some(m => m.id === id)) return true;
+                    if (!options.ignoreRoles && (data.mention_roles || []).includes(id)) return true;
+                    if (!options.ignoreEveryone && data.mention_everyone && (id === '@everyone' || id === '@here')) return true;
+                    return false;
+                }
+            };
+            data.reactions = data.reactions || [];
+            data.stickers = data.sticker_items || data.stickers || [];
+            data.messageSnapshots = data.message_snapshots || [];
+            data.applicationId = data.application_id || null;
+            data.webhookId = data.webhook_id || null;
+            data.reference = data.message_reference || null;
+            data.interaction = data.interaction || null;
+            data.interactionMetadata = data.interaction_metadata || null;
+            data.nonce = data.nonce || null;
+            data.poll = data.poll || null;
+            data.resolved = data.resolved || null;
+            data.roleSubscriptionData = data.role_subscription_data || null;
+            data.activity = data.activity || null;
+            data.call = data.call || null;
+            data.groupActivityApplication = data.application || null;
+            data.thread = data.thread || null;
+            data.hasThread = !!data.thread;
+            data.position = data.position ?? null;
+            data.url = `https://discord.com/channels/${data.guild_id || '@me'}/${data.channel_id}/${data.id}`;
+            data.client = this.client || this;
+            data.channel = {
+                id: data.channel_id,
+                fetch: async () => {
+                    const channelData = await this._api(`channels/${data.channel_id}`, { method: 'GET' });
+                    return this._patchChannel ? this._patchChannel(channelData) : channelData;
+                }
+            };
+            data.guild = data.guild_id ? (this.guilds?.get(data.guild_id) || null) : null;
+            data.cleanContent = data.content;
+            data.crosspostable = data.crosspostable ?? false;
+            data.deletable = data.deletable ?? false;
+            data.bulkDeletable = data.bulkDeletable ?? false;
+            data.pinnable = data.pinnable ?? false;
+            data.editable = data.author?.id === (this.user?.id || this.client?.user?.id);
             const msgUrl = `channels/${data.channel_id}/messages/${data.id}`;
             data.delete = async () => {
                 return await this._api(msgUrl, { method: 'DELETE' });
             };
             data.edit = async (content) => {
                 const body = typeof content === 'string' ? { content } : content;
-                return await this._api(msgUrl, { method: 'PATCH', body: JSON.stringify(body) });
+                return await this._api(msgUrl, { method: 'PATCH', body });
             };
             data.reply = async (content) => {
                 const body = typeof content === 'string' ? { content } : content;
                 return await this._api(`channels/${data.channel_id}/messages`, {
                     method: 'POST',
-                    body: JSON.stringify({ ...body, message_reference: { message_id: data.id } })
+                    body: { ...body, message_reference: { message_id: data.id } }
                 });
             };
             data.fetch = async () => {
@@ -415,7 +570,7 @@
                 return await this._api(`${msgUrl}/crosspost`, { method: 'POST' });
             };
             data.startThread = async (options) => {
-                return await this._api(`${msgUrl}/threads`, { method: 'POST', body: JSON.stringify(options) });
+                return await this._api(`${msgUrl}/threads`, { method: 'POST', body: options });
             };
             data.suppressEmbeds = async (suppress = true) => {
                 const flags = suppress ? (data.flags | 4) : (data.flags & ~4);
@@ -430,7 +585,7 @@
             data.forward = async (channelId) => {
                 return await this._api(`channels/${channelId}/messages`, {
                     method: 'POST',
-                    body: JSON.stringify({ message_reference: { message_id: data.id, type: 1 } })
+                    body: { message_reference: { message_id: data.id, type: 1 } }
                 });
             };
             data.inGuild = () => !!data.guild_id;
@@ -497,16 +652,42 @@
             }
             return false;
         }
+        /**
+         * Updates the client's presence and sends it over the active WebSocket connection.
+         *
+         * @param {object} [presence={}] - Partial presence data to merge with the existing presence.
+         * @returns {object} The normalized presence object after merging and processing.
+         *
+         * @description
+         * - Safely merges the existing presence with the new one.
+         * - Normalizes the merged presence before storing.
+         * - Sends the presence update over WebSocket if the connection is open.
+         * - Emits debug and presence-related events for observability.
+         */
         setPresence(presence = {}) {
-            const d = this._normalizePresence(presence);
+            const mergedPresence = {
+                ...(this._presence || {}),
+                ...(presence || {})
+            };
+            const d = this._normalizePresence(mergedPresence);
             this._presence = d;
-            if (this._ws && this._ws.readyState === WebSocket.OPEN) {
+            const WS = globalThis.WebSocket;
+            const isOpen =
+                this._ws &&
+                WS &&
+                typeof WS.OPEN === 'number' &&
+                this._ws.readyState === WS.OPEN;
+            if (isOpen) {
                 try {
-                    this._ws.send(JSON.stringify({ op: 3, d }));
+                    const presencePayload = { op: 3, d };
+                    this._ws.send(JSON.stringify(presencePayload));
                     this.emit('debug', 'Presence sent', d);
                     this.emit('presenceSelfUpdate', d);
                 } catch (e) {
-                    this.emit('error', new Error('Failed to send presence: ' + (e?.message || e)));
+                    this.emit(
+                        'error',
+                        new Error('Failed to send presence: ' + (e?.message || e))
+                    );
                 }
             } else {
                 this.emit('debug', 'WebSocket not open, presence not sent', d);
@@ -550,38 +731,31 @@
                 }
                 if (type === 'READY') {
                     this._sessionId = data?.session_id || null;
-
                     if (Array.isArray(data?.presences)) {
                         for (const presence of data.presences) {
                             this._storePresence(presence);
                         }
                     }
-
                     if (Array.isArray(data?.relationships)) {
                         for (const relationship of data.relationships) {
                             this._storeRelationship(relationship);
                         }
                     }
-
                     if (data?.user) {
                         this.user = Object.assign(this.user || {}, data.user);
-
                         if (!Object.prototype.hasOwnProperty.call(this.user, 'setPresence')) {
                             Object.defineProperty(this.user, 'setPresence', {
                                 value: (p) => this.setPresence(p),
                                 enumerable: false
                             });
                         }
-
                         this._attachPresenceHelpers(this.user);
                         this._attachRelationshipHelpers(this.user);
                     }
-
                     if (data?.user) {
                         this._attachPresenceHelpers(data.user);
                         this._attachRelationshipHelpers(data.user);
                     }
-
                     if (data?.user_settings && this.user) {
                         const { custom_status, status } = data.user_settings;
                         const presence = {
@@ -589,7 +763,6 @@
                             since: null,
                             afk: false
                         };
-
                         if (custom_status?.text) {
                             const activity = {
                                 id: 'custom',
@@ -599,17 +772,27 @@
                             };
                             presence.activities = [activity];
                         }
-
                         this.user.setPresence(presence);
                     }
-
+                    if (data?.read_state) {
+                        data.read_state.forEach(state => {
+                            if (state.mention_count > 0) {
+                                this._setUnreadState(state.id, state.mention_count, state.last_message_id);
+                            }
+                        });
+                    }
                     this.emit('ready', { sessionId: this._sessionId, user: data?.user || null });
-
                     if (this._presence && this._ws && this._ws.readyState === WebSocket.OPEN) {
                         try {
                             this._ws.send(JSON.stringify({ op: 3, d: this._presence }));
                             this.emit('debug', 'Presence flushed post-READY', this._presence);
-                        } catch { /* ignore */ }
+                        } catch (err) { /* ignore */ }
+                    }
+                } else if (type === 'MESSAGE_ACK') {
+                    const { channel_id, mention_count, message_id } = data || {};
+                    if (channel_id) {
+                        this._setUnreadState(channel_id, mention_count || 0, message_id);
+                        this.emit('debug', `Unread state updated for ${channel_id}: ${mention_count} mentions`);
                     }
                 } else if (type === 'MESSAGE_CREATE') {
                     this._patchMessage(data);
@@ -618,44 +801,32 @@
                         user.isSelf = user.id === this.user?.id;
                         this._storeUser(user);
                     }
-
                     const key = `messages:${data.channel_id}`;
                     if (this._store.has(key)) {
                         const arr = this._store.get(key);
                         this._store.set(key, [...arr, data]);
                     }
-
                     this.emit('messageCreate', data);
                 } else if (type === 'MESSAGE_UPDATE') {
                     this._patchMessage(data);
-
                     const key = `messages:${data.channel_id}`;
-                    let updatedMessage = data; // Default to the raw data received
-
+                    let updatedMessage = data;
                     if (this._store.has(key)) {
                         const messages = this._store.get(key);
                         const index = messages.findIndex(m => m.id === data.id);
-
                         if (index !== -1) {
-                            // Merge the update into the cached message
                             updatedMessage = { ...messages[index], ...data };
                             messages[index] = updatedMessage;
                             this._store.set(key, [...messages]);
                         }
                     }
-
-                    // IMPORTANT: Emit even if it wasn't in the store. 
-                    // This allows your queue logic to see the edit.
                     this.emit('messageUpdate', updatedMessage);
                 } else if (type === 'PRESENCE_UPDATE') {
                     if (data) this._storePresence(data);
                 } else if (type === 'INTERACTION_CREATE' && data?.type === 2) {
                     const client = this;
-
                     const interaction = {
                         ...data,
-
-                        // Matches discord.js-style: returns name of first subcommand, or null
                         options: {
                             getSubcommand(required = true) {
                                 const opts = data.data?.options;
@@ -671,8 +842,6 @@
                                 return sub.name;
                             }
                         },
-
-                        // Immediately acknowledge and send final reply
                         reply: async (content) => {
                             const body = typeof content === 'string' ? { content } : content;
                             return client._api(
@@ -681,25 +850,22 @@
                                     method: 'POST',
                                     auth: false,
                                     body: {
-                                        type: 4, // CHANNEL_MESSAGE_WITH_SOURCE
+                                        type: 4,
                                         data: body
                                     }
                                 }
                             );
                         },
-
-                        // Acknowledge without content so you can reply later
                         deferReply: async () => {
                             return client._api(
                                 `interactions/${data.id}/${data.token}/callback`,
                                 {
                                     method: 'POST',
                                     auth: false,
-                                    body: { type: 5 } // DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE
+                                    body: { type: 5 }
                                 }
                             );
                         },
-
                         editReply: async (content) => {
                             const body = typeof content === 'string' ? { content } : content;
                             return client._api(
@@ -711,7 +877,6 @@
                                 }
                             );
                         },
-
                         followUp: async (content) => {
                             const body = typeof content === 'string' ? { content } : content;
                             return client._api(
@@ -724,7 +889,6 @@
                             );
                         }
                     };
-
                     this.emit('slashCommand', interaction);
                 } else if (type === 'SESSIONS_REPLACE') {
                     this.emit('debug', 'Session replace called', data);
@@ -753,43 +917,40 @@
             });
         }
         _identify() {
-            if (!this._ws || this._ws.readyState !== WebSocket.OPEN) return;
+            const WS = globalThis.WebSocket;
+            if (!this._ws || !WS || this._ws.readyState !== WS.OPEN) return;
+            const INTENT_BITS = [
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+                10, 11, 12, 13, 14, 15, 16,
+                20, 21, 24, 25
+            ];
+            const ALL_INTENTS = INTENT_BITS.reduce(
+                (acc, bit) => acc | (1 << bit),
+                0
+            );
+            const presenceField =
+                this._presence && Object.keys(this._presence).length > 0
+                    ? { presence: this._presence }
+                    : {};
             const identify = {
                 op: 2,
                 d: {
                     token: this._token,
                     properties: this.properties,
-                    ...(this._presence ? { presence: this._presence } : {}),
-                    ...(this._isBot
-                        ? {
-                            intents:
-                                (1 << 0)
-                                | (1 << 1)
-                                | (1 << 2)
-                                | (1 << 3)
-                                | (1 << 4)
-                                | (1 << 5)
-                                | (1 << 6)
-                                | (1 << 7)
-                                | (1 << 8)
-                                | (1 << 9)
-                                | (1 << 10)
-                                | (1 << 11)
-                                | (1 << 12)
-                                | (1 << 13)
-                                | (1 << 14)
-                                | (1 << 15)
-                                | (1 << 16)
-                                | (1 << 20)
-                                | (1 << 21)
-                                | (1 << 24)
-                                | (1 << 25)
-                        }
-                        : {})
+                    ...presenceField,
+                    ...(this._isBot ? { intents: ALL_INTENTS } : {})
                 }
             };
-            this._ws.send(JSON.stringify(identify));
-            this.emit('debug', 'Identify sent');
+            try {
+                const payload = JSON.stringify(identify);
+                this._ws.send(payload);
+                this.emit('debug', 'Identify sent with payload', identify.d);
+            } catch (err) {
+                this.emit(
+                    'error',
+                    new Error('Failed to send identify payload: ' + (err?.message || err))
+                );
+            }
         }
         _startHeartbeat(intervalMs) {
             this._stopHeartbeat();
@@ -849,8 +1010,14 @@
             } = opts;
             const url = new URL(path, this.apiBase);
             if (query) {
-                for (const [k, v] of Object.entries(query)) {
-                    url.searchParams.append(k, v);
+                for (const [key, value] of Object.entries(query)) {
+                    if (Array.isArray(value)) {
+                        for (const v of value) {
+                            url.searchParams.append(key, v);
+                        }
+                    } else if (value !== undefined && value !== null) {
+                        url.searchParams.append(key, value);
+                    }
                 }
             }
             const finalHeaders = {
@@ -858,33 +1025,70 @@
                 ...headers
             };
             if (auth) {
-                finalHeaders['Authorization'] = this._authHeader();
-            }
-            const res = await fetch(url.toString(), {
-                method,
-                headers: finalHeaders,
-                body: body == null ? undefined : JSON.stringify(body)
-            });
-            if (res.status === 204) return null;
-            if (res.status === 429) {
-                let retryAfterMs = 1000;
                 try {
-                    const j = await res.json();
-                    if (j?.retry_after != null) {
-                        retryAfterMs = Number(j.retry_after) * 1000;
-                    } else {
-                        const ra = res.headers.get('Retry-After');
-                        if (ra) retryAfterMs = Number(ra) * 1000;
+                    finalHeaders['Authorization'] = this._authHeader();
+                } catch (err) {
+                    this.emit(
+                        'error',
+                        new Error('Failed to generate Authorization header: ' + (err?.message || err))
+                    );
+                    throw err;
+                }
+            }
+            let finalBody;
+            if (body == null) {
+                finalBody = undefined;
+            } else if (typeof body === 'string' || body instanceof Uint8Array) {
+                finalBody = body;
+            } else {
+                finalBody = JSON.stringify(body);
+            }
+            let attempt = 0;
+            const MAX_RETRIES = 5;
+            while (true) {
+                const res = await fetch(url.toString(), {
+                    method,
+                    headers: finalHeaders,
+                    body: finalBody
+                });
+                if (res.status === 204) return null;
+                if (res.status === 429) {
+                    attempt++;
+                    if (attempt > MAX_RETRIES) {
+                        throw new Error('API repeatedly returned 429 Too Many Requests');
                     }
-                } catch { /* ignore parse errors */ }
-                await this._sleep(retryAfterMs);
-                return this._api(path, opts);
+                    let retryAfterMs = 1000;
+                    try {
+                        const j = await res.json();
+                        if (j?.retry_after != null) {
+                            retryAfterMs = Number(j.retry_after) * 1000;
+                        } else {
+                            const ra = res.headers.get('Retry-After');
+                            if (ra) retryAfterMs = Number(ra) * 1000;
+                        }
+                    } catch (err) {
+                        this.emit(
+                            'debug',
+                            'Failed to parse 429 JSON response: ' + (err?.message || err)
+                        );
+                    }
+                    await this._sleep(retryAfterMs);
+                    continue;
+                }
+                if (!res.ok) {
+                    const text = await res.text().catch(() => String(res.status));
+                    throw new Error(`API ${res.status} ${res.statusText}: ${text}`);
+                }
+                try {
+                    return await res.json();
+                } catch (err) {
+                    this.emit(
+                        'debug',
+                        'Failed to parse JSON response: ' + (err?.message || err)
+                    );
+                    return null;
+                }
             }
-            if (!res.ok) {
-                const text = await res.text().catch(() => String(res.status));
-                throw new Error(`API ${res.status} ${res.statusText}: ${text}`);
-            }
-            return res.json().catch(() => null);
         }
     }
     function createClient(options) {
