@@ -1463,7 +1463,7 @@
                 author = {},
                 member = {}
             } = discordMessage || {};
-            const username = member.nick || author.global_name || author.username || 'Unknown User';
+            const username = author.global_name || author.username || 'Unknown User';
             const authorId = author.id || null;
             const avatarUrl = author.avatar ?
                 `https://cdn.discordapp.com/avatars/${authorId}/${author.avatar}.png` :
