@@ -1,5 +1,8 @@
 (function (global) {
     'use strict';
+
+    console.log("[Zycord Module] Script execution started.");
+
     class Emitter {
         constructor() { this._events = new Map(); }
         on(event, listener) {
@@ -85,58 +88,76 @@
          *
          * @param {Object} [options={}] - Fetch configuration.
          * @param {number} [options.limit=50] - Number of messages to request (1–100).
-         * @param {string|number} [options.before] - Fetch messages before this message ID.
-         * @param {string|number} [options.after] - Fetch messages after this message ID.
-         * @param {string|number} [options.around] - Fetch messages around this message ID.
+         * @param {string|number} [options.before] - Fetch messages strictly before this message ID.
+         * @param {string|number} [options.after] - Fetch messages strictly after this message ID.
+         * @param {string|number} [options.around] - Intended to fetch messages around this ID.
+         *        NOTE: `around` is NOT fully implemented. When provided, cached filtering is disabled
+         *        and the method falls back to a direct API request without true "around" semantics.
          * @param {boolean} [options.force=false] - If true, bypasses cache and forces a fresh fetch.
          *
          * @returns {Promise<Array>} A sorted array of message objects (oldest → newest).
          *
          * Notes:
-         * - Cache keys now include query parameters to avoid overwriting unrelated fetches.
-         * - Sorting now validates timestamps to avoid NaN issues.
+         * - `around` currently does NOT perform midpoint-based fetching; it only triggers a fresh API call.
+         * - Sorting uses BigInt-safe comparison and validates timestamps.
+         * - Cache is global per-channel; consider limiting size or indexing IDs for large histories.
+         * - Filtering now slices in the correct direction depending on query type.
          */
         async fetch(options = {}) {
             const { limit = 50, before, after, around, force = false } = options;
-            const query = {};
-            if (limit != null) query.limit = String(Math.max(1, Math.min(100, Number(limit))));
+            const globalKey = `messages:${this.channel.id}`;
+            let cached = this.client._store.get(globalKey) || [];
+            const cmp = (a, b) => {
+                const A = BigInt(a.id);
+                const B = BigInt(b.id);
+                return A === B ? 0 : (A < B ? -1 : 1);
+            };
+            if (!force && !around) {
+                let filtered = [...cached];
+                if (before) filtered = filtered.filter(m => BigInt(m.id) < BigInt(before));
+                if (after) filtered = filtered.filter(m => BigInt(m.id) > BigInt(after));
+                if (filtered.length >= limit) {
+                    filtered.sort(cmp);
+                    if (before) {
+                        return filtered.slice(-limit);
+                    }
+                    if (after) {
+                        return filtered.slice(0, limit);
+                    }
+                    return filtered.slice(-limit);
+                }
+            }
+            const query = {
+                limit: String(Math.max(1, Math.min(100, Number(limit))))
+            };
             if (before) query.before = String(before);
             if (after) query.after = String(after);
             if (around) query.around = String(around);
-            const keyParts = [
-                `messages:${this.channel.id}`,
-                `limit=${query.limit ?? ""}`,
-                `before=${query.before ?? ""}`,
-                `after=${query.after ?? ""}`,
-                `around=${query.around ?? ""}`
-            ];
-            const cacheKey = keyParts.join("|");
-            if (!force && this.client._store.has(cacheKey)) {
-                return this.client._store.get(cacheKey);
-            }
-            const messages = await this.client._api(`channels/${this.channel.id}/messages`, { query });
-            const list = Array.isArray(messages) ? messages : [];
+            const apiMessages = await this.client._api(
+                `channels/${this.channel.id}/messages`,
+                { query }
+            );
+            const list = Array.isArray(apiMessages) ? apiMessages : [];
+            const existingIds = new Set(cached.map(m => m.id));
             for (let m of list) {
                 this.client._patchMessage(m);
-                const author = m?.author;
-                if (author) {
-                    author.isSelf = author.id === this.client.user?.id;
-                    this.client._attachPresenceHelpers(author);
-                    this.client._attachRelationshipHelpers(author);
+                if (!existingIds.has(m.id)) {
+                    cached.push(m);
                 }
             }
-            list.sort((a, b) => {
-                const ta = Date.parse(a?.timestamp);
-                const tb = Date.parse(b?.timestamp);
-                const validA = !isNaN(ta);
-                const validB = !isNaN(tb);
-                if (validA && validB) return ta - tb;
-                if (validA) return -1;
-                if (validB) return 1;
-                return 0;
-            });
-            this.client._store.set(cacheKey, list);
-            return list;
+            cached.sort(cmp);
+            this.client._store.set(globalKey, cached);
+            let result = [...cached];
+            if (before) result = result.filter(m => BigInt(m.id) < BigInt(before));
+            if (after) result = result.filter(m => BigInt(m.id) > BigInt(after));
+            result.sort(cmp);
+            if (before) {
+                return result.slice(-limit);
+            }
+            if (after) {
+                return result.slice(0, limit);
+            }
+            return result.slice(-limit);
         }
         async search({
             authorId,
@@ -200,7 +221,7 @@
             if (messageData?.id) {
                 messageData.delete = () => this.deleteMessage(messageData.id);
             }
-            return messageData;
+            return this.client._patchMessage(messageData);
         }
         async deleteMessage(messageId) {
             return await this.client._api(`channels/${this.id}/messages/${messageId}`, { method: 'DELETE' });
@@ -281,6 +302,60 @@
         toJSON() { return { ...this }; }
         toString() { return `<#${this.id}>`; }
         valueOf() { return this.id; }
+    }
+    class Activity {
+        constructor(client) {
+            this.client = client;
+            this.name = '';
+            this.type = 0;
+            this.state = '';
+            this.application_id = null;
+            this.details = null;
+            this.assets = null;
+        }
+
+        setName(name) {
+            this.name = String(name);
+            return this;
+        }
+
+        setType(type) {
+            const typeMap = { PLAYING: 0, STREAMING: 1, LISTENING: 2, WATCHING: 3, CUSTOM: 4, COMPETING: 5 };
+            this.type = typeof type === 'string' ? (typeMap[type.toUpperCase()] ?? 0) : type;
+            return this;
+        }
+
+        setApplicationId(id) {
+            this.application_id = String(id);
+            return this;
+        }
+
+        setState(state) {
+            this.state = String(state);
+            return this;
+        }
+
+        apply() {
+            return this.client.setPresence({
+                activities: [this.toJSON()]
+            });
+        }
+
+        clear() {
+            return this.client.setPresence({ activities: [] });
+        }
+
+        toJSON() {
+            return {
+                name: this.name,
+                type: this.type,
+                state: this.state,
+                application_id: this.application_id,
+                details: this.details,
+                assets: this.assets,
+                created_at: Date.now()
+            };
+        }
     }
     class Client extends Emitter {
         constructor(options = {}) {
@@ -484,6 +559,7 @@
             data.tts = data.tts ?? false;
             data.system = data.type !== 0 && data.type !== 19;
             data.type = data.type ?? 0;
+            data.author.isSelf = data.author?.id === (this.user?.id || this.client?.user?.id);
             data.flags = data.flags ?? 0;
             data.partial = false;
             data.attachments = data.attachments || [];
@@ -597,6 +673,10 @@
             };
             return data;
         }
+        newActivity() {
+            return new Activity(this);
+        }
+
         _normalizeActivity(a = {}) {
             const typeMap = {
                 PLAYING: 0,
@@ -606,9 +686,11 @@
                 CUSTOM: 4,
                 COMPETING: 5
             };
+
             let type = a.type;
             if (typeof type === 'string') type = typeMap[type.toUpperCase()] ?? 0;
             if (typeof type !== 'number') type = 0;
+
             const out = {
                 name: String(a.name || ''),
                 type,
@@ -627,18 +709,29 @@
                 flags: a.flags || 0,
                 emoji: a.emoji || null
             };
+
             if (type === 1 && a.url) {
                 out.url = String(a.url);
             }
-            if (type === 4 && typeof a.state === 'string') {
-                out.state = a.state;
+
+            // Custom Status handling: Discord requires 'name' to be "Custom Status" 
+            // and the text to be in 'state'.
+            if (type === 4) {
+                out.name = "Custom Status";
+                if (typeof a.state === 'string') {
+                    out.state = a.state;
+                } else if (a.name && !a.state) {
+                    out.state = a.name;
+                }
             }
+
             return out;
         }
+
         _normalizePresence(p = {}) {
             const status = (p.status || 'online').toLowerCase();
             const activities = Array.isArray(p.activities)
-                ? p.activities.map(a => this._normalizeActivity(a)).filter(a => a.name)
+                ? p.activities.map(a => this._normalizeActivity(a)).filter(a => a.name || a.state)
                 : [];
             const since = Number.isFinite(p.since) ? Number(p.since) : null;
             const afk = !!p.afk;
@@ -795,18 +888,13 @@
                         this.emit('debug', `Unread state updated for ${channel_id}: ${mention_count} mentions`);
                     }
                 } else if (type === 'MESSAGE_CREATE') {
-                    this._patchMessage(data);
-                    const user = data?.author;
-                    if (user) {
-                        user.isSelf = user.id === this.user?.id;
-                        this._storeUser(user);
-                    }
                     const key = `messages:${data.channel_id}`;
                     if (this._store.has(key)) {
                         const arr = this._store.get(key);
                         this._store.set(key, [...arr, data]);
                     }
-                    this.emit('messageCreate', data);
+                    const newMessageData = this._patchMessage(data);
+                    this.emit('messageCreate', newMessageData);
                 } else if (type === 'MESSAGE_UPDATE') {
                     this._patchMessage(data);
                     const key = `messages:${data.channel_id}`;
@@ -821,6 +909,23 @@
                         }
                     }
                     this.emit('messageUpdate', updatedMessage);
+                } else if (type === 'MESSAGE_DELETE') {
+                    const key = `messages:${data.channel_id}`;
+                    if (this._store.has(key)) {
+                        const messages = this._store.get(key);
+                        const index = messages.findIndex(m => m.id === data.id);
+                        if (index !== -1) {
+                            const cached = messages[index];
+                            for (const k in cached) {
+                                if (data[k] === undefined) {
+                                    data[k] = cached[k];
+                                }
+                            }
+                            messages.splice(index, 1);
+                            this._store.set(key, [...messages]);
+                        }
+                    }
+                    this.emit('messageDelete', data);
                 } else if (type === 'PRESENCE_UPDATE') {
                     if (data) this._storePresence(data);
                 } else if (type === 'INTERACTION_CREATE' && data?.type === 2) {
@@ -1097,5 +1202,6 @@
     const api = { Client, createClient };
     if (global) {
         global.MiniDiscordish = global.MiniDiscordish || api;
+        console.log("[Zycord Module] Exported to global.MiniDiscordish", global.MiniDiscordish);
     }
 })(typeof window !== 'undefined' ? window : (typeof globalThis !== 'undefined' ? globalThis : this));
